@@ -15,6 +15,14 @@ Rachel is an open-source AI agent that lives on a server and works for you 24/7.
 
 She's not a chatbot. She's a full agent with tools — like having a junior dev / personal assistant that never sleeps.
 
+## Why Rachel?
+
+**It's full Claude Code.** Rachel runs on the Claude Agent SDK — the same engine behind Claude Code. This isn't a wrapper or a dumbed-down API call. It's the real thing, with full tool use, file access, bash execution, and web browsing. It writes the best code because it *is* Claude Code.
+
+**Works with your existing Claude subscription.** Rachel uses the Claude Code API through the Agent SDK, which is covered under Anthropic's standard terms. If you already pay for Claude, you're good to go — no extra AI costs, no ToS gray areas.
+
+**A seriously powerful server for $20/month.** Each Rachel gets her own dedicated machine with 2 vCPUs, 4GB RAM, 40GB NVMe, and 20TB of traffic. That's not a container or a shared slice — it's a real server that she owns and operates. She can install packages, run long processes, host websites, manage databases — whatever you need.
+
 ## What is Rachel Cloud?
 
 Rachel Cloud is the managed version. We handle the infrastructure so you don't have to.
@@ -43,13 +51,6 @@ You get your own dedicated server with Rachel running on it. Your data, your age
 **$20/month.** That's it.
 
 You bring your own Anthropic API key (for Claude). We handle everything else.
-
-### Why bring your own API key?
-
-- You control your AI costs directly with Anthropic
-- No markup on AI usage — pay Anthropic's prices
-- We charge only for the platform and infrastructure
-- Heavy users and light users pay the same flat rate for hosting
 
 ## Open Source
 
