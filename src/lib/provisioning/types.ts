@@ -175,6 +175,11 @@ export interface HetznerFirewallResponse {
 	actions: HetznerAction[];
 }
 
+/** Response from GET /firewalls (list all) */
+export interface ListFirewallsResponse {
+	firewalls: HetznerFirewall[];
+}
+
 /** Generic Hetzner API error response */
 export interface HetznerErrorResponse {
 	error: {

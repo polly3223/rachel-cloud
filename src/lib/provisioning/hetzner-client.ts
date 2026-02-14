@@ -22,6 +22,7 @@ import type {
 	HetznerSSHKeyResponse,
 	HetznerFirewall,
 	HetznerFirewallResponse,
+	ListFirewallsResponse,
 	HetznerErrorResponse,
 } from './types';
 
@@ -38,6 +39,7 @@ export type {
 	HetznerSSHKeyResponse,
 	HetznerFirewall,
 	HetznerFirewallResponse,
+	ListFirewallsResponse,
 };
 
 /** Configuration for the Hetzner API client. */
@@ -317,5 +319,14 @@ export class HetznerClient {
    */
   async getFirewall(firewallId: number): Promise<HetznerFirewallResponse> {
     return this.request<HetznerFirewallResponse>(`/firewalls/${firewallId}`);
+  }
+
+  /**
+   * List all firewalls in the project.
+   *
+   * @see https://docs.hetzner.cloud/#firewalls-get-all-firewalls
+   */
+  async listFirewalls(): Promise<ListFirewallsResponse> {
+    return this.request<ListFirewallsResponse>('/firewalls');
   }
 }
