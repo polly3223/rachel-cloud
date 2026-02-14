@@ -3,12 +3,13 @@
 ## Project Reference
 See: .planning/PROJECT.md (updated 2026-02-14)
 **Core value:** A user can go from signup to talking to their own personal AI agent on Telegram in under 2 minutes
-**Current focus:** Phase 5
+**Current focus:** Phase 6
 
 ## Current Phase
 Phase: 5 — Dashboard & User Controls
-Status: In Progress
+Status: Complete
 Started: 2026-02-14
+Completed: 2026-02-14
 
 #### Plan 05-01: Admin Auth Middleware + Admin Route Group
 - Status: ✅ Complete
