@@ -100,6 +100,15 @@ export const subscriptions = sqliteTable('subscriptions', {
 	deprovisionedAt: integer('deprovisioned_at', { mode: 'timestamp' }),
 	sshPrivateKey: text('ssh_private_key'),
 
+	// Update tracking fields (Phase 7)
+	currentVersion: text('current_version'),
+	targetVersion: text('target_version'),
+	updateStatus: text('update_status', {
+		enum: ['idle', 'updating', 'success', 'failed', 'rolled_back']
+	}).$defaultFn(() => 'idle'),
+	previousVersion: text('previous_version'),
+	lastUpdateAt: integer('last_update_at', { mode: 'timestamp' }),
+
 	createdAt: integer('created_at', { mode: 'timestamp' })
 		.$defaultFn(() => new Date())
 		.notNull(),
