@@ -3,13 +3,27 @@
 ## Project Reference
 See: .planning/PROJECT.md (updated 2026-02-14)
 **Core value:** A user can go from signup to talking to their own personal AI agent on Telegram in under 2 minutes
-**Current focus:** Phase 7 (Complete)
+**Current focus:** Phase 8 (Complete)
 
 ## Current Phase
-Phase: 7 — Auto-Updates & Rollout System
+Phase: 8 — Polish & Gap Fixes
 Status: Complete
 Started: 2026-02-14
 Completed: 2026-02-14
+
+#### Phase 8 Changes
+- ✅ Admin Users page (/admin/users) — searchable, filterable, expandable details
+- ✅ Admin Revenue page (/admin/revenue) — MRR, ARR, unit economics, funnel, timeline
+- ✅ Admin Infrastructure page (/admin/infrastructure) — VPS fleet, health, costs
+- ✅ Fixed onboarding step 3 placeholder text (now shows real provisioning steps)
+- ✅ Removed broken /dashboard/logs nav link
+- ✅ Landing page redesigned (dark theme, gradient accents, correct GitHub links)
+- ✅ Public rachel repo: replaced PCCI with local whisper.cpp
+- ✅ Cloud-init updated with ffmpeg, build-essential, cmake for whisper
+
+## Phase History
+
+### Phase 7: Auto-Updates & Rollout System ✅
 
 #### Plan 07-01: DB Schema + Update Engine
 - Status: ✅ Complete
