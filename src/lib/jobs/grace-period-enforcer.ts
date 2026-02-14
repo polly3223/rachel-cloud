@@ -2,6 +2,7 @@ import schedule from 'node-schedule';
 import { db } from '$lib/db';
 import { subscriptions } from '$lib/db/schema';
 import { eq } from 'drizzle-orm';
+import { deprovisionVPS } from '$lib/provisioning/deprovision-vps';
 
 /**
  * Schedule a VPS deprovisioning job to run after the grace period ends.
@@ -104,18 +105,3 @@ export function cancelGracePeriodJob(userId: string): boolean {
 	return false;
 }
 
-/**
- * Stub function for VPS deprovisioning.
- * Phase 3 will implement the actual Hetzner API calls here.
- *
- * @param userId - The user ID whose VPS should be deprovisioned
- */
-async function deprovisionVPS(userId: string) {
-	console.log('TODO Phase 3: Deprovision VPS for user', userId);
-	// Phase 3 will implement:
-	// 1. Get VPS details from database
-	// 2. Call Hetzner API to delete server
-	// 3. Clean up DNS records
-	// 4. Archive user data if needed
-	// 5. Update database
-}
