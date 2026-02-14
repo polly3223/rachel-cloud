@@ -36,7 +36,9 @@
     "node-scp": "^0.0.25",
     "pkce-challenge": "^6.0.0",
     "resend": "^6.9.2",
+    "schema-dts": "^1.1.5",
     "ssh2": "^1.17.0",
-    "svelte-email": "^0.0.4"
+    "svelte-email": "^0.0.4",
+    "svelte-meta-tags": "^4.5.0"
   }
 }
