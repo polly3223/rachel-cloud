@@ -1,4 +1,4 @@
-import { createAuthClient } from 'better-auth/svelte-client';
+import { createAuthClient } from 'better-auth/svelte';
 
 /**
  * Better Auth client for frontend/browser use.
