@@ -8,6 +8,13 @@
       "when": 1771030055335,
       "tag": "0000_strong_mordo",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "6",
+      "when": 1771060942917,
+      "tag": "0001_solid_killmonger",
+      "breakpoints": true
     }
   ]
 }
