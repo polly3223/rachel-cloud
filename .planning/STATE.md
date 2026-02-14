@@ -7,12 +7,12 @@ See: .planning/PROJECT.md (updated 2026-02-14)
 
 ## Current Phase
 Phase: 3 — VPS Provisioning & Deployment
-Status: In progress
+Status: Complete
 Started: 2026-02-14
-Completed: —
+Completed: 2026-02-14
 
 #### Plan 03-01: Database Schema & SSH Keys
-- Status: Complete
+- Status: ✅ Complete
 - Commits: eae6014, 270d4d3, ab5bc0e
 - Summary: .planning/phases/03-vps-provisioning/03-01-SUMMARY.md
 
@@ -25,6 +25,11 @@ Completed: —
 - Status: ✅ Complete
 - Commits: aaf61af, c8e4019, 167107c, 41edb88
 - Summary: .planning/phases/03-vps-provisioning/03-03-SUMMARY.md
+
+#### Plan 03-04: Provisioning Orchestrator, Deprovisioning & Deploy UI
+- Status: ✅ Complete
+- Commits: f7f72d8, a87a1d7, 14267df
+- Summary: .planning/phases/03-vps-provisioning/03-04-SUMMARY.md
 
 ## Phase History
 
@@ -83,13 +88,19 @@ Completed: —
 - Claude Code CLI is an npm package (@anthropic-ai/claude-code), installed via bun install -g
 - Manual YAML construction avoids YAML library dependency while maintaining cloud-init compatibility
 - SSH heredoc syntax (`<< 'EOF'`) prevents shell variable expansion in injected credentials
+- Shared firewall reuse: create once by name, list to find existing before creating new
+- provisionVPS runs fire-and-forget from API endpoint (void + .catch pattern)
+- DB polling every 5s for cloud-init callback coordination (not 2s, reduces load)
+- Svelte 5: @const tags only valid inside control flow blocks, use $derived() instead
 
 ## Key Decisions
 - Polar checkout via REST endpoint /api/auth/checkout?slug=... (simpler than client method)
 - Dashboard layout with sidebar nav (responsive mobile hamburger menu)
 - Resend for transactional emails
 - node-schedule for grace period deprovisioning jobs
-- deprovisionVPS() stubbed for Phase 3
+- deprovisionVPS() implemented in Phase 3 Plan 04 (replaced Phase 2 stub)
+- Shared firewall (rachel-cloud-ssh-only) reused across all user VPSs
+- Provisioning status machine: pending -> creating -> cloud_init -> injecting_secrets -> ready | failed
 
 ## Blockers
 (None)
