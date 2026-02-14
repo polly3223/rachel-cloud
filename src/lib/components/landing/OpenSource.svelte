@@ -10,27 +10,30 @@
 	});
 </script>
 
-<section class="py-20 sm:py-24 bg-gray-900 text-white">
-	<div class="max-w-4xl mx-auto text-center px-4 sm:px-6 lg:px-8">
-		<h2 class="text-3xl sm:text-4xl font-bold mb-4">Open Source</h2>
-		<p class="text-lg text-gray-300 mb-10 max-w-2xl mx-auto leading-relaxed">
-			Rachel is fully open source. Self-host it on your own server, or let us handle everything
-			with Rachel Cloud.
+<section class="py-24 bg-[#0a0a0f] border-t border-white/5">
+	<div class="max-w-4xl mx-auto text-center px-6">
+		<p class="text-sm font-medium text-amber-400 text-center mb-3 tracking-wide uppercase">Open source</p>
+		<h2 class="text-3xl sm:text-4xl font-bold text-white mb-4">
+			Built in the open
+		</h2>
+		<p class="text-gray-500 mb-10 max-w-xl mx-auto leading-relaxed">
+			Rachel is fully open source. Self-host it yourself for free, or let Rachel Cloud handle everything for $20/mo.
 		</p>
-		<div class="flex flex-col sm:flex-row items-center justify-center gap-6">
+
+		<div class="flex flex-col sm:flex-row items-center justify-center gap-5">
 			<a
 				class="github-button"
-				href="https://github.com/polly3223/Rachel8"
+				href="https://github.com/polly3223/rachel"
 				data-icon="octicon-star"
 				data-size="large"
 				data-show-count="true"
-				aria-label="Star polly3223/Rachel8 on GitHub"
+				aria-label="Star polly3223/rachel on GitHub"
 			>
 				Star
 			</a>
 			<a
-				href="https://github.com/polly3223/Rachel8"
-				class="inline-flex items-center px-6 py-3 border-2 border-white text-white rounded-lg font-medium hover:bg-white hover:text-gray-900 transition-colors"
+				href="https://github.com/polly3223/rachel"
+				class="inline-flex items-center px-6 py-3 rounded-xl font-medium text-gray-300 border border-white/10 hover:border-white/25 hover:text-white transition-all duration-300"
 				target="_blank"
 				rel="noopener noreferrer"
 			>
