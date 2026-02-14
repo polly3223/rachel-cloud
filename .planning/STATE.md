@@ -11,6 +11,11 @@ Status: In progress
 Started: 2026-02-14
 Completed: —
 
+#### Plan 03-01: Database Schema & SSH Keys
+- Status: Complete
+- Commits: eae6014, 270d4d3, ab5bc0e
+- Summary: .planning/phases/03-vps-provisioning/03-01-SUMMARY.md
+
 #### Plan 03-02: Hetzner Cloud API Client
 - Status: ✅ Complete
 - Commits: a3c826a, 995a4cc
@@ -65,6 +70,11 @@ Completed: —
 - Polar SDK cancel: use update({ cancelAtPeriodEnd: true }), not cancel()
 - Webhook payloads have customerId, not userId — need DB lookup via polarCustomerId
 - Grace period jobs must check subscription status before deprovisioning (prevent data loss on uncanceled)
+
+### Phase 3 Learnings
+- Drizzle Kit generates auto-named migrations; Phase 2 tables were created via push without generate
+- node:crypto generateKeyPairSync can output DER for SPKI public keys, requires manual conversion to OpenSSH format
+- SSH key generation is synchronous (no async needed) using generateKeyPairSync
 
 ## Key Decisions
 - Polar checkout via REST endpoint /api/auth/checkout?slug=... (simpler than client method)
