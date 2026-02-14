@@ -15,7 +15,7 @@
 
 import schedule from 'node-schedule';
 import { db } from '$lib/db';
-import { healthChecks, subscriptions } from '$lib/db/schema';
+import { healthChecks, subscriptions, users } from '$lib/db/schema';
 import { eq, and } from 'drizzle-orm';
 import { execSSHCommand } from '$lib/provisioning/ssh-exec';
 import { restartRachelService } from '$lib/provisioning/vps-status';
@@ -27,6 +27,11 @@ import {
 	shouldAttemptRestart,
 	type CircuitBreakerInput
 } from './circuit-breaker';
+import {
+	sendInstanceDownEmail,
+	sendInstanceRecoveredEmail,
+	sendCircuitBreakerAlert
+} from './health-notifications';
 import { randomUUID } from 'node:crypto';
 
 // ---------------------------------------------------------------------------
@@ -45,6 +50,9 @@ const HEALTH_CHECK_CONNECT_TIMEOUT_MS = 10_000;
 /** SSH command timeout for health checks (10 seconds). */
 const HEALTH_CHECK_COMMAND_TIMEOUT_MS = 10_000;
 
+/** Minimum interval between same notification type per user (5 minutes). */
+const NOTIFICATION_COOLDOWN_MS = 5 * 60 * 1000;
+
 // ---------------------------------------------------------------------------
 // Module state
 // ---------------------------------------------------------------------------
@@ -60,6 +68,8 @@ interface ActiveVPS {
 	userId: string;
 	vpsIpAddress: string;
 	sshPrivateKey: string;
+	userEmail: string;
+	userName: string;
 }
 
 // ---------------------------------------------------------------------------
@@ -158,9 +168,12 @@ async function getActiveVPSs(): Promise<ActiveVPS[]> {
 		.select({
 			userId: subscriptions.userId,
 			vpsIpAddress: subscriptions.vpsIpAddress,
-			sshPrivateKey: subscriptions.sshPrivateKey
+			sshPrivateKey: subscriptions.sshPrivateKey,
+			userEmail: users.email,
+			userName: users.name
 		})
 		.from(subscriptions)
+		.innerJoin(users, eq(subscriptions.userId, users.id))
 		.where(
 			and(
 				eq(subscriptions.status, 'active'),
@@ -231,7 +244,8 @@ async function checkAndRecoverVPS(vps: ActiveVPS): Promise<boolean> {
 			circuitState: effectiveState
 		});
 
-		await upsertHealthCheck(vps.userId, {
+		// Send recovery notification if previously notified user of downtime
+		const recoveryUpdate: HealthCheckUpdate = {
 			status: 'healthy',
 			consecutiveFailures: afterSuccess.consecutiveFailures,
 			circuitState: afterSuccess.circuitState,
@@ -243,7 +257,21 @@ async function checkAndRecoverVPS(vps: ActiveVPS): Promise<boolean> {
 			totalRecoveries: afterSuccess.recovered
 				? (healthRecord?.totalRecoveries ?? 0) + 1
 				: (healthRecord?.totalRecoveries ?? 0)
-		});
+		};
+
+		if (afterSuccess.recovered && healthRecord?.lastNotifiedDownAt) {
+			// Only send recovery email if we previously told user their instance was down
+			const downtimeMs = now.getTime() - (healthRecord.lastFailureAt?.getTime() ?? now.getTime());
+			const downtimeMinutes = Math.round(downtimeMs / 60_000);
+
+			recoveryUpdate.lastNotifiedUpAt = now;
+
+			// Fire-and-forget: email failure must not break health monitoring
+			sendInstanceRecoveredEmail(vps.userEmail, vps.userName || 'there', downtimeMinutes).catch(() => {});
+			console.log(`[health-checker] ${vps.userId}: recovered, sending recovery email (downtime ~${downtimeMinutes}m)`);
+		}
+
+		await upsertHealthCheck(vps.userId, recoveryUpdate);
 
 		if (afterSuccess.recovered) {
 			console.log(`[health-checker] ${vps.userId}: recovered (check #${totalChecks})`);
@@ -268,7 +296,7 @@ async function checkAndRecoverVPS(vps: ActiveVPS): Promise<boolean> {
 
 		const displayStatus: HealthStatus = afterFailure.circuitState === 'open' ? 'circuit_open' : 'down';
 
-		await upsertHealthCheck(vps.userId, {
+		const sshFailUpdate: HealthCheckUpdate = {
 			status: displayStatus,
 			consecutiveFailures: afterFailure.consecutiveFailures,
 			circuitState: afterFailure.circuitState,
@@ -278,9 +306,24 @@ async function checkAndRecoverVPS(vps: ActiveVPS): Promise<boolean> {
 			lastError: errorMsg,
 			totalChecks,
 			totalFailures
-		});
+		};
 
+		// Send down notification on first failure (transition from healthy)
+		if (cbInput.consecutiveFailures === 0 && canSendDownNotification(healthRecord?.lastNotifiedDownAt ?? null)) {
+			sshFailUpdate.lastNotifiedDownAt = now;
+			sendInstanceDownEmail(vps.userEmail, vps.userName || 'there').catch(() => {});
+			console.log(`[health-checker] ${vps.userId}: sending instance down email (SSH unreachable)`);
+		}
+
+		// Send circuit breaker alert to admin when circuit trips
 		if (afterFailure.tripped) {
+			const adminEmail = process.env.ADMIN_EMAIL;
+			if (adminEmail) {
+				sendCircuitBreakerAlert(
+					adminEmail, vps.userId, vps.userEmail,
+					vps.vpsIpAddress, afterFailure.consecutiveFailures, errorMsg
+				).catch(() => {});
+			}
 			console.log(
 				`[health-checker] ${vps.userId}: circuit breaker TRIPPED (${afterFailure.consecutiveFailures} consecutive failures, SSH unreachable)`
 			);
@@ -289,6 +332,8 @@ async function checkAndRecoverVPS(vps: ActiveVPS): Promise<boolean> {
 				`[health-checker] ${vps.userId}: unreachable (consecutive: ${afterFailure.consecutiveFailures})`
 			);
 		}
+
+		await upsertHealthCheck(vps.userId, sshFailUpdate);
 
 		return false;
 	}
@@ -313,7 +358,7 @@ async function checkAndRecoverVPS(vps: ActiveVPS): Promise<boolean> {
 				circuitState: effectiveState
 			});
 
-			await upsertHealthCheck(vps.userId, {
+			const restartSuccessUpdate: HealthCheckUpdate = {
 				status: 'healthy',
 				consecutiveFailures: afterSuccess.consecutiveFailures,
 				circuitState: afterSuccess.circuitState,
@@ -325,7 +370,18 @@ async function checkAndRecoverVPS(vps: ActiveVPS): Promise<boolean> {
 				totalChecks,
 				totalFailures,
 				totalRecoveries: (healthRecord?.totalRecoveries ?? 0) + 1
-			});
+			};
+
+			// If user was previously notified of downtime, send recovery email
+			if (healthRecord?.lastNotifiedDownAt) {
+				const downtimeMs = now.getTime() - (healthRecord.lastFailureAt?.getTime() ?? now.getTime());
+				const downtimeMinutes = Math.round(downtimeMs / 60_000);
+				restartSuccessUpdate.lastNotifiedUpAt = now;
+				sendInstanceRecoveredEmail(vps.userEmail, vps.userName || 'there', downtimeMinutes).catch(() => {});
+				console.log(`[health-checker] ${vps.userId}: restart successful, sending recovery email (downtime ~${downtimeMinutes}m)`);
+			}
+
+			await upsertHealthCheck(vps.userId, restartSuccessUpdate);
 
 			console.log(`[health-checker] ${vps.userId}: restart successful, marking healthy`);
 			return true;
@@ -339,7 +395,7 @@ async function checkAndRecoverVPS(vps: ActiveVPS): Promise<boolean> {
 
 		const displayStatus: HealthStatus = afterFailure.circuitState === 'open' ? 'circuit_open' : 'unhealthy';
 
-		await upsertHealthCheck(vps.userId, {
+		const restartFailUpdate: HealthCheckUpdate = {
 			status: displayStatus,
 			consecutiveFailures: afterFailure.consecutiveFailures,
 			circuitState: afterFailure.circuitState,
@@ -350,9 +406,24 @@ async function checkAndRecoverVPS(vps: ActiveVPS): Promise<boolean> {
 			lastError: restartResult.message,
 			totalChecks,
 			totalFailures
-		});
+		};
 
+		// Send down notification on first failure (restart attempted and failed)
+		if (cbInput.consecutiveFailures === 0 && canSendDownNotification(healthRecord?.lastNotifiedDownAt ?? null)) {
+			restartFailUpdate.lastNotifiedDownAt = now;
+			sendInstanceDownEmail(vps.userEmail, vps.userName || 'there').catch(() => {});
+			console.log(`[health-checker] ${vps.userId}: sending instance down email (restart failed)`);
+		}
+
+		// Send circuit breaker alert to admin when circuit trips
 		if (afterFailure.tripped) {
+			const adminEmail = process.env.ADMIN_EMAIL;
+			if (adminEmail) {
+				sendCircuitBreakerAlert(
+					adminEmail, vps.userId, vps.userEmail,
+					vps.vpsIpAddress, afterFailure.consecutiveFailures, restartResult.message
+				).catch(() => {});
+			}
 			console.log(
 				`[health-checker] ${vps.userId}: circuit breaker TRIPPED (${afterFailure.consecutiveFailures} consecutive failures)`
 			);
@@ -361,6 +432,8 @@ async function checkAndRecoverVPS(vps: ActiveVPS): Promise<boolean> {
 				`[health-checker] ${vps.userId}: restart failed (consecutive: ${afterFailure.consecutiveFailures})`
 			);
 		}
+
+		await upsertHealthCheck(vps.userId, restartFailUpdate);
 
 		return false;
 	}
@@ -401,6 +474,8 @@ interface HealthCheckUpdate {
 	lastHealthyAt?: Date;
 	lastFailureAt?: Date;
 	lastRestartAttemptAt?: Date;
+	lastNotifiedDownAt?: Date;
+	lastNotifiedUpAt?: Date;
 	lastError?: string | null;
 	totalChecks?: number;
 	totalFailures?: number;
@@ -429,6 +504,8 @@ async function upsertHealthCheck(userId: string, updates: HealthCheckUpdate): Pr
 			lastHealthyAt: updates.lastHealthyAt ?? undefined,
 			lastFailureAt: updates.lastFailureAt ?? undefined,
 			lastRestartAttemptAt: updates.lastRestartAttemptAt ?? undefined,
+			lastNotifiedDownAt: updates.lastNotifiedDownAt ?? undefined,
+			lastNotifiedUpAt: updates.lastNotifiedUpAt ?? undefined,
 			lastError: updates.lastError ?? undefined,
 			totalChecks: updates.totalChecks ?? 1,
 			totalFailures: updates.totalFailures ?? 0,
@@ -453,6 +530,12 @@ async function upsertHealthCheck(userId: string, updates: HealthCheckUpdate): Pr
 				...(updates.lastRestartAttemptAt !== undefined && {
 					lastRestartAttemptAt: updates.lastRestartAttemptAt
 				}),
+				...(updates.lastNotifiedDownAt !== undefined && {
+					lastNotifiedDownAt: updates.lastNotifiedDownAt
+				}),
+				...(updates.lastNotifiedUpAt !== undefined && {
+					lastNotifiedUpAt: updates.lastNotifiedUpAt
+				}),
 				...(updates.lastError !== undefined && { lastError: updates.lastError }),
 				...(updates.totalChecks !== undefined && { totalChecks: updates.totalChecks }),
 				...(updates.totalFailures !== undefined && { totalFailures: updates.totalFailures }),
@@ -462,6 +545,19 @@ async function upsertHealthCheck(userId: string, updates: HealthCheckUpdate): Pr
 				updatedAt: now
 			}
 		});
+}
+
+// ---------------------------------------------------------------------------
+// Internal: Notification spam guard
+// ---------------------------------------------------------------------------
+
+/**
+ * Check if enough time has elapsed to send another "down" notification.
+ * Returns true if lastNotifiedDownAt is null or older than NOTIFICATION_COOLDOWN_MS.
+ */
+function canSendDownNotification(lastNotifiedDownAt: Date | null): boolean {
+	if (!lastNotifiedDownAt) return true;
+	return Date.now() - lastNotifiedDownAt.getTime() >= NOTIFICATION_COOLDOWN_MS;
 }
 
 // ---------------------------------------------------------------------------
