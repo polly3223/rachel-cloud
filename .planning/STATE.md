@@ -3,7 +3,7 @@
 ## Project Reference
 See: .planning/PROJECT.md (updated 2026-02-14)
 **Core value:** A user can go from signup to talking to their own personal AI agent on Telegram in under 2 minutes
-**Current focus:** Phase 3
+**Current focus:** Phase 4
 
 ## Current Phase
 Phase: 3 — VPS Provisioning & Deployment

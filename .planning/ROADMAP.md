@@ -52,27 +52,28 @@ Plans:
 
 ---
 
-## Phase 3: VPS Provisioning & Deployment
+## Phase 3: VPS Provisioning & Deployment ✅
 
+**Status:** Complete (2026-02-14)
 **Goal:** System auto-provisions a dedicated Hetzner VPS with Rachel8 running in under 2 minutes.
 **Requirements:** PROV-01, PROV-02, PROV-03, PROV-04, PROV-05, PROV-06, PROV-07, PROV-08
 
 ### Success Criteria
-1. User clicks "Deploy" and sees their Rachel bot responding on Telegram within 2 minutes
-2. Provisioning succeeds 95%+ of the time with clear error messages on failure
-3. Cloud-init validation reports success/failure back to control plane for every provision
-4. Failed provisions are automatically cleaned up with no orphaned VPS instances
-5. User's Claude tokens and Telegram bot token are injected securely without appearing in logs
+1. ✅ User clicks "Deploy" and sees their Rachel bot responding on Telegram within 2 minutes
+2. ✅ Provisioning succeeds 95%+ of the time with clear error messages on failure
+3. ✅ Cloud-init validation reports success/failure back to control plane for every provision
+4. ✅ Failed provisions are automatically cleaned up with no orphaned VPS instances
+5. ✅ User's Claude tokens and Telegram bot token are injected securely without appearing in logs
 
 ### Plans
 
-**Plans:** 4/4 plans (3 waves)
+**Plans:** 4/4 complete (3 waves)
 
 Plans:
-- [ ] 03-01-PLAN.md — Database schema extensions + SSH key generation (Wave 1)
-- [ ] 03-02-PLAN.md — Hetzner API client with retry logic (Wave 1)
-- [ ] 03-03-PLAN.md — Cloud-init builder + SSH injector + callback endpoint (Wave 2)
-- [ ] 03-04-PLAN.md — Provisioning orchestrator + deprovisioning + Deploy button (Wave 3)
+- [x] 03-01-PLAN.md — Database schema extensions + SSH key generation (Wave 1)
+- [x] 03-02-PLAN.md — Hetzner API client with retry logic (Wave 1)
+- [x] 03-03-PLAN.md — Cloud-init builder + SSH injector + callback endpoint (Wave 2)
+- [x] 03-04-PLAN.md — Provisioning orchestrator + deprovisioning + Deploy button (Wave 3)
 
 ---
 
