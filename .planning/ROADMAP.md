@@ -64,7 +64,15 @@ Plans:
 4. Failed provisions are automatically cleaned up with no orphaned VPS instances
 5. User's Claude tokens and Telegram bot token are injected securely without appearing in logs
 
-### Plans (to be created during /gsd:plan-phase)
+### Plans
+
+**Plans:** 4/4 plans (3 waves)
+
+Plans:
+- [ ] 03-01-PLAN.md — Database schema extensions + SSH key generation (Wave 1)
+- [ ] 03-02-PLAN.md — Hetzner API client with retry logic (Wave 1)
+- [ ] 03-03-PLAN.md — Cloud-init builder + SSH injector + callback endpoint (Wave 2)
+- [ ] 03-04-PLAN.md — Provisioning orchestrator + deprovisioning + Deploy button (Wave 3)
 
 ---
 
