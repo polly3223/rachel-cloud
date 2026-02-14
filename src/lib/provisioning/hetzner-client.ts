@@ -10,11 +10,35 @@
  * @module hetzner-client
  */
 import { backOff } from 'exponential-backoff';
+import type {
+	CreateServerRequest,
+	CreateSSHKeyRequest,
+	CreateFirewallRequest,
+	HetznerServer,
+	HetznerAction,
+	HetznerServerResponse,
+	HetznerActionsResponse,
+	HetznerSSHKey,
+	HetznerSSHKeyResponse,
+	HetznerFirewall,
+	HetznerFirewallResponse,
+	HetznerErrorResponse,
+} from './types';
 
-// ---------------------------------------------------------------------------
-// Local type definitions
-// These will be replaced by imports from ./types.ts once plan 03-01 lands.
-// ---------------------------------------------------------------------------
+// Re-export types for consumers
+export type {
+	CreateServerRequest,
+	CreateSSHKeyRequest,
+	CreateFirewallRequest,
+	HetznerServer,
+	HetznerAction,
+	HetznerServerResponse,
+	HetznerActionsResponse,
+	HetznerSSHKey,
+	HetznerSSHKeyResponse,
+	HetznerFirewall,
+	HetznerFirewallResponse,
+};
 
 /** Configuration for the Hetzner API client. */
 export interface HetznerConfig {
@@ -22,156 +46,14 @@ export interface HetznerConfig {
   baseUrl?: string;
 }
 
-// -- Server types -----------------------------------------------------------
-
-export interface CreateServerRequest {
-  name: string;
-  server_type: string;
-  image: string;
-  location?: string;
-  ssh_keys?: number[];
-  user_data?: string;
-  firewalls?: Array<{ firewall: number }>;
-  start_after_create?: boolean;
-  public_net?: {
-    enable_ipv4: boolean;
-    enable_ipv6: boolean;
-  };
-}
-
-export interface HetznerServer {
-  id: number;
-  name: string;
-  status: string;
-  public_net: {
-    ipv4: {
-      ip: string;
-      blocked: boolean;
-    };
-    ipv6: {
-      ip: string;
-      blocked: boolean;
-    };
-  };
-  server_type: {
-    id: number;
-    name: string;
-    description: string;
-  };
-  datacenter: {
-    id: number;
-    name: string;
-    description: string;
-  };
-  created: string;
-}
-
-export interface HetznerAction {
-  id: number;
-  command: string;
-  status: 'running' | 'success' | 'error';
-  progress: number;
-  started: string;
-  finished: string | null;
-  error: {
-    code: string;
-    message: string;
-  } | null;
-  resources: Array<{
-    id: number;
-    type: string;
-  }>;
-}
-
-export interface CreateServerResponse {
-  server: HetznerServer;
-  action: HetznerAction;
-  next_actions: HetznerAction[];
-  root_password: string | null;
-}
-
+/** Response from GET /servers/{id} */
 export interface ServerResponse {
   server: HetznerServer;
 }
 
-export interface ActionsResponse {
-  actions: HetznerAction[];
-}
-
+/** Response from GET /actions/{id} */
 export interface ActionResponse {
   action: HetznerAction;
-}
-
-// -- SSH Key types ----------------------------------------------------------
-
-export interface CreateSSHKeyRequest {
-  name: string;
-  public_key: string;
-  labels?: Record<string, string>;
-}
-
-export interface HetznerSSHKey {
-  id: number;
-  name: string;
-  fingerprint: string;
-  public_key: string;
-  created: string;
-  labels: Record<string, string>;
-}
-
-export interface SSHKeyResponse {
-  ssh_key: HetznerSSHKey;
-}
-
-// -- Firewall types ---------------------------------------------------------
-
-export interface FirewallRule {
-  direction: 'in' | 'out';
-  protocol: 'tcp' | 'udp' | 'icmp' | 'esp' | 'gre';
-  port?: string;
-  source_ips?: string[];
-  destination_ips?: string[];
-  description?: string;
-}
-
-export interface CreateFirewallRequest {
-  name: string;
-  rules: FirewallRule[];
-  labels?: Record<string, string>;
-  apply_to?: Array<{
-    type: string;
-    server?: { id: number };
-    label_selector?: { selector: string };
-  }>;
-}
-
-export interface HetznerFirewall {
-  id: number;
-  name: string;
-  rules: FirewallRule[];
-  applied_to: Array<{
-    type: string;
-    server?: { id: number };
-    applied_to_resources: Array<{
-      type: string;
-      server?: { id: number };
-    }>;
-  }>;
-  created: string;
-  labels: Record<string, string>;
-}
-
-export interface FirewallResponse {
-  firewall: HetznerFirewall;
-}
-
-// -- Hetzner error format ---------------------------------------------------
-
-interface HetznerErrorBody {
-  error: {
-    code: string;
-    message: string;
-  };
 }
 
 // ---------------------------------------------------------------------------
@@ -280,7 +162,7 @@ export class HetznerClient {
         if (!response.ok) {
           let errorMessage = response.statusText;
           try {
-            const errorBody = (await response.json()) as HetznerErrorBody;
+            const errorBody = (await response.json()) as HetznerErrorResponse;
             if (errorBody.error?.message) {
               errorMessage = errorBody.error.message;
             }
@@ -336,8 +218,8 @@ export class HetznerClient {
    *
    * @see https://docs.hetzner.cloud/#servers-create-a-server
    */
-  async createServer(params: CreateServerRequest): Promise<CreateServerResponse> {
-    return this.request<CreateServerResponse>('/servers', {
+  async createServer(params: CreateServerRequest): Promise<HetznerServerResponse> {
+    return this.request<HetznerServerResponse>('/servers', {
       method: 'POST',
       body: JSON.stringify(params),
     });
@@ -368,8 +250,8 @@ export class HetznerClient {
    *
    * @see https://docs.hetzner.cloud/#server-actions-get-all-actions-for-a-server
    */
-  async getServerActions(serverId: number): Promise<ActionsResponse> {
-    return this.request<ActionsResponse>(`/servers/${serverId}/actions`);
+  async getServerActions(serverId: number): Promise<HetznerActionsResponse> {
+    return this.request<HetznerActionsResponse>(`/servers/${serverId}/actions`);
   }
 
   // -------------------------------------------------------------------------
@@ -394,8 +276,8 @@ export class HetznerClient {
    *
    * @see https://docs.hetzner.cloud/#ssh-keys-create-an-ssh-key
    */
-  async createSSHKey(params: CreateSSHKeyRequest): Promise<SSHKeyResponse> {
-    return this.request<SSHKeyResponse>('/ssh_keys', {
+  async createSSHKey(params: CreateSSHKeyRequest): Promise<HetznerSSHKeyResponse> {
+    return this.request<HetznerSSHKeyResponse>('/ssh_keys', {
       method: 'POST',
       body: JSON.stringify(params),
     });
@@ -421,8 +303,8 @@ export class HetznerClient {
    *
    * @see https://docs.hetzner.cloud/#firewalls-create-a-firewall
    */
-  async createFirewall(params: CreateFirewallRequest): Promise<FirewallResponse> {
-    return this.request<FirewallResponse>('/firewalls', {
+  async createFirewall(params: CreateFirewallRequest): Promise<HetznerFirewallResponse> {
+    return this.request<HetznerFirewallResponse>('/firewalls', {
       method: 'POST',
       body: JSON.stringify(params),
     });
@@ -433,7 +315,7 @@ export class HetznerClient {
    *
    * @see https://docs.hetzner.cloud/#firewalls-get-a-firewall
    */
-  async getFirewall(firewallId: number): Promise<FirewallResponse> {
-    return this.request<FirewallResponse>(`/firewalls/${firewallId}`);
+  async getFirewall(firewallId: number): Promise<HetznerFirewallResponse> {
+    return this.request<HetznerFirewallResponse>(`/firewalls/${firewallId}`);
   }
 }
