@@ -15,7 +15,14 @@
 3. User logs out and back in, session persists, and Claude tokens auto-refresh without re-auth
 4. Security audit shows all Claude tokens encrypted at rest with AES-256-GCM
 
-### Plans (to be created during /gsd:plan-phase)
+### Plans
+
+**Plans:** 3 plans in 2 waves
+
+Plans:
+- [ ] 01-01-PLAN.md — Database, Better Auth, and token encryption foundation
+- [ ] 01-02-PLAN.md — Auth API endpoints and session management (Wave 2)
+- [ ] 01-03-PLAN.md — Claude OAuth 2.0 + PKCE with auto-refresh (Wave 2)
 
 ---
 
