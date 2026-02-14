@@ -59,11 +59,17 @@ export const POST: RequestHandler = async ({ locals }) => {
 			);
 		}
 
-		// Call Polar API to cancel subscription
-		await polarClient.subscriptions.cancel(subscription.polarSubscriptionId);
+		// Call Polar API to cancel subscription at period end
+		// Using update() with cancelAtPeriodEnd = true to schedule cancellation
+		await polarClient.subscriptions.update({
+			id: subscription.polarSubscriptionId,
+			subscriptionUpdate: {
+				cancelAtPeriodEnd: true
+			}
+		});
 
 		// The webhook handler will update the database and schedule grace period
-		console.log(`Subscription canceled via API for user ${userId}`);
+		console.log(`Subscription scheduled for cancellation at period end for user ${userId}`);
 
 		return json({
 			success: true,
