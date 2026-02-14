@@ -14,7 +14,7 @@
 					Login
 				</a>
 				<a
-					href="https://github.com/polly3223/rachel"
+					href="https://github.com/polly3223/Rachel8"
 					class="text-sm text-gray-500 hover:text-gray-300 transition-colors"
 					target="_blank"
 					rel="noopener noreferrer"

@@ -1,6 +1,6 @@
 # Rachel Cloud
 
-Managed hosting for [Rachel](https://github.com/polly3223/rachel) — your personal AI assistant on Telegram, deployed and running in minutes.
+Managed hosting for [Rachel](https://github.com/polly3223/Rachel8) — your personal AI assistant on Telegram, deployed and running in minutes.
 
 ## What is Rachel?
 
@@ -57,7 +57,7 @@ You bring your own Claude subscription. We handle everything else.
 
 ## Open Source
 
-Rachel herself is fully open source at [polly3223/rachel](https://github.com/polly3223/rachel). You can self-host her for free if you want to manage your own server.
+Rachel herself is fully open source at [polly3223/Rachel8](https://github.com/polly3223/Rachel8). You can self-host her for free if you want to manage your own server.
 
 Rachel Cloud exists for people who'd rather just have it work.
 

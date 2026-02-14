@@ -26,16 +26,16 @@
 		<div class="flex flex-col sm:flex-row items-center justify-center gap-5">
 			<a
 				class="github-button"
-				href="https://github.com/polly3223/rachel"
+				href="https://github.com/polly3223/Rachel8"
 				data-icon="octicon-star"
 				data-size="large"
 				data-show-count="true"
-				aria-label="Star polly3223/rachel on GitHub"
+				aria-label="Star polly3223/Rachel8 on GitHub"
 			>
 				Star
 			</a>
 			<a
-				href="https://github.com/polly3223/rachel"
+				href="https://github.com/polly3223/Rachel8"
 				class="inline-flex items-center px-6 py-3 rounded-xl font-medium text-gray-300 border border-white/10 hover:border-white/25 hover:text-white transition-all duration-300"
 				target="_blank"
 				rel="noopener noreferrer"

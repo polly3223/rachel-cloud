@@ -130,7 +130,7 @@ function buildYaml(username: string, sshPublicKey: string, callbackUrl: string):
 	// 5. Clone Rachel repository (from public repo)
 	lines.push('  # Clone Rachel repository');
 	lines.push(
-		`  - ["su", "-", "${username}", "-c", "git clone https://github.com/polly3223/rachel.git /home/${username}/rachel8"]`
+		`  - ["su", "-", "${username}", "-c", "git clone https://github.com/polly3223/Rachel8.git /home/${username}/rachel8"]`
 	);
 
 	// 6. Install Rachel8 dependencies

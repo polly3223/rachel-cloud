@@ -30,7 +30,7 @@
 					Start for &euro;40/mo
 				</a>
 				<a
-					href="https://github.com/polly3223/rachel"
+					href="https://github.com/polly3223/Rachel8"
 					class="px-8 py-3.5 rounded-xl font-medium text-gray-300 border border-white/10 hover:border-white/25 hover:text-white transition-all duration-300"
 					target="_blank"
 					rel="noopener noreferrer"
