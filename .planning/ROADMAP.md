@@ -137,7 +137,12 @@ Plans:
 4. 99% of instance failures are auto-recovered without user intervention
 5. Mean time to recovery (MTTR) is under 5 minutes for automated failures
 
-### Plans (to be created during /gsd:plan-phase)
+**Plans:** 3 plans (2 waves)
+
+Plans:
+- [ ] 06-01-PLAN.md — DB schema for health tracking + health check service + circuit breaker (Wave 1)
+- [ ] 06-02-PLAN.md — Auto-recovery with circuit breaker + email notifications (Wave 2)
+- [ ] 06-03-PLAN.md — Health status in user dashboard + admin dashboard (Wave 2)
 
 ---
 
@@ -166,4 +171,4 @@ Plans:
 - Phase 6: Reliability
 - Phase 7: Operations
 
-**Next Step:** Run `/gsd:execute-phase 5` to implement Dashboard & User Controls.
+**Next Step:** Run `/gsd:execute-phase 6` to implement Health Monitoring & Auto-Recovery.
