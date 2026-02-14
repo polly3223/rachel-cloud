@@ -79,6 +79,7 @@ Plans:
 
 ## Phase 4: Landing Page & Public Launch
 
+**Status:** In Progress
 **Goal:** Public-facing landing page converts visitors to signups and explains the product clearly.
 **Requirements:** LAND-01, LAND-02, LAND-03, LAND-04, LAND-05
 
@@ -89,10 +90,10 @@ Plans:
 4. Landing page links to open-source Rachel8 repo and drives GitHub stars
 5. Conversion rate from landing page visit to signup is above 5%
 
-**Plans:** 5 plans (3 waves)
+**Plans:** 1/5 complete (3 waves)
 
 Plans:
-- [ ] 04-01-PLAN.md — Tailwind CSS migration (CDN to @tailwindcss/vite) + route group restructuring (Wave 1)
+- [x] 04-01-PLAN.md — Tailwind CSS migration (CDN to @tailwindcss/vite) + route group restructuring (Wave 1)
 - [ ] 04-05-PLAN.md — Create public Rachel repo + update cloud-init clone URL (Wave 1)
 - [ ] 04-02-PLAN.md — Landing page sections: Hero, HowItWorks, Features, Pricing, OpenSource, FAQ, Footer (Wave 2)
 - [ ] 04-03-PLAN.md — SEO meta tags, Open Graph, Twitter Cards, JSON-LD, sitemap.xml, robots.txt (Wave 2)

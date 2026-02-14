@@ -6,32 +6,23 @@ See: .planning/PROJECT.md (updated 2026-02-14)
 **Current focus:** Phase 4
 
 ## Current Phase
-Phase: 3 — VPS Provisioning & Deployment
-Status: Complete
+Phase: 4 — Landing Page & Public Launch
+Status: In Progress
 Started: 2026-02-14
-Completed: 2026-02-14
+Current Plan: 04-02
 
-#### Plan 03-01: Database Schema & SSH Keys
+#### Plan 04-01: Tailwind CSS Migration & Route Group Restructuring
 - Status: ✅ Complete
-- Commits: eae6014, 270d4d3, ab5bc0e
-- Summary: .planning/phases/03-vps-provisioning/03-01-SUMMARY.md
-
-#### Plan 03-02: Hetzner Cloud API Client
-- Status: ✅ Complete
-- Commits: a3c826a, 995a4cc
-- Summary: .planning/phases/03-vps-provisioning/03-02-SUMMARY.md
-
-#### Plan 03-03: Cloud-Init & SSH Injection
-- Status: ✅ Complete
-- Commits: aaf61af, c8e4019, 167107c, 41edb88
-- Summary: .planning/phases/03-vps-provisioning/03-03-SUMMARY.md
-
-#### Plan 03-04: Provisioning Orchestrator, Deprovisioning & Deploy UI
-- Status: ✅ Complete
-- Commits: f7f72d8, a87a1d7, 14267df
-- Summary: .planning/phases/03-vps-provisioning/03-04-SUMMARY.md
+- Commits: 9e3434f, f8d203f
+- Summary: .planning/phases/04-landing-page/04-01-SUMMARY.md
 
 ## Phase History
+
+### Phase 3: VPS Provisioning & Deployment ✅
+- Status: Complete
+- Started: 2026-02-14
+- Completed: 2026-02-14
+- Plans: 4/4 complete (03-01, 03-02, 03-03, 03-04)
 
 ### Phase 1: Authentication & User Foundation ✅
 - Status: Complete
@@ -93,6 +84,11 @@ Completed: 2026-02-14
 - DB polling every 5s for cloud-init callback coordination (not 2s, reduces load)
 - Svelte 5: @const tags only valid inside control flow blocks, use $derived() instead
 
+### Phase 4 Learnings
+- Tailwind v4 uses CSS-based config (@import "tailwindcss"), no tailwind.config.js needed
+- @tailwindcss/vite plugin must be listed before sveltekit() in vite plugins array
+- SvelteKit route groups (parenthesized dirs) share the root layout but have their own group layouts
+
 ## Key Decisions
 - Polar checkout via REST endpoint /api/auth/checkout?slug=... (simpler than client method)
 - Dashboard layout with sidebar nav (responsive mobile hamburger menu)
@@ -101,6 +97,9 @@ Completed: 2026-02-14
 - deprovisionVPS() implemented in Phase 3 Plan 04 (replaced Phase 2 stub)
 - Shared firewall (rachel-cloud-ssh-only) reused across all user VPSs
 - Provisioning status machine: pending -> creating -> cloud_init -> injecting_secrets -> ready | failed
+- Tailwind v4 via @tailwindcss/vite (no CDN, no tailwind.config.js)
+- Route groups: (landing) for public pages, (app) for authenticated pages
+- Root layout is minimal (CSS import + slot); route groups own their layout wrappers
 
 ## Blockers
 (None)
