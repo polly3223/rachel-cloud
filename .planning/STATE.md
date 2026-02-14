@@ -21,7 +21,9 @@ Started: 2026-02-14
 - Summary: .planning/phases/05-dashboard-controls/05-02-SUMMARY.md
 
 #### Plan 05-03: User Dashboard Enhancements
-- Status: Pending
+- Status: ✅ Complete
+- Commits: def253e9, 2f474724
+- Summary: .planning/phases/05-dashboard-controls/05-03-SUMMARY.md
 
 #### Plan 05-04: Admin Dashboard
 - Status: Pending
@@ -115,8 +117,14 @@ Started: 2026-02-14
 - Case-insensitive email comparison is critical for admin checks (RFC 5321)
 - Defense-in-depth: check admin in both hooks.server.ts and layout.server.ts for robustness
 - Use button elements (not div) for mobile overlay to avoid a11y warnings
+- Server-side VPS status pre-load + client-side polling gives instant render with live updates
+- $effect() cleanup functions are essential for interval management in Svelte 5
+- $derived.by() for complex computed values that return objects (status color mapping)
 
 ## Key Decisions
+- Server-side VPS status pre-load for instant dashboard render (no loading flash)
+- Client-side polling for uptime (avoids SSH blocking page load)
+- 30s status refresh, 10s opt-in log auto-refresh (balances freshness vs API load)
 - Admin auth via ADMIN_EMAIL env var (single admin, case-insensitive email match)
 - Admin route guard inline in hooks.server.ts (no sequence() helper needed)
 - Route groups: (admin) for admin routes alongside (landing) and (app)
