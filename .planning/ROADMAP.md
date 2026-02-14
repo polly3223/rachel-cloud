@@ -33,13 +33,21 @@ Plans:
 **Requirements:** BILL-01, BILL-02, BILL-03, BILL-04, BILL-05, BILL-06, ONBR-01, ONBR-02, ONBR-03, ONBR-04
 
 ### Success Criteria
-1. User completes Stripe checkout and sees active subscription status within 60 seconds
+1. User completes Polar checkout and sees active subscription status within 60 seconds
 2. User follows BotFather instructions, enters token, and system validates it before proceeding
 3. User cancels subscription and VPS is deprovisioned after 3-day grace period
 4. Failed payment triggers email notification and subscription status updates correctly
 5. Average onboarding time from signup to "ready to provision" is under 5 minutes
 
-### Plans (to be created during /gsd:plan-phase)
+### Plans
+
+**Plans:** 4 plans (3 waves)
+
+Plans:
+- [ ] 02-01-PLAN.md — Database schema extensions, Polar SDK setup, and Better Auth integration (Wave 1)
+- [ ] 02-02-PLAN.md — Polar webhooks, grace period logic, and email notifications (Wave 2)
+- [ ] 02-03-PLAN.md — Telegram bot validation and onboarding flow UI (Wave 2)
+- [ ] 02-04-PLAN.md — Billing dashboard and subscription management pages (Wave 3)
 
 ---
 
