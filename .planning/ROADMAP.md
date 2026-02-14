@@ -141,7 +141,7 @@ Plans:
 
 Plans:
 - [x] 06-01-PLAN.md — DB schema for health tracking + health check service + circuit breaker (Wave 1)
-- [ ] 06-02-PLAN.md — Auto-recovery with circuit breaker + email notifications (Wave 2)
+- [x] 06-02-PLAN.md — Auto-recovery with circuit breaker + email notifications (Wave 2)
 - [x] 06-03-PLAN.md — Health status in user dashboard + admin dashboard (Wave 2)
 
 ---
