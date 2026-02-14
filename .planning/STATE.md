@@ -21,6 +21,11 @@ Completed: —
 - Commits: a3c826a, 995a4cc
 - Summary: .planning/phases/03-vps-provisioning/03-02-SUMMARY.md
 
+#### Plan 03-03: Cloud-Init & SSH Injection
+- Status: ✅ Complete
+- Commits: aaf61af, c8e4019, 167107c, 41edb88
+- Summary: .planning/phases/03-vps-provisioning/03-03-SUMMARY.md
+
 ## Phase History
 
 ### Phase 1: Authentication & User Foundation ✅
@@ -75,6 +80,9 @@ Completed: —
 - Drizzle Kit generates auto-named migrations; Phase 2 tables were created via push without generate
 - node:crypto generateKeyPairSync can output DER for SPKI public keys, requires manual conversion to OpenSSH format
 - SSH key generation is synchronous (no async needed) using generateKeyPairSync
+- Claude Code CLI is an npm package (@anthropic-ai/claude-code), installed via bun install -g
+- Manual YAML construction avoids YAML library dependency while maintaining cloud-init compatibility
+- SSH heredoc syntax (`<< 'EOF'`) prevents shell variable expansion in injected credentials
 
 ## Key Decisions
 - Polar checkout via REST endpoint /api/auth/checkout?slug=... (simpler than client method)
