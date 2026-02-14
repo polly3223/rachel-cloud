@@ -68,3 +68,50 @@ export const claudeTokens = sqliteTable('claude_tokens', {
 		.$onUpdateFn(() => new Date())
 		.notNull()
 });
+
+// Subscriptions table (Polar billing integration)
+export const subscriptions = sqliteTable('subscriptions', {
+	id: text('id').primaryKey(),
+	userId: text('user_id')
+		.notNull()
+		.unique()
+		.references(() => users.id, { onDelete: 'cascade' }),
+	polarCustomerId: text('polar_customer_id'),
+	polarSubscriptionId: text('polar_subscription_id'),
+	status: text('status', { enum: ['none', 'active', 'grace_period', 'canceled'] })
+		.notNull()
+		.$defaultFn(() => 'none'),
+	currentPeriodEnd: integer('current_period_end', { mode: 'timestamp' }),
+	gracePeriodEndsAt: integer('grace_period_ends_at', { mode: 'timestamp' }),
+	vpsProvisioned: integer('vps_provisioned', { mode: 'boolean' })
+		.notNull()
+		.$defaultFn(() => false),
+	createdAt: integer('created_at', { mode: 'timestamp' })
+		.$defaultFn(() => new Date())
+		.notNull(),
+	updatedAt: integer('updated_at', { mode: 'timestamp' })
+		.$defaultFn(() => new Date())
+		.$onUpdateFn(() => new Date())
+		.notNull()
+});
+
+// Telegram bots table (encrypted token storage)
+export const telegramBots = sqliteTable('telegram_bots', {
+	id: text('id').primaryKey(),
+	userId: text('user_id')
+		.notNull()
+		.unique()
+		.references(() => users.id, { onDelete: 'cascade' }),
+	botUsername: text('bot_username'),
+	encryptedToken: text('encrypted_token').notNull(),
+	validated: integer('validated', { mode: 'boolean' })
+		.notNull()
+		.$defaultFn(() => false),
+	createdAt: integer('created_at', { mode: 'timestamp' })
+		.$defaultFn(() => new Date())
+		.notNull(),
+	updatedAt: integer('updated_at', { mode: 'timestamp' })
+		.$defaultFn(() => new Date())
+		.$onUpdateFn(() => new Date())
+		.notNull()
+});
