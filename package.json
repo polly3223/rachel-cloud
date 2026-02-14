@@ -23,6 +23,8 @@
   },
   "type": "module",
   "dependencies": {
+    "@polar-sh/better-auth": "^1.8.1",
+    "@polar-sh/sdk": "^0.43.1",
     "better-auth": "^1.4.18",
     "drizzle-orm": "^0.45.1",
     "pkce-challenge": "^6.0.0"
