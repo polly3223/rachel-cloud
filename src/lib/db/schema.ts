@@ -109,6 +109,48 @@ export const subscriptions = sqliteTable('subscriptions', {
 		.notNull()
 });
 
+// Health checks table (health monitoring state per user VPS)
+export const healthChecks = sqliteTable('health_checks', {
+	id: text('id').primaryKey(),
+	userId: text('user_id')
+		.notNull()
+		.unique()
+		.references(() => users.id, { onDelete: 'cascade' }),
+	status: text('status', { enum: ['healthy', 'unhealthy', 'down', 'circuit_open'] })
+		.notNull()
+		.$defaultFn(() => 'healthy'),
+	consecutiveFailures: integer('consecutive_failures')
+		.notNull()
+		.$defaultFn(() => 0),
+	circuitState: text('circuit_state', { enum: ['closed', 'open', 'half_open'] })
+		.notNull()
+		.$defaultFn(() => 'closed'),
+	circuitOpenedAt: integer('circuit_opened_at', { mode: 'timestamp' }),
+	lastCheckAt: integer('last_check_at', { mode: 'timestamp' }),
+	lastHealthyAt: integer('last_healthy_at', { mode: 'timestamp' }),
+	lastFailureAt: integer('last_failure_at', { mode: 'timestamp' }),
+	lastRestartAttemptAt: integer('last_restart_attempt_at', { mode: 'timestamp' }),
+	lastNotifiedDownAt: integer('last_notified_down_at', { mode: 'timestamp' }),
+	lastNotifiedUpAt: integer('last_notified_up_at', { mode: 'timestamp' }),
+	lastError: text('last_error'),
+	totalChecks: integer('total_checks')
+		.notNull()
+		.$defaultFn(() => 0),
+	totalFailures: integer('total_failures')
+		.notNull()
+		.$defaultFn(() => 0),
+	totalRecoveries: integer('total_recoveries')
+		.notNull()
+		.$defaultFn(() => 0),
+	createdAt: integer('created_at', { mode: 'timestamp' })
+		.$defaultFn(() => new Date())
+		.notNull(),
+	updatedAt: integer('updated_at', { mode: 'timestamp' })
+		.$defaultFn(() => new Date())
+		.$onUpdateFn(() => new Date())
+		.notNull()
+});
+
 // Telegram bots table (encrypted token storage)
 export const telegramBots = sqliteTable('telegram_bots', {
 	id: text('id').primaryKey(),
