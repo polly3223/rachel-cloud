@@ -89,7 +89,13 @@ Plans:
 4. Landing page links to open-source Rachel8 repo and drives GitHub stars
 5. Conversion rate from landing page visit to signup is above 5%
 
-### Plans (to be created during /gsd:plan-phase)
+**Plans:** 4 plans (3 waves)
+
+Plans:
+- [ ] 04-01-PLAN.md — Tailwind CSS migration (CDN to @tailwindcss/vite) + route group restructuring (Wave 1)
+- [ ] 04-02-PLAN.md — Landing page sections: Hero, HowItWorks, Features, Pricing, OpenSource, FAQ, Footer (Wave 2)
+- [ ] 04-03-PLAN.md — SEO meta tags, Open Graph, Twitter Cards, JSON-LD, sitemap.xml, robots.txt (Wave 2)
+- [ ] 04-04-PLAN.md — Telegram chat mockup component + scroll-triggered animations (Wave 3)
 
 ---
 
