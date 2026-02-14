@@ -5,6 +5,7 @@
 	import Hero from '$lib/components/landing/Hero.svelte';
 	import HowItWorks from '$lib/components/landing/HowItWorks.svelte';
 	import Features from '$lib/components/landing/Features.svelte';
+	import TelegramDemo from '$lib/components/landing/TelegramDemo.svelte';
 	import Pricing from '$lib/components/landing/Pricing.svelte';
 	import OpenSource from '$lib/components/landing/OpenSource.svelte';
 	import FAQ from '$lib/components/landing/FAQ.svelte';
@@ -65,6 +66,7 @@
 	<Hero />
 	<HowItWorks />
 	<Features />
+	<TelegramDemo />
 	<Pricing />
 	<OpenSource />
 	<FAQ />
