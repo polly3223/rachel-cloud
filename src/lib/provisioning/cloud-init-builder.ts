@@ -2,7 +2,7 @@
  * Cloud-init user-data YAML builder for VPS provisioning.
  *
  * Generates cloud-config YAML that:
- * - Creates the 'rachel' user with sudo and SSH access
+ * - Creates the 'rachel' user with SSH access (no sudo)
  * - Installs required packages (git, curl, unzip)
  * - Installs Bun runtime, GitHub CLI, and Claude Code CLI
  * - Clones Rachel8 repo and installs dependencies
@@ -72,8 +72,6 @@ function buildYaml(username: string, sshPublicKey: string, callbackUrl: string):
 	// -------------------------------------------------------------------
 	lines.push('users:');
 	lines.push(`  - name: ${username}`);
-	lines.push('    groups: [sudo]');
-	lines.push('    sudo: "ALL=(ALL) NOPASSWD:ALL"');
 	lines.push('    shell: /bin/bash');
 	lines.push('    ssh_authorized_keys:');
 	lines.push(`      - ${sshPublicKey}`);
