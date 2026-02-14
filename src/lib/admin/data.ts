@@ -11,7 +11,7 @@
  */
 
 import { db } from '$lib/db';
-import { users, subscriptions } from '$lib/db/schema';
+import { users, subscriptions, healthChecks } from '$lib/db/schema';
 import { eq } from 'drizzle-orm';
 
 // ---------------------------------------------------------------------------
@@ -30,6 +30,10 @@ export interface AdminUser {
 	hetznerServerId: number | null;
 	provisioningStatus: string | null;
 	provisionedAt: Date | null;
+	healthStatus: string | null;
+	consecutiveFailures: number;
+	lastCheckAt: Date | null;
+	circuitState: string | null;
 }
 
 /** Aggregated overview for the admin dashboard. */
@@ -42,6 +46,9 @@ export interface AdminOverview {
 	runningVPSCount: number;
 	estimatedMonthlyCost: number;
 	profitMargin: number;
+	healthyVPSCount: number;
+	unhealthyVPSCount: number;
+	circuitOpenCount: number;
 	users: AdminUser[];
 }
 
@@ -81,9 +88,14 @@ export async function getAdminOverview(): Promise<AdminOverview> {
 				hetznerServerId: subscriptions.hetznerServerId,
 				provisioningStatus: subscriptions.provisioningStatus,
 				provisionedAt: subscriptions.provisionedAt,
+				healthStatus: healthChecks.status,
+				consecutiveFailures: healthChecks.consecutiveFailures,
+				lastCheckAt: healthChecks.lastCheckAt,
+				circuitState: healthChecks.circuitState,
 			})
 			.from(users)
 			.leftJoin(subscriptions, eq(users.id, subscriptions.userId))
+			.leftJoin(healthChecks, eq(users.id, healthChecks.userId))
 			.orderBy(users.createdAt);
 
 		// Map rows to AdminUser[], handling SQLite boolean (0/1 → boolean)
@@ -98,6 +110,10 @@ export async function getAdminOverview(): Promise<AdminOverview> {
 			hetznerServerId: row.hetznerServerId ?? null,
 			provisioningStatus: row.provisioningStatus ?? null,
 			provisionedAt: row.provisionedAt ?? null,
+			healthStatus: row.healthStatus ?? null,
+			consecutiveFailures: row.consecutiveFailures ?? 0,
+			lastCheckAt: row.lastCheckAt ?? null,
+			circuitState: row.circuitState ?? null,
 		}));
 
 		// Aggregate counts
@@ -113,6 +129,13 @@ export async function getAdminOverview(): Promise<AdminOverview> {
 		const runningVPSCount = mappedUsers.filter(
 			(u) => u.vpsProvisioned === true
 		).length;
+
+		// Health aggregates
+		const healthyVPSCount = mappedUsers.filter((u) => u.healthStatus === 'healthy').length;
+		const unhealthyVPSCount = mappedUsers.filter(
+			(u) => u.healthStatus === 'unhealthy' || u.healthStatus === 'down'
+		).length;
+		const circuitOpenCount = mappedUsers.filter((u) => u.healthStatus === 'circuit_open').length;
 
 		// Financial metrics
 		const totalMRR = activeSubscribers * PRICE_PER_SUBSCRIBER_USD;
@@ -131,6 +154,9 @@ export async function getAdminOverview(): Promise<AdminOverview> {
 			runningVPSCount,
 			estimatedMonthlyCost,
 			profitMargin,
+			healthyVPSCount,
+			unhealthyVPSCount,
+			circuitOpenCount,
 			users: mappedUsers,
 		};
 	} catch (error) {

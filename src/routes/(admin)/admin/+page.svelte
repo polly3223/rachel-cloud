@@ -86,6 +86,26 @@
 		if (margin >= 40) return 'text-yellow-600';
 		return 'text-red-600';
 	}
+
+	function healthStatusColor(status: string | null): string {
+		switch (status) {
+			case 'healthy': return 'bg-green-100 text-green-800';
+			case 'unhealthy': return 'bg-yellow-100 text-yellow-800';
+			case 'down': return 'bg-red-100 text-red-800';
+			case 'circuit_open': return 'bg-red-100 text-red-800 font-bold';
+			default: return 'bg-gray-100 text-gray-600';
+		}
+	}
+
+	function healthStatusLabel(status: string | null, failures: number): string {
+		switch (status) {
+			case 'healthy': return 'Healthy';
+			case 'unhealthy': return `Unhealthy (${failures})`;
+			case 'down': return 'Down';
+			case 'circuit_open': return 'Circuit Open';
+			default: return 'Not Monitored';
+		}
+	}
 </script>
 
 <div class="max-w-7xl mx-auto">
@@ -160,6 +180,57 @@
 		</div>
 	</div>
 
+	<!-- Section 1.5: Health Overview Cards -->
+	<div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-8">
+		<!-- Healthy VPSs -->
+		<div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+			<div class="flex items-center">
+				<div class="flex-shrink-0 p-3 bg-green-50 rounded-lg">
+					<svg class="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+						<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+					</svg>
+				</div>
+				<div class="ml-4">
+					<p class="text-sm font-medium text-gray-500">Healthy VPSs</p>
+					<p class="text-2xl font-bold text-green-600">{overview.healthyVPSCount}</p>
+				</div>
+			</div>
+		</div>
+
+		<!-- Unhealthy / Down -->
+		<div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+			<div class="flex items-center">
+				<div class="flex-shrink-0 p-3 {overview.unhealthyVPSCount > 0 ? 'bg-red-50' : 'bg-yellow-50'} rounded-lg">
+					<svg class="w-6 h-6 {overview.unhealthyVPSCount > 0 ? 'text-red-600' : 'text-yellow-600'}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+						<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4.5c-.77-.833-2.694-.833-3.464 0L3.34 16.5c-.77.833.192 2.5 1.732 2.5z"></path>
+					</svg>
+				</div>
+				<div class="ml-4">
+					<p class="text-sm font-medium text-gray-500">Unhealthy / Down</p>
+					<p class="text-2xl font-bold {overview.unhealthyVPSCount > 0 ? 'text-red-600' : 'text-gray-900'}">{overview.unhealthyVPSCount}</p>
+				</div>
+			</div>
+		</div>
+
+		<!-- Circuit Breakers Tripped -->
+		<div class="rounded-lg shadow-sm border p-6 {overview.circuitOpenCount > 0 ? 'bg-red-50 border-red-300' : 'bg-white border-gray-200'}">
+			<div class="flex items-center">
+				<div class="flex-shrink-0 p-3 bg-red-50 rounded-lg">
+					<svg class="w-6 h-6 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+						<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18.364 5.636a9 9 0 010 12.728m0 0l-2.829-2.829m2.829 2.829L21 21M15.536 8.464a5 5 0 010 7.072m0 0l-2.829-2.829m-4.243 2.829a4.978 4.978 0 01-1.414-2.83m-1.414 5.658a9 9 0 01-2.167-9.238m7.824 2.167a1 1 0 111.414 1.414m-1.414-1.414L3 3"></path>
+					</svg>
+				</div>
+				<div class="ml-4">
+					<p class="text-sm font-medium text-gray-500">Circuit Breakers Tripped</p>
+					<p class="text-2xl font-bold {overview.circuitOpenCount > 0 ? 'text-red-700' : 'text-gray-900'}">{overview.circuitOpenCount}</p>
+					{#if overview.circuitOpenCount > 0}
+						<p class="text-xs text-red-600 font-medium mt-1">Requires attention</p>
+					{/if}
+				</div>
+			</div>
+		</div>
+	</div>
+
 	<!-- Section 2: Revenue & Costs Summary -->
 	<div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6 mb-8">
 		<h2 class="text-lg font-semibold text-gray-900 mb-4">Revenue & Costs</h2>
@@ -225,6 +296,7 @@
 							<th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">User</th>
 							<th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
 							<th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">VPS Status</th>
+							<th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Health</th>
 							<th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">IP Address</th>
 							<th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Provisioned</th>
 							<th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Member Since</th>
@@ -249,6 +321,11 @@
 								<td class="px-6 py-4 whitespace-nowrap">
 									<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium {provisioningStatusColor(user.provisioningStatus)}">
 										{provisioningStatusLabel(user.provisioningStatus, user.vpsProvisioned)}
+									</span>
+								</td>
+								<td class="px-6 py-4 whitespace-nowrap">
+									<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium {healthStatusColor(user.healthStatus)}">
+										{healthStatusLabel(user.healthStatus, user.consecutiveFailures)}
 									</span>
 								</td>
 								<td class="px-6 py-4 whitespace-nowrap">
@@ -288,6 +365,9 @@
 						<div class="flex flex-wrap gap-x-4 gap-y-1 text-xs text-gray-500">
 							<span>
 								VPS: <span class="inline-flex items-center px-1.5 py-0.5 rounded-full text-xs font-medium {provisioningStatusColor(user.provisioningStatus)}">{provisioningStatusLabel(user.provisioningStatus, user.vpsProvisioned)}</span>
+							</span>
+							<span>
+								Health: <span class="inline-flex items-center px-1.5 py-0.5 rounded-full text-xs font-medium {healthStatusColor(user.healthStatus)}">{healthStatusLabel(user.healthStatus, user.consecutiveFailures)}</span>
 							</span>
 							{#if user.vpsIpAddress}
 								<span>IP: <code class="font-mono text-gray-700">{user.vpsIpAddress}</code></span>
