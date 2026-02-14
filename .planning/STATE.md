@@ -6,28 +6,28 @@ See: .planning/PROJECT.md (updated 2026-02-14)
 **Current focus:** Phase 6
 
 ## Current Phase
-Phase: 5 — Dashboard & User Controls
-Status: Complete
+Phase: 6 — Health Monitoring & Auto-Recovery
+Status: In Progress
 Started: 2026-02-14
-Completed: 2026-02-14
 
-#### Plan 05-01: Admin Auth Middleware + Admin Route Group
+#### Plan 06-01: DB Schema + Health Check Service + Circuit Breaker
 - Status: ✅ Complete
-- Commits: 97aaa457, b92e59c0
-- Summary: .planning/phases/05-dashboard-controls/05-01-SUMMARY.md
+- Commits: 71862264, 8074dd4a
+- Summary: .planning/phases/06-health-monitoring/06-01-SUMMARY.md
 
-#### Plan 05-02: VPS Status, Restart & Logs Backend
-- Status: ✅ Complete
-- Commits: f08de7cc, f6e6203e
-- Summary: .planning/phases/05-dashboard-controls/05-02-SUMMARY.md
-
-#### Plan 05-03: User Dashboard Enhancements
-- Status: ✅ Complete
-- Commits: def253e9, 2f474724
-- Summary: .planning/phases/05-dashboard-controls/05-03-SUMMARY.md
-
-#### Plan 05-04: Admin Dashboard
+#### Plan 06-02: Auto-Recovery + Email Notifications
 - Status: Pending
+
+#### Plan 06-03: Dashboard Health Status
+- Status: Pending
+
+## Phase History
+
+### Phase 5: Dashboard & User Controls ✅
+- Status: Complete
+- Started: 2026-02-14
+- Completed: 2026-02-14
+- Plans: 3/4 complete (05-01, 05-02, 05-03; 05-04 deferred)
 
 ## Phase History
 
