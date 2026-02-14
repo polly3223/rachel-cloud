@@ -1,7 +1,14 @@
 import { auth } from '$lib/auth/config';
 import { getSession } from '$lib/auth/session';
 import { isAdmin } from '$lib/admin/guard';
+import { startHealthMonitor } from '$lib/monitoring/health-checker';
 import { redirect, type Handle } from '@sveltejs/kit';
+
+// Start health monitoring on server boot
+// Only start if in production or if ENABLE_HEALTH_MONITOR env var is set
+if (process.env.NODE_ENV === 'production' || process.env.ENABLE_HEALTH_MONITOR === 'true') {
+	startHealthMonitor();
+}
 
 export const handle: Handle = async ({ event, resolve }) => {
 	// Only route /api/auth/* requests through Better Auth handler
