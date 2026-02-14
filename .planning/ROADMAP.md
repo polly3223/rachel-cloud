@@ -77,27 +77,27 @@ Plans:
 
 ---
 
-## Phase 4: Landing Page & Public Launch
+## Phase 4: Landing Page & Public Launch ✅
 
-**Status:** In Progress
+**Status:** Complete (2026-02-14)
 **Goal:** Public-facing landing page converts visitors to signups and explains the product clearly.
 **Requirements:** LAND-01, LAND-02, LAND-03, LAND-04, LAND-05
 
 ### Success Criteria
-1. Visitor lands on page and understands what Rachel Cloud is within 10 seconds
-2. Landing page clearly shows $20/month pricing and "Sign Up" CTA is visible above fold
-3. Demo video or screenshots demonstrate Rachel responding to Telegram messages
-4. Landing page links to open-source Rachel8 repo and drives GitHub stars
+1. ✅ Visitor lands on page and understands what Rachel Cloud is within 10 seconds
+2. ✅ Landing page clearly shows $20/month pricing and "Sign Up" CTA is visible above fold
+3. ✅ Demo video or screenshots demonstrate Rachel responding to Telegram messages
+4. ✅ Landing page links to open-source Rachel8 repo and drives GitHub stars
 5. Conversion rate from landing page visit to signup is above 5%
 
-**Plans:** 4/5 complete (3 waves)
+**Plans:** 5/5 complete (3 waves)
 
 Plans:
 - [x] 04-01-PLAN.md — Tailwind CSS migration (CDN to @tailwindcss/vite) + route group restructuring (Wave 1)
 - [x] 04-05-PLAN.md — Create public Rachel repo + update cloud-init clone URL (Wave 1)
 - [x] 04-02-PLAN.md — Landing page sections: Hero, HowItWorks, Features, Pricing, OpenSource, FAQ, Footer (Wave 2)
 - [x] 04-03-PLAN.md — SEO meta tags, Open Graph, Twitter Cards, JSON-LD, sitemap.xml, robots.txt (Wave 2)
-- [ ] 04-04-PLAN.md — Telegram chat mockup component + scroll-triggered animations (Wave 3)
+- [x] 04-04-PLAN.md — Telegram chat mockup component + scroll-triggered animations (Wave 3)
 
 ---
 

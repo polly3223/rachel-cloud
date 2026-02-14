@@ -9,7 +9,7 @@ See: .planning/PROJECT.md (updated 2026-02-14)
 Phase: 4 — Landing Page & Public Launch
 Status: In Progress
 Started: 2026-02-14
-Current Plan: 04-04
+Current Plan: Complete (all plans done)
 
 #### Plan 04-01: Tailwind CSS Migration & Route Group Restructuring
 - Status: ✅ Complete
@@ -20,6 +20,11 @@ Current Plan: 04-04
 - Status: ✅ Complete
 - Commits: ecf306d, 8dfb976
 - Summary: .planning/phases/04-landing-page/04-02-SUMMARY.md
+
+#### Plan 04-04: Telegram Chat Mockup & Scroll Animations
+- Status: ✅ Complete
+- Commits: abc897b, 91043bf
+- Summary: .planning/phases/04-landing-page/04-04-SUMMARY.md
 
 ## Phase History
 
@@ -93,6 +98,9 @@ Current Plan: 04-04
 - Tailwind v4 uses CSS-based config (@import "tailwindcss"), no tailwind.config.js needed
 - @tailwindcss/vite plugin must be listed before sveltekit() in vite plugins array
 - SvelteKit route groups (parenthesized dirs) share the root layout but have their own group layouts
+- svelte-inview v4.0.4 supports Svelte 5 event syntax (oninview_enter) alongside legacy on:inview_enter
+- CSS class-based scroll animations are preferred for prerendered pages (content stays in DOM for SEO)
+- noscript style blocks in svelte:head ensure graceful degradation for no-JS users
 
 ## Key Decisions
 - Polar checkout via REST endpoint /api/auth/checkout?slug=... (simpler than client method)
