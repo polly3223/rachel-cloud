@@ -27,6 +27,8 @@
 
 10. **No new backend work:** This is a purely frontend phase. No new API endpoints, database changes, or server-side logic.
 
+11. **Public Rachel repo strategy:** Create a clean public repo (e.g. `rachel` or `rachel-public`) separate from the private `rachel8` dev repo. The public repo is what gets cloned onto user VPSs (simpler, no dev/planning files). Also serves as marketing/open-source channel. Features flow: rachel8 (private, bleeding edge) → stabilized → pushed to public rachel repo. Cloud-init builder must be updated to clone from the public repo URL.
+
 ## Deferred Ideas
 
 - Dynamic OG image generation (satori/vercel-og) -- static PNG is fine for launch
