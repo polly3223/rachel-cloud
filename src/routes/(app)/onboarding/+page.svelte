@@ -261,9 +261,21 @@
 							We're provisioning your dedicated server and deploying Rachel. This usually takes 2-3 minutes.
 						</p>
 
-						<div class="mt-8 bg-blue-50 rounded-lg p-6 max-w-md mx-auto">
-							<p class="text-sm text-gray-700">
-								<strong>Phase 3:</strong> VPS provisioning will happen here. This is a placeholder for the provisioning flow.
+						<div class="mt-8 bg-blue-50 rounded-lg p-6 max-w-md mx-auto text-left space-y-2">
+							<p class="text-sm text-gray-700 flex items-center gap-2">
+								<span class="text-blue-500">●</span> Creating your dedicated VPS on Hetzner Cloud
+							</p>
+							<p class="text-sm text-gray-700 flex items-center gap-2">
+								<span class="text-blue-500">●</span> Installing Bun, Claude Code, and Rachel
+							</p>
+							<p class="text-sm text-gray-700 flex items-center gap-2">
+								<span class="text-blue-500">●</span> Injecting your credentials securely via SSH
+							</p>
+							<p class="text-sm text-gray-700 flex items-center gap-2">
+								<span class="text-blue-500">●</span> Starting your Rachel bot service
+							</p>
+							<p class="text-xs text-gray-500 mt-3">
+								You'll be redirected to your dashboard automatically when ready.
 							</p>
 						</div>
 					</div>
