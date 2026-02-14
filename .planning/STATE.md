@@ -11,7 +11,9 @@ Status: In Progress
 Started: 2026-02-14
 
 #### Plan 05-01: Admin Auth Middleware + Admin Route Group
-- Status: (pending or check if done)
+- Status: ✅ Complete
+- Commits: 97aaa457, b92e59c0
+- Summary: .planning/phases/05-dashboard-controls/05-01-SUMMARY.md
 
 #### Plan 05-02: VPS Status, Restart & Logs Backend
 - Status: ✅ Complete
@@ -108,7 +110,17 @@ Started: 2026-02-14
 - CSS class-based scroll animations are preferred for prerendered pages (content stays in DOM for SEO)
 - noscript style blocks in svelte:head ensure graceful degradation for no-JS users
 
+### Phase 5 Learnings
+- Admin route protection belongs in hooks.server.ts (runs before all load functions), not layouts
+- Case-insensitive email comparison is critical for admin checks (RFC 5321)
+- Defense-in-depth: check admin in both hooks.server.ts and layout.server.ts for robustness
+- Use button elements (not div) for mobile overlay to avoid a11y warnings
+
 ## Key Decisions
+- Admin auth via ADMIN_EMAIL env var (single admin, case-insensitive email match)
+- Admin route guard inline in hooks.server.ts (no sequence() helper needed)
+- Route groups: (admin) for admin routes alongside (landing) and (app)
+- Indigo/purple accent for admin layout to visually distinguish from blue user dashboard
 - Polar checkout via REST endpoint /api/auth/checkout?slug=... (simpler than client method)
 - Dashboard layout with sidebar nav (responsive mobile hamburger menu)
 - Resend for transactional emails
