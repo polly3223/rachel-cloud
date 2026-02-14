@@ -19,7 +19,7 @@ function getResend(): Resend {
 }
 
 function getFromEmail(): string {
-	return process.env.RESEND_FROM_EMAIL || 'Rachel Cloud <noreply@rachel.cloud>';
+	return process.env.RESEND_FROM_EMAIL || 'Rachel Cloud <noreply@get-rachel.com>';
 }
 
 function getBaseUrl(): string {

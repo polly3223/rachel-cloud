@@ -2,7 +2,7 @@ import { db } from '$lib/db';
 import { users, referrals } from '$lib/db/schema';
 import { eq, and, sql } from 'drizzle-orm';
 
-const BASE_URL = process.env.PUBLIC_BASE_URL || 'https://rachelcloud.com';
+const BASE_URL = process.env.PUBLIC_BASE_URL || 'https://get-rachel.com';
 
 /**
  * Generate a random 8-character alphanumeric string.

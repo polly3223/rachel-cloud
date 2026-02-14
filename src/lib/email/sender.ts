@@ -16,7 +16,7 @@ export async function sendPaymentFailedEmail(
 	userName: string
 ): Promise<boolean> {
 	try {
-		const fromEmail = process.env.RESEND_FROM_EMAIL || 'Rachel Cloud <noreply@rachel.cloud>';
+		const fromEmail = process.env.RESEND_FROM_EMAIL || 'Rachel Cloud <noreply@get-rachel.com>';
 		const baseUrl = process.env.PUBLIC_BASE_URL || 'http://localhost:5173';
 
 		await resend.emails.send({
@@ -84,7 +84,7 @@ export async function sendSubscriptionCanceledEmail(
 	gracePeriodEnd: Date
 ): Promise<boolean> {
 	try {
-		const fromEmail = process.env.RESEND_FROM_EMAIL || 'Rachel Cloud <noreply@rachel.cloud>';
+		const fromEmail = process.env.RESEND_FROM_EMAIL || 'Rachel Cloud <noreply@get-rachel.com>';
 		const baseUrl = process.env.PUBLIC_BASE_URL || 'http://localhost:5173';
 
 		await resend.emails.send({

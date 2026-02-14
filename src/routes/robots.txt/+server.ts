@@ -7,7 +7,7 @@ Disallow: /dashboard
 Disallow: /onboarding
 Disallow: /api
 
-Sitemap: https://rachelcloud.com/sitemap.xml`;
+Sitemap: https://get-rachel.com/sitemap.xml`;
 
 	return new Response(body.trim(), {
 		headers: {

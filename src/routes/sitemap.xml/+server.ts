@@ -1,7 +1,7 @@
 export const prerender = true;
 
 export async function GET() {
-	const baseUrl = 'https://rachelcloud.com';
+	const baseUrl = 'https://get-rachel.com';
 	const pages = [
 		{ url: '/', priority: '1.0', changefreq: 'weekly' },
 		{ url: '/signup', priority: '0.8', changefreq: 'monthly' },
