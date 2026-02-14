@@ -3,23 +3,33 @@
 ## Project Reference
 See: .planning/PROJECT.md (updated 2026-02-14)
 **Core value:** A user can go from signup to talking to their own personal AI agent on Telegram in under 2 minutes
-**Current focus:** Phase 4
+**Current focus:** Phase 5
 
 ## Current Phase
 Phase: 4 — Landing Page & Public Launch
-Status: In Progress
+Status: Complete
 Started: 2026-02-14
-Current Plan: Complete (all plans done)
+Completed: 2026-02-14
 
 #### Plan 04-01: Tailwind CSS Migration & Route Group Restructuring
 - Status: ✅ Complete
 - Commits: 9e3434f, f8d203f
 - Summary: .planning/phases/04-landing-page/04-01-SUMMARY.md
 
+#### Plan 04-05: Public Rachel Repo + Cloud-Init Update
+- Status: ✅ Complete
+- Commits: f825e3e (rachel-cloud), ad46d39 (polly3223/rachel)
+- Summary: .planning/phases/04-landing-page/04-05-SUMMARY.md
+
 #### Plan 04-02: Landing Page Sections (Hero, HowItWorks, Features, Pricing, OpenSource, FAQ, Footer)
 - Status: ✅ Complete
 - Commits: ecf306d, 8dfb976
 - Summary: .planning/phases/04-landing-page/04-02-SUMMARY.md
+
+#### Plan 04-03: SEO Meta Tags, Open Graph, JSON-LD, Sitemap, Robots
+- Status: ✅ Complete
+- Commits: 622d1f0, 3ddbdd4
+- Summary: .planning/phases/04-landing-page/04-03-SUMMARY.md
 
 #### Plan 04-04: Telegram Chat Mockup & Scroll Animations
 - Status: ✅ Complete

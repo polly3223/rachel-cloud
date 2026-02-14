@@ -1,0 +1,494 @@
+{
+  ".svelte-kit/generated/server/internal.js": {
+    "file": "internal.js",
+    "name": "internal",
+    "src": ".svelte-kit/generated/server/internal.js",
+    "isEntry": true,
+    "imports": [
+      "_internal.js",
+      "_environment.js"
+    ]
+  },
+  "_claude-oauth.js": {
+    "file": "chunks/claude-oauth.js",
+    "name": "claude-oauth"
+  },
+  "_client.js": {
+    "file": "chunks/client.js",
+    "name": "client",
+    "imports": [
+      "_url.js"
+    ]
+  },
+  "_config.js": {
+    "file": "chunks/config.js",
+    "name": "config",
+    "imports": [
+      "_url.js",
+      "_subscription-manager.js",
+      "_index3.js"
+    ],
+    "dynamicImports": [
+      "node_modules/better-auth/dist/adapters/memory-adapter/index.mjs",
+      "node_modules/better-auth/dist/adapters/kysely-adapter/index.mjs",
+      "node_modules/better-auth/dist/adapters/kysely-adapter/index.mjs",
+      "node_modules/better-auth/dist/adapters/kysely-adapter/bun-sqlite-dialect.mjs",
+      "node_modules/better-auth/dist/adapters/kysely-adapter/node-sqlite-dialect.mjs"
+    ]
+  },
+  "_context.js": {
+    "file": "chunks/context.js",
+    "name": "context"
+  },
+  "_encryption.js": {
+    "file": "chunks/encryption.js",
+    "name": "encryption"
+  },
+  "_environment.js": {
+    "file": "chunks/environment.js",
+    "name": "environment"
+  },
+  "_exports.js": {
+    "file": "chunks/exports.js",
+    "name": "exports"
+  },
+  "_false.js": {
+    "file": "chunks/false.js",
+    "name": "false"
+  },
+  "_index.js": {
+    "file": "chunks/index.js",
+    "name": "index",
+    "imports": [
+      "_context.js"
+    ]
+  },
+  "_index2.js": {
+    "file": "chunks/index2.js",
+    "name": "index",
+    "imports": [
+      "_context.js",
+      "_false.js"
+    ]
+  },
+  "_index3.js": {
+    "file": "chunks/index3.js",
+    "name": "index"
+  },
+  "_internal.js": {
+    "file": "chunks/internal.js",
+    "name": "internal",
+    "imports": [
+      "_index2.js",
+      "_context.js",
+      "_environment.js"
+    ],
+    "dynamicImports": [
+      "src/hooks.server.ts"
+    ]
+  },
+  "_session.js": {
+    "file": "chunks/session.js",
+    "name": "session",
+    "imports": [
+      "_config.js"
+    ]
+  },
+  "_shared.js": {
+    "file": "chunks/shared.js",
+    "name": "shared",
+    "imports": [
+      "_utils.js"
+    ]
+  },
+  "_state.svelte.js": {
+    "file": "chunks/state.svelte.js",
+    "name": "state.svelte",
+    "imports": [
+      "_context.js"
+    ]
+  },
+  "_subscription-manager.js": {
+    "file": "chunks/subscription-manager.js",
+    "name": "subscription-manager",
+    "imports": [
+      "_index3.js"
+    ]
+  },
+  "_url.js": {
+    "file": "chunks/url.js",
+    "name": "url"
+  },
+  "_utils.js": {
+    "file": "chunks/utils.js",
+    "name": "utils"
+  },
+  "node_modules/@sveltejs/kit/src/runtime/app/server/remote/index.js": {
+    "file": "remote-entry.js",
+    "name": "remote-entry",
+    "src": "node_modules/@sveltejs/kit/src/runtime/app/server/remote/index.js",
+    "isEntry": true,
+    "imports": [
+      "_shared.js",
+      "_false.js",
+      "_environment.js"
+    ]
+  },
+  "node_modules/@sveltejs/kit/src/runtime/components/svelte-5/error.svelte": {
+    "file": "entries/fallbacks/error.svelte.js",
+    "name": "entries/fallbacks/error.svelte",
+    "src": "node_modules/@sveltejs/kit/src/runtime/components/svelte-5/error.svelte",
+    "isEntry": true,
+    "imports": [
+      "_context.js",
+      "_state.svelte.js",
+      "_exports.js",
+      "_utils.js",
+      "_index.js"
+    ]
+  },
+  "node_modules/@sveltejs/kit/src/runtime/server/index.js": {
+    "file": "index.js",
+    "name": "index",
+    "src": "node_modules/@sveltejs/kit/src/runtime/server/index.js",
+    "isEntry": true,
+    "imports": [
+      "_false.js",
+      "_environment.js",
+      "_shared.js",
+      "_exports.js",
+      "_utils.js",
+      "_index.js",
+      "_internal.js"
+    ]
+  },
+  "node_modules/better-auth/dist/adapters/kysely-adapter/bun-sqlite-dialect.mjs": {
+    "file": "chunks/bun-sqlite-dialect.js",
+    "name": "bun-sqlite-dialect",
+    "src": "node_modules/better-auth/dist/adapters/kysely-adapter/bun-sqlite-dialect.mjs",
+    "isDynamicEntry": true
+  },
+  "node_modules/better-auth/dist/adapters/kysely-adapter/index.mjs": {
+    "file": "chunks/index5.js",
+    "name": "index",
+    "src": "node_modules/better-auth/dist/adapters/kysely-adapter/index.mjs",
+    "isDynamicEntry": true,
+    "imports": [
+      "_config.js"
+    ]
+  },
+  "node_modules/better-auth/dist/adapters/kysely-adapter/node-sqlite-dialect.mjs": {
+    "file": "chunks/node-sqlite-dialect.js",
+    "name": "node-sqlite-dialect",
+    "src": "node_modules/better-auth/dist/adapters/kysely-adapter/node-sqlite-dialect.mjs",
+    "isDynamicEntry": true
+  },
+  "node_modules/better-auth/dist/adapters/memory-adapter/index.mjs": {
+    "file": "chunks/index4.js",
+    "name": "index",
+    "src": "node_modules/better-auth/dist/adapters/memory-adapter/index.mjs",
+    "isDynamicEntry": true
+  },
+  "src/hooks.server.ts": {
+    "file": "entries/hooks.server.js",
+    "name": "entries/hooks.server",
+    "src": "src/hooks.server.ts",
+    "isEntry": true,
+    "isDynamicEntry": true,
+    "imports": [
+      "_config.js",
+      "_session.js"
+    ]
+  },
+  "src/routes/(app)/+layout.svelte": {
+    "file": "entries/pages/(app)/_layout.svelte.js",
+    "name": "entries/pages/(app)/_layout.svelte",
+    "src": "src/routes/(app)/+layout.svelte",
+    "isEntry": true
+  },
+  "src/routes/(app)/auth/callback/+page.svelte": {
+    "file": "entries/pages/(app)/auth/callback/_page.svelte.js",
+    "name": "entries/pages/(app)/auth/callback/_page.svelte",
+    "src": "src/routes/(app)/auth/callback/+page.svelte",
+    "isEntry": true,
+    "imports": [
+      "_index2.js",
+      "_exports.js",
+      "_utils.js",
+      "_state.svelte.js"
+    ]
+  },
+  "src/routes/(app)/dashboard/+layout.server.ts": {
+    "file": "entries/pages/(app)/dashboard/_layout.server.ts.js",
+    "name": "entries/pages/(app)/dashboard/_layout.server.ts",
+    "src": "src/routes/(app)/dashboard/+layout.server.ts",
+    "isEntry": true,
+    "imports": [
+      "_session.js"
+    ]
+  },
+  "src/routes/(app)/dashboard/+layout.svelte": {
+    "file": "entries/pages/(app)/dashboard/_layout.svelte.js",
+    "name": "entries/pages/(app)/dashboard/_layout.svelte",
+    "src": "src/routes/(app)/dashboard/+layout.svelte",
+    "isEntry": true,
+    "imports": [
+      "_index2.js",
+      "_context.js",
+      "_exports.js",
+      "_utils.js",
+      "_state.svelte.js",
+      "_client.js"
+    ]
+  },
+  "src/routes/(app)/dashboard/+page.server.ts": {
+    "file": "entries/pages/(app)/dashboard/_page.server.ts.js",
+    "name": "entries/pages/(app)/dashboard/_page.server.ts",
+    "src": "src/routes/(app)/dashboard/+page.server.ts",
+    "isEntry": true,
+    "imports": [
+      "_session.js",
+      "_subscription-manager.js"
+    ]
+  },
+  "src/routes/(app)/dashboard/+page.svelte": {
+    "file": "entries/pages/(app)/dashboard/_page.svelte.js",
+    "name": "entries/pages/(app)/dashboard/_page.svelte",
+    "src": "src/routes/(app)/dashboard/+page.svelte",
+    "isEntry": true,
+    "imports": [
+      "_index2.js",
+      "_context.js"
+    ]
+  },
+  "src/routes/(app)/dashboard/billing/+page.server.ts": {
+    "file": "entries/pages/(app)/dashboard/billing/_page.server.ts.js",
+    "name": "entries/pages/(app)/dashboard/billing/_page.server.ts",
+    "src": "src/routes/(app)/dashboard/billing/+page.server.ts",
+    "isEntry": true,
+    "imports": [
+      "_session.js",
+      "_subscription-manager.js"
+    ]
+  },
+  "src/routes/(app)/dashboard/billing/+page.svelte": {
+    "file": "entries/pages/(app)/dashboard/billing/_page.svelte.js",
+    "name": "entries/pages/(app)/dashboard/billing/_page.svelte",
+    "src": "src/routes/(app)/dashboard/billing/+page.svelte",
+    "isEntry": true,
+    "imports": [
+      "_index2.js",
+      "_client.js",
+      "_context.js"
+    ]
+  },
+  "src/routes/(app)/dashboard/claude/+page.server.ts": {
+    "file": "entries/pages/(app)/dashboard/claude/_page.server.ts.js",
+    "name": "entries/pages/(app)/dashboard/claude/_page.server.ts",
+    "src": "src/routes/(app)/dashboard/claude/+page.server.ts",
+    "isEntry": true,
+    "imports": [
+      "_session.js",
+      "_index3.js"
+    ]
+  },
+  "src/routes/(app)/dashboard/claude/+page.svelte": {
+    "file": "entries/pages/(app)/dashboard/claude/_page.svelte.js",
+    "name": "entries/pages/(app)/dashboard/claude/_page.svelte",
+    "src": "src/routes/(app)/dashboard/claude/+page.svelte",
+    "isEntry": true,
+    "imports": [
+      "_index2.js",
+      "_context.js"
+    ]
+  },
+  "src/routes/(app)/login/+page.svelte": {
+    "file": "entries/pages/(app)/login/_page.svelte.js",
+    "name": "entries/pages/(app)/login/_page.svelte",
+    "src": "src/routes/(app)/login/+page.svelte",
+    "isEntry": true,
+    "imports": [
+      "_index2.js",
+      "_exports.js",
+      "_utils.js",
+      "_state.svelte.js",
+      "_context.js"
+    ]
+  },
+  "src/routes/(app)/onboarding/+page.server.ts": {
+    "file": "entries/pages/(app)/onboarding/_page.server.ts.js",
+    "name": "entries/pages/(app)/onboarding/_page.server.ts",
+    "src": "src/routes/(app)/onboarding/+page.server.ts",
+    "isEntry": true,
+    "imports": [
+      "_session.js",
+      "_index3.js"
+    ]
+  },
+  "src/routes/(app)/onboarding/+page.svelte": {
+    "file": "entries/pages/(app)/onboarding/_page.svelte.js",
+    "name": "entries/pages/(app)/onboarding/_page.svelte",
+    "src": "src/routes/(app)/onboarding/+page.svelte",
+    "isEntry": true,
+    "imports": [
+      "_index2.js",
+      "_exports.js",
+      "_utils.js",
+      "_state.svelte.js",
+      "_context.js"
+    ]
+  },
+  "src/routes/(app)/signup/+page.svelte": {
+    "file": "entries/pages/(app)/signup/_page.svelte.js",
+    "name": "entries/pages/(app)/signup/_page.svelte",
+    "src": "src/routes/(app)/signup/+page.svelte",
+    "isEntry": true,
+    "imports": [
+      "_index2.js",
+      "_exports.js",
+      "_utils.js",
+      "_state.svelte.js",
+      "_context.js"
+    ]
+  },
+  "src/routes/(landing)/+layout.svelte": {
+    "file": "entries/pages/(landing)/_layout.svelte.js",
+    "name": "entries/pages/(landing)/_layout.svelte",
+    "src": "src/routes/(landing)/+layout.svelte",
+    "isEntry": true
+  },
+  "src/routes/(landing)/+page.svelte": {
+    "file": "entries/pages/(landing)/_page.svelte.js",
+    "name": "entries/pages/(landing)/_page.svelte",
+    "src": "src/routes/(landing)/+page.svelte",
+    "isEntry": true,
+    "imports": [
+      "_index2.js",
+      "_context.js"
+    ],
+    "css": [
+      "_app/immutable/assets/_page.X0HRxd8g.css"
+    ]
+  },
+  "src/routes/(landing)/+page.ts": {
+    "file": "entries/pages/(landing)/_page.ts.js",
+    "name": "entries/pages/(landing)/_page.ts",
+    "src": "src/routes/(landing)/+page.ts",
+    "isEntry": true
+  },
+  "src/routes/+layout.svelte": {
+    "file": "entries/pages/_layout.svelte.js",
+    "name": "entries/pages/_layout.svelte",
+    "src": "src/routes/+layout.svelte",
+    "isEntry": true,
+    "css": [
+      "_app/immutable/assets/_layout.CkczZHdd.css"
+    ]
+  },
+  "src/routes/api/auth/[...all]/+server.ts": {
+    "file": "entries/endpoints/api/auth/_...all_/_server.ts.js",
+    "name": "entries/endpoints/api/auth/_...all_/_server.ts",
+    "src": "src/routes/api/auth/[...all]/+server.ts",
+    "isEntry": true,
+    "imports": [
+      "_config.js"
+    ]
+  },
+  "src/routes/api/billing/cancel/+server.ts": {
+    "file": "entries/endpoints/api/billing/cancel/_server.ts.js",
+    "name": "entries/endpoints/api/billing/cancel/_server.ts",
+    "src": "src/routes/api/billing/cancel/+server.ts",
+    "isEntry": true,
+    "imports": [
+      "_subscription-manager.js"
+    ]
+  },
+  "src/routes/api/claude/callback/+server.ts": {
+    "file": "entries/endpoints/api/claude/callback/_server.ts.js",
+    "name": "entries/endpoints/api/claude/callback/_server.ts",
+    "src": "src/routes/api/claude/callback/+server.ts",
+    "isEntry": true,
+    "imports": [
+      "_claude-oauth.js",
+      "_encryption.js",
+      "_index3.js",
+      "_session.js"
+    ]
+  },
+  "src/routes/api/claude/connect/+server.ts": {
+    "file": "entries/endpoints/api/claude/connect/_server.ts.js",
+    "name": "entries/endpoints/api/claude/connect/_server.ts",
+    "src": "src/routes/api/claude/connect/+server.ts",
+    "isEntry": true,
+    "imports": [
+      "_claude-oauth.js",
+      "_session.js"
+    ]
+  },
+  "src/routes/api/claude/disconnect/+server.ts": {
+    "file": "entries/endpoints/api/claude/disconnect/_server.ts.js",
+    "name": "entries/endpoints/api/claude/disconnect/_server.ts",
+    "src": "src/routes/api/claude/disconnect/+server.ts",
+    "isEntry": true,
+    "imports": [
+      "_session.js",
+      "_index3.js"
+    ]
+  },
+  "src/routes/api/claude/refresh/+server.ts": {
+    "file": "entries/endpoints/api/claude/refresh/_server.ts.js",
+    "name": "entries/endpoints/api/claude/refresh/_server.ts",
+    "src": "src/routes/api/claude/refresh/+server.ts",
+    "isEntry": true,
+    "imports": [
+      "_session.js",
+      "_index3.js",
+      "_claude-oauth.js",
+      "_encryption.js"
+    ]
+  },
+  "src/routes/api/onboarding/validate-bot/+server.ts": {
+    "file": "entries/endpoints/api/onboarding/validate-bot/_server.ts.js",
+    "name": "entries/endpoints/api/onboarding/validate-bot/_server.ts",
+    "src": "src/routes/api/onboarding/validate-bot/+server.ts",
+    "isEntry": true,
+    "imports": [
+      "_session.js",
+      "_encryption.js",
+      "_index3.js"
+    ]
+  },
+  "src/routes/api/provision/callback/[userId]/+server.ts": {
+    "file": "entries/endpoints/api/provision/callback/_userId_/_server.ts.js",
+    "name": "entries/endpoints/api/provision/callback/_userId_/_server.ts",
+    "src": "src/routes/api/provision/callback/[userId]/+server.ts",
+    "isEntry": true,
+    "imports": [
+      "_index3.js"
+    ]
+  },
+  "src/routes/api/provision/deploy/+server.ts": {
+    "file": "entries/endpoints/api/provision/deploy/_server.ts.js",
+    "name": "entries/endpoints/api/provision/deploy/_server.ts",
+    "src": "src/routes/api/provision/deploy/+server.ts",
+    "isEntry": true,
+    "imports": [
+      "_session.js",
+      "_index3.js",
+      "_encryption.js",
+      "_subscription-manager.js"
+    ]
+  },
+  "src/routes/robots.txt/+server.ts": {
+    "file": "entries/endpoints/robots.txt/_server.ts.js",
+    "name": "entries/endpoints/robots.txt/_server.ts",
+    "src": "src/routes/robots.txt/+server.ts",
+    "isEntry": true
+  },
+  "src/routes/sitemap.xml/+server.ts": {
+    "file": "entries/endpoints/sitemap.xml/_server.ts.js",
+    "name": "entries/endpoints/sitemap.xml/_server.ts",
+    "src": "src/routes/sitemap.xml/+server.ts",
+    "isEntry": true
+  }
+}
