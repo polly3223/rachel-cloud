@@ -2,6 +2,7 @@
 	import { MetaTags } from 'svelte-meta-tags';
 	import JsonLd from '$lib/components/seo/JsonLd.svelte';
 	import type { WithContext, SoftwareApplication } from 'schema-dts';
+	import { inview } from 'svelte-inview';
 	import Hero from '$lib/components/landing/Hero.svelte';
 	import HowItWorks from '$lib/components/landing/HowItWorks.svelte';
 	import Features from '$lib/components/landing/Features.svelte';
@@ -32,7 +33,26 @@
 		},
 		url: canonicalUrl
 	};
+
+	const inviewOptions = { rootMargin: '-100px', unobserveOnEnter: true };
+
+	function reveal(e: CustomEvent) {
+		const node = e.detail.node as HTMLElement;
+		node.classList.remove('opacity-0', 'translate-y-8');
+		node.classList.add('opacity-100', 'translate-y-0');
+	}
 </script>
+
+<svelte:head>
+	<noscript>
+		<style>
+			.scroll-reveal {
+				opacity: 1 !important;
+				transform: none !important;
+			}
+		</style>
+	</noscript>
+</svelte:head>
 
 <MetaTags
 	{title}
@@ -64,11 +84,47 @@
 
 <main>
 	<Hero />
-	<HowItWorks />
-	<Features />
-	<TelegramDemo />
-	<Pricing />
-	<OpenSource />
-	<FAQ />
+	<div
+		class="scroll-reveal opacity-0 translate-y-8 transition-all duration-700 ease-out"
+		use:inview={inviewOptions}
+		oninview_enter={reveal}
+	>
+		<HowItWorks />
+	</div>
+	<div
+		class="scroll-reveal opacity-0 translate-y-8 transition-all duration-700 ease-out"
+		use:inview={inviewOptions}
+		oninview_enter={reveal}
+	>
+		<Features />
+	</div>
+	<div
+		class="scroll-reveal opacity-0 translate-y-8 transition-all duration-700 ease-out"
+		use:inview={inviewOptions}
+		oninview_enter={reveal}
+	>
+		<TelegramDemo />
+	</div>
+	<div
+		class="scroll-reveal opacity-0 translate-y-8 transition-all duration-700 ease-out"
+		use:inview={inviewOptions}
+		oninview_enter={reveal}
+	>
+		<Pricing />
+	</div>
+	<div
+		class="scroll-reveal opacity-0 translate-y-8 transition-all duration-700 ease-out"
+		use:inview={inviewOptions}
+		oninview_enter={reveal}
+	>
+		<OpenSource />
+	</div>
+	<div
+		class="scroll-reveal opacity-0 translate-y-8 transition-all duration-700 ease-out"
+		use:inview={inviewOptions}
+		oninview_enter={reveal}
+	>
+		<FAQ />
+	</div>
 </main>
 <Footer />
