@@ -142,7 +142,7 @@
 				</div>
 				<div class="ml-4">
 					<p class="text-sm font-medium text-gray-500">Monthly Revenue</p>
-					<p class="text-2xl font-bold text-green-600">${overview.totalMRR}/mo</p>
+					<p class="text-2xl font-bold text-green-600">&euro;{overview.totalMRR}/mo</p>
 				</div>
 			</div>
 		</div>
@@ -238,7 +238,7 @@
 			<div>
 				<p class="text-sm text-gray-500">Revenue</p>
 				<p class="text-lg font-semibold text-gray-900">
-					${overview.totalMRR}/mo
+					&euro;{overview.totalMRR}/mo
 					<span class="text-sm font-normal text-gray-500">from {overview.activeSubscribers} active subscriber{overview.activeSubscribers !== 1 ? 's' : ''}</span>
 				</p>
 			</div>

@@ -7,6 +7,7 @@ export const users = sqliteTable('users', {
 	emailVerified: integer('email_verified', { mode: 'boolean' }),
 	name: text('name'),
 	image: text('image'),
+	referralCode: text('referral_code').unique(),
 	createdAt: integer('created_at', { mode: 'timestamp' })
 		.$defaultFn(() => new Date())
 		.notNull(),
@@ -179,4 +180,26 @@ export const telegramBots = sqliteTable('telegram_bots', {
 		.$defaultFn(() => new Date())
 		.$onUpdateFn(() => new Date())
 		.notNull()
+});
+
+// Referral tracking
+export const referrals = sqliteTable('referrals', {
+	id: text('id').primaryKey(),
+	referrerId: text('referrer_id')
+		.notNull()
+		.references(() => users.id, { onDelete: 'cascade' }),
+	referredId: text('referred_id')
+		.references(() => users.id, { onDelete: 'set null' }),
+	referralCode: text('referral_code').notNull().unique(),
+	status: text('status', { enum: ['pending', 'completed', 'credited'] })
+		.notNull()
+		.$defaultFn(() => 'pending'),
+	creditAmountCents: integer('credit_amount_cents')
+		.notNull()
+		.$defaultFn(() => 1000), // €10 in cents
+	completedAt: integer('completed_at', { mode: 'timestamp' }),
+	creditedAt: integer('credited_at', { mode: 'timestamp' }),
+	createdAt: integer('created_at', { mode: 'timestamp' })
+		.$defaultFn(() => new Date())
+		.notNull(),
 });

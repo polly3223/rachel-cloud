@@ -56,8 +56,8 @@ export interface AdminOverview {
 // Constants
 // ---------------------------------------------------------------------------
 
-/** Revenue per active subscriber per month (USD). */
-const PRICE_PER_SUBSCRIBER_USD = 20;
+/** Revenue per active subscriber per month (EUR). */
+const PRICE_PER_SUBSCRIBER_EUR = 40;
 
 /** Estimated Hetzner cost per VPS per month (EUR). */
 const COST_PER_VPS_EUR = 3.49;
@@ -138,7 +138,7 @@ export async function getAdminOverview(): Promise<AdminOverview> {
 		const circuitOpenCount = mappedUsers.filter((u) => u.healthStatus === 'circuit_open').length;
 
 		// Financial metrics
-		const totalMRR = activeSubscribers * PRICE_PER_SUBSCRIBER_USD;
+		const totalMRR = activeSubscribers * PRICE_PER_SUBSCRIBER_EUR;
 		const estimatedMonthlyCost = runningVPSCount * COST_PER_VPS_EUR;
 		const profitMargin =
 			totalMRR > 0

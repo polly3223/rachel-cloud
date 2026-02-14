@@ -7,34 +7,34 @@
 
 	const messages: Message[] = [
 		{
-			text: "What's on my calendar today?",
+			text: "How many people signed up on my landing page today?",
 			sender: 'user',
-			time: '9:15 AM'
+			time: '10:32 AM'
 		},
 		{
-			text: "You have 3 things today:\n\n10:00 AM — Team standup\n1:00 PM — Lunch with Sarah\n4:00 PM — Dentist appointment\n\nYour morning is free until standup.",
+			text: "You got 7 new signups today! Here's the breakdown:\n\n1. Marco Rossi — marco@rossi.it\n2. Elena Bianchi — elena.b@gmail.com\n3. Fabio Conti — fabio@contigroup.com\n4. Sara De Luca — sara.deluca@outlook.com\n5. Luca Moretti — luca.m@hotmail.it\n6. Anna Ferrari — a.ferrari@yahoo.com\n7. Giulia Greco — giulia@greco.biz\n\nWant me to send you the full list as an Excel file?",
 			sender: 'rachel',
-			time: '9:15 AM'
+			time: '10:32 AM'
 		},
 		{
-			text: 'Remind me to call the dentist tomorrow at 10am',
+			text: "Yes, send the Excel. And remind me to call Marco Rossi tomorrow at 9am — he looks like a hot lead.",
 			sender: 'user',
-			time: '9:16 AM'
+			time: '10:33 AM'
 		},
 		{
-			text: "Done! I'll remind you tomorrow (Wednesday) at 10:00 AM to call the dentist.",
+			text: "Done! Here's your file: signups_2026-02-14.xlsx\n\nReminder set: Call Marco Rossi — tomorrow (Saturday) at 9:00 AM.\n\nBy the way, Marco visited your page 3 times before signing up. Definitely interested.",
 			sender: 'rachel',
-			time: '9:16 AM'
+			time: '10:33 AM'
 		},
 		{
-			text: 'What did we talk about last week?',
+			text: "Draft a follow-up email for all 7 signups. Professional but friendly, mention our free consultation offer.",
 			sender: 'user',
-			time: '9:17 AM'
+			time: '10:34 AM'
 		},
 		{
-			text: "Last week we covered:\n\n— Your trip planning for Portland in March\n— The new project proposal you were drafting\n— Setting up weekly meal prep reminders\n\nWant me to pull up details on any of these?",
+			text: "Here's your draft:\n\nSubject: Thanks for your interest — let's chat!\n\nHi [Name],\n\nThanks for signing up! I'd love to offer you a free 15-minute consultation to see how we can help your business.\n\nJust reply to this email with a time that works for you, or pick a slot here: [your calendar link]\n\nLooking forward to it!\n\nWant me to adjust the tone or add anything?",
 			sender: 'rachel',
-			time: '9:17 AM'
+			time: '10:34 AM'
 		}
 	];
 </script>
@@ -43,10 +43,10 @@
 	<div class="max-w-5xl mx-auto px-6">
 		<p class="text-sm font-medium text-cyan-400 text-center mb-3 tracking-wide uppercase">See it in action</p>
 		<h2 class="text-3xl sm:text-4xl font-bold text-center text-white mb-4">
-			Just open Telegram and talk
+			Just open Telegram and ask
 		</h2>
 		<p class="text-center text-gray-500 mb-14 max-w-md mx-auto">
-			This is what a real conversation with Rachel looks like.
+			This is what running your business with Rachel actually looks like. No apps to learn. No dashboards. Just chat.
 		</p>
 
 		<div class="max-w-sm mx-auto">

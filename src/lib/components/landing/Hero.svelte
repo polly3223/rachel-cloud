@@ -10,24 +10,24 @@
 			<!-- Badge -->
 			<div class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full border border-white/10 bg-white/5 text-sm text-gray-400 mb-8 backdrop-blur-sm">
 				<span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
-				Open source &middot; Powered by Claude
+				Your personal AI that works for you 24/7
 			</div>
 
 			<h1 class="text-5xl sm:text-6xl lg:text-7xl font-bold tracking-tight text-white leading-[1.1]">
-				Your AI that actually
-				<span class="bg-gradient-to-r from-violet-400 via-blue-400 to-cyan-400 bg-clip-text text-transparent">knows you</span>
+				Run your business
+				<span class="bg-gradient-to-r from-violet-400 via-blue-400 to-cyan-400 bg-clip-text text-transparent">like a superhuman</span>
 			</h1>
 
-			<p class="mt-6 text-lg sm:text-xl text-gray-400 max-w-xl leading-relaxed">
-				A personal assistant on Telegram that remembers everything, runs 24/7 on its own server, and gets smarter over time.
+			<p class="mt-6 text-lg sm:text-xl text-gray-400 max-w-2xl leading-relaxed">
+				Rachel is an AI assistant on Telegram that builds landing pages, tracks your leads, manages contacts, schedules reminders, creates documents, and handles research &mdash; so you can focus on closing deals.
 			</p>
 
 			<div class="mt-10 flex flex-col sm:flex-row items-center gap-4">
 				<a
 					href="/signup"
-					class="group relative px-8 py-3.5 rounded-xl font-medium text-white bg-gradient-to-r from-violet-600 to-blue-600 hover:from-violet-500 hover:to-blue-500 transition-all duration-300 shadow-lg shadow-violet-500/25 hover:shadow-violet-500/40"
+					class="group relative px-8 py-3.5 rounded-xl font-medium text-white bg-gradient-to-r from-emerald-600 to-emerald-500 hover:from-emerald-500 hover:to-emerald-400 transition-all duration-300 shadow-lg shadow-emerald-500/25 hover:shadow-emerald-500/40"
 				>
-					Start for $20/mo
+					Start for &euro;40/mo
 				</a>
 				<a
 					href="https://github.com/polly3223/rachel"
@@ -35,12 +35,12 @@
 					target="_blank"
 					rel="noopener noreferrer"
 				>
-					View source
+					See how it works
 				</a>
 			</div>
 
 			<p class="mt-5 text-sm text-gray-600">
-				Uses your Claude subscription via OAuth &middot; Cancel anytime
+				Open source &middot; You own your data &middot; Cancel anytime
 			</p>
 		</div>
 	</div>

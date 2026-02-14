@@ -16,7 +16,8 @@
 	const navLinks = [
 		{ href: '/dashboard', label: 'Overview', icon: 'home' },
 		{ href: '/dashboard/billing', label: 'Billing', icon: 'credit-card' },
-		{ href: '/dashboard/claude', label: 'Claude Connection', icon: 'link' }
+		{ href: '/dashboard/claude', label: 'Claude Connection', icon: 'link' },
+		{ href: '/dashboard/referrals', label: 'Referrals', icon: 'gift' }
 	];
 
 	// Check if a link is active
@@ -82,6 +83,10 @@
 							{:else if link.icon === 'link'}
 								<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
 									<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"></path>
+								</svg>
+							{:else if link.icon === 'gift'}
+								<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+									<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v13m0-13V6a2 2 0 112 2h-2zm0 0V5.5A2.5 2.5 0 109.5 8H12zm-7 4h14M5 12a2 2 0 110-4h14a2 2 0 110 4M5 12v7a2 2 0 002 2h10a2 2 0 002-2v-7"></path>
 								</svg>
 							{:else if link.icon === 'file-text'}
 								<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -160,6 +165,10 @@
 								{:else if link.icon === 'link'}
 									<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
 										<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"></path>
+									</svg>
+								{:else if link.icon === 'gift'}
+									<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+										<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v13m0-13V6a2 2 0 112 2h-2zm0 0V5.5A2.5 2.5 0 109.5 8H12zm-7 4h14M5 12a2 2 0 110-4h14a2 2 0 110 4M5 12v7a2 2 0 002 2h10a2 2 0 002-2v-7"></path>
 									</svg>
 								{:else if link.icon === 'file-text'}
 									<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">

@@ -1,11 +1,27 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
+	import { page } from '$app/stores';
 
 	let name = $state('');
 	let email = $state('');
 	let password = $state('');
 	let error = $state('');
 	let loading = $state(false);
+
+	// Capture referral code from ?ref= query parameter
+	let referralCode = $derived($page.url.searchParams.get('ref') || '');
+
+	// Store referral code in localStorage on mount so it persists through OAuth flows
+	$effect(() => {
+		if (referralCode) {
+			localStorage.setItem('rachel_referral_code', referralCode);
+		}
+	});
+
+	// Get referral code from URL param or localStorage fallback
+	function getStoredReferralCode(): string {
+		return referralCode || localStorage.getItem('rachel_referral_code') || '';
+	}
 
 	async function handleSignup(e: Event) {
 		e.preventDefault();
@@ -33,6 +49,25 @@
 				return;
 			}
 
+			// Process referral if we have a code
+			const refCode = getStoredReferralCode();
+			if (refCode && data.user?.id) {
+				try {
+					await fetch('/api/referral/process', {
+						method: 'POST',
+						headers: { 'Content-Type': 'application/json' },
+						body: JSON.stringify({
+							referralCode: refCode,
+							userId: data.user.id
+						})
+					});
+				} catch {
+					// Don't block signup if referral processing fails
+					console.warn('Failed to process referral code');
+				}
+				localStorage.removeItem('rachel_referral_code');
+			}
+
 			// Sign up successful, redirect to dashboard
 			goto('/dashboard');
 		} catch (err) {
@@ -42,6 +77,7 @@
 	}
 
 	function handleGoogleSignup() {
+		// Referral code is already in localStorage, will be processed after OAuth callback
 		window.location.href = '/api/auth/sign-in/google';
 	}
 </script>
@@ -63,6 +99,19 @@
 				</a>
 			</p>
 		</div>
+
+		{#if referralCode}
+			<div class="rounded-md bg-green-50 border border-green-200 p-4">
+				<div class="flex items-center">
+					<svg class="h-5 w-5 text-green-400 mr-2 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+						<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v13m0-13V6a2 2 0 112 2h-2zm0 0V5.5A2.5 2.5 0 109.5 8H12zm-7 4h14M5 12a2 2 0 110-4h14a2 2 0 110 4M5 12v7a2 2 0 002 2h10a2 2 0 002-2v-7" />
+					</svg>
+					<p class="text-sm font-medium text-green-800">
+						You've been referred! Sign up to get &euro;10 off your first month.
+					</p>
+				</div>
+			</div>
+		{/if}
 
 		<div class="mt-8 space-y-6">
 			{#if error}

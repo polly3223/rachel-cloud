@@ -16,7 +16,7 @@
 			? overview.estimatedMonthlyCost / overview.activeSubscribers
 			: 0
 	);
-	const grossMarginPerSubscriber = $derived(20 - 3.49);
+	const grossMarginPerSubscriber = $derived(40 - 3.49);
 	const churned = $derived(overview.canceledUsers);
 	const signupToActiveRate = $derived(
 		overview.totalUsers > 0
@@ -42,7 +42,7 @@
 	// Formatting helpers
 	// -----------------------------------------------------------------------
 
-	function formatCurrency(amount: number, currency: string = '$'): string {
+	function formatCurrency(amount: number, currency: string = '€'): string {
 		return `${currency}${amount.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
 	}
 
@@ -205,7 +205,7 @@
 		<div class="grid grid-cols-1 md:grid-cols-3 gap-6">
 			<div class="border border-gray-100 rounded-lg p-4">
 				<p class="text-sm text-gray-500 mb-1">Revenue per Subscriber</p>
-				<p class="text-xl font-semibold text-green-600">$20.00<span class="text-sm font-normal text-gray-500"> / month</span></p>
+				<p class="text-xl font-semibold text-green-600">&euro;40.00<span class="text-sm font-normal text-gray-500"> / month</span></p>
 				<p class="text-xs text-gray-400 mt-1">Fixed subscription price</p>
 			</div>
 			<div class="border border-gray-100 rounded-lg p-4">
@@ -215,8 +215,8 @@
 			</div>
 			<div class="border border-gray-100 rounded-lg p-4">
 				<p class="text-sm text-gray-500 mb-1">Gross Margin per Subscriber</p>
-				<p class="text-xl font-semibold text-green-600">${grossMarginPerSubscriber.toFixed(2)}<span class="text-sm font-normal text-gray-500"> / month</span></p>
-				<p class="text-xs text-gray-400 mt-1">$20.00 &minus; &euro;3.49 (approx.)</p>
+				<p class="text-xl font-semibold text-green-600">&euro;{grossMarginPerSubscriber.toFixed(2)}<span class="text-sm font-normal text-gray-500"> / month</span></p>
+				<p class="text-xs text-gray-400 mt-1">&euro;40.00 &minus; &euro;5.00 (approx.)</p>
 			</div>
 		</div>
 	</div>

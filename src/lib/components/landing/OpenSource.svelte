@@ -12,12 +12,15 @@
 
 <section class="py-24 bg-[#0a0a0f] border-t border-white/5">
 	<div class="max-w-4xl mx-auto text-center px-6">
-		<p class="text-sm font-medium text-amber-400 text-center mb-3 tracking-wide uppercase">Open source</p>
+		<p class="text-sm font-medium text-amber-400 text-center mb-3 tracking-wide uppercase">Transparent & trustworthy</p>
 		<h2 class="text-3xl sm:text-4xl font-bold text-white mb-4">
-			Built in the open
+			Open source. You own everything.
 		</h2>
+		<p class="text-gray-500 mb-6 max-w-xl mx-auto leading-relaxed">
+			Rachel's code is 100% open source. Your data lives on your own private server &mdash; we never see it, we never sell it, we never touch it.
+		</p>
 		<p class="text-gray-500 mb-10 max-w-xl mx-auto leading-relaxed">
-			Rachel is fully open source. Self-host it yourself for free, or let Rachel Cloud handle everything for $20/mo.
+			Want to host it yourself? Go ahead &mdash; it's free. Want us to handle everything? That's Rachel Cloud for &euro;40/mo.
 		</p>
 
 		<div class="flex flex-col sm:flex-row items-center justify-center gap-5">

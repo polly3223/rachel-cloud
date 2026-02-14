@@ -138,7 +138,7 @@
 						<div class="space-y-2 text-sm text-gray-600">
 							<p>
 								<span class="font-medium">Amount:</span>
-								<span class="text-2xl font-bold text-gray-900 ml-2">$20</span>
+								<span class="text-2xl font-bold text-gray-900 ml-2">&euro;40</span>
 								<span class="text-gray-500">/month</span>
 							</p>
 							{#if data.subscription?.currentPeriodEnd}

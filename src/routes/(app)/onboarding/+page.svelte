@@ -96,7 +96,7 @@
 					<div class="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-lg p-8 mb-8 border-2 border-blue-200">
 						<h2 class="text-2xl font-bold text-gray-900 mb-4">Rachel Cloud Monthly</h2>
 						<div class="mb-6">
-							<span class="text-5xl font-extrabold text-blue-600">$20</span>
+							<span class="text-5xl font-extrabold text-blue-600">&euro;40</span>
 							<span class="text-xl text-gray-600">/month</span>
 						</div>
 						<ul class="text-left space-y-3 mb-8 max-w-md mx-auto">
