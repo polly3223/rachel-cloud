@@ -103,17 +103,25 @@ Plans:
 
 ## Phase 5: Dashboard & User Controls
 
-**Goal:** Users can monitor their Rachel instance, view logs, restart it, and see uptime metrics.
-**Requirements:** DASH-01, DASH-02, DASH-03, DASH-04, DASH-05
+**Goal:** Users can monitor their Rachel instance, view logs, restart it, and see uptime metrics. Admin can view all users, revenue, costs, and VPS status.
+**Requirements:** DASH-01, DASH-02, DASH-03, DASH-04, DASH-05, ADMIN-01
 
 ### Success Criteria
 1. User opens dashboard and sees current server status (running/stopped/error) within 1 second
-2. User clicks "Logs" and sees real-time log stream from their Rachel instance
+2. User views recent log lines from their Rachel instance
 3. User clicks "Restart" and instance restarts successfully within 30 seconds
-4. Dashboard displays uptime percentage and last activity timestamp accurately
+4. Dashboard displays VPS IP, uptime, and datacenter info
 5. Dashboard is fully responsive and usable on mobile devices
+6. Admin dashboard shows all users with subscription status, MRR, costs, and VPS status
+7. Admin dashboard is only accessible to admin user (ADMIN_EMAIL)
 
-### Plans (to be created during /gsd:plan-phase)
+**Plans:** 4 plans (2 waves)
+
+Plans:
+- [ ] 05-01-PLAN.md — Admin auth middleware + admin route group + admin layout (Wave 1)
+- [ ] 05-02-PLAN.md — Remote VPS status checking + restart service SSH utilities + API endpoints (Wave 1)
+- [ ] 05-03-PLAN.md — User dashboard enhancements: server status, restart, logs, connection info (Wave 2)
+- [ ] 05-04-PLAN.md — Admin dashboard: users list, revenue, costs, VPS overview (Wave 2)
 
 ---
 
@@ -158,4 +166,4 @@ Plans:
 - Phase 6: Reliability
 - Phase 7: Operations
 
-**Next Step:** Run `/gsd:plan-phase 1` to create detailed implementation plan for Authentication & User Foundation.
+**Next Step:** Run `/gsd:execute-phase 5` to implement Dashboard & User Controls.
