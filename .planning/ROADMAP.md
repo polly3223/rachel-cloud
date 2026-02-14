@@ -119,7 +119,7 @@ Plans:
 
 Plans:
 - [ ] 05-01-PLAN.md — Admin auth middleware + admin route group + admin layout (Wave 1)
-- [ ] 05-02-PLAN.md — Remote VPS status checking + restart service SSH utilities + API endpoints (Wave 1)
+- [x] 05-02-PLAN.md — Remote VPS status checking + restart service SSH utilities + API endpoints (Wave 1)
 - [ ] 05-03-PLAN.md — User dashboard enhancements: server status, restart, logs, connection info (Wave 2)
 - [ ] 05-04-PLAN.md — Admin dashboard: users list, revenue, costs, VPS overview (Wave 2)
 

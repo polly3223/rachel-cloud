@@ -6,35 +6,31 @@ See: .planning/PROJECT.md (updated 2026-02-14)
 **Current focus:** Phase 5
 
 ## Current Phase
-Phase: 4 — Landing Page & Public Launch
-Status: Complete
+Phase: 5 — Dashboard & User Controls
+Status: In Progress
 Started: 2026-02-14
-Completed: 2026-02-14
 
-#### Plan 04-01: Tailwind CSS Migration & Route Group Restructuring
-- Status: ✅ Complete
-- Commits: 9e3434f, f8d203f
-- Summary: .planning/phases/04-landing-page/04-01-SUMMARY.md
+#### Plan 05-01: Admin Auth Middleware + Admin Route Group
+- Status: (pending or check if done)
 
-#### Plan 04-05: Public Rachel Repo + Cloud-Init Update
+#### Plan 05-02: VPS Status, Restart & Logs Backend
 - Status: ✅ Complete
-- Commits: f825e3e (rachel-cloud), ad46d39 (polly3223/rachel)
-- Summary: .planning/phases/04-landing-page/04-05-SUMMARY.md
+- Commits: f08de7cc, f6e6203e
+- Summary: .planning/phases/05-dashboard-controls/05-02-SUMMARY.md
 
-#### Plan 04-02: Landing Page Sections (Hero, HowItWorks, Features, Pricing, OpenSource, FAQ, Footer)
-- Status: ✅ Complete
-- Commits: ecf306d, 8dfb976
-- Summary: .planning/phases/04-landing-page/04-02-SUMMARY.md
+#### Plan 05-03: User Dashboard Enhancements
+- Status: Pending
 
-#### Plan 04-03: SEO Meta Tags, Open Graph, JSON-LD, Sitemap, Robots
-- Status: ✅ Complete
-- Commits: 622d1f0, 3ddbdd4
-- Summary: .planning/phases/04-landing-page/04-03-SUMMARY.md
+#### Plan 05-04: Admin Dashboard
+- Status: Pending
 
-#### Plan 04-04: Telegram Chat Mockup & Scroll Animations
-- Status: ✅ Complete
-- Commits: abc897b, 91043bf
-- Summary: .planning/phases/04-landing-page/04-04-SUMMARY.md
+## Phase History
+
+### Phase 4: Landing Page & Public Launch ✅
+- Status: Complete
+- Started: 2026-02-14
+- Completed: 2026-02-14
+- Plans: 5/5 complete (04-01, 04-05, 04-02, 04-03, 04-04)
 
 ## Phase History
 
