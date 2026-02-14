@@ -19,7 +19,23 @@
 	// Open Polar customer portal
 	async function openCustomerPortal() {
 		try {
-			await authClient.customer.portal();
+			// Call Better Auth portal endpoint
+			const response = await fetch('/api/auth/customer/portal', {
+				method: 'POST',
+				headers: {
+					'Content-Type': 'application/json'
+				},
+				body: JSON.stringify({ redirect: false })
+			});
+
+			if (!response.ok) {
+				throw new Error('Failed to get portal URL');
+			}
+
+			const result = await response.json();
+			if (result.url) {
+				window.location.href = result.url;
+			}
 		} catch (err) {
 			error = 'Failed to open customer portal. Please try again.';
 			console.error('Customer portal error:', err);
