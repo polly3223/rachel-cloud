@@ -1,6 +1,9 @@
 import { requireAuth } from '$lib/auth/session';
 import { getSubscription } from '$lib/billing/subscription-manager';
 import { getVPSStatus } from '$lib/provisioning/vps-status';
+import { db } from '$lib/db';
+import { healthChecks } from '$lib/db/schema';
+import { eq } from 'drizzle-orm';
 import type { PageServerLoad } from './$types';
 
 export const load: PageServerLoad = async (event) => {
@@ -28,10 +31,39 @@ export const load: PageServerLoad = async (event) => {
 		}
 	}
 
+	// Load health monitoring status if VPS is provisioned
+	let healthStatus: {
+		status: string;
+		lastCheckAt: Date | null;
+		lastHealthyAt: Date | null;
+		consecutiveFailures: number;
+		circuitState: string;
+		totalChecks: number;
+		totalRecoveries: number;
+	} | null = null;
+
+	if (subscription?.vpsProvisioned) {
+		const healthRecord = await db.query.healthChecks.findFirst({
+			where: eq(healthChecks.userId, session.user.id)
+		});
+		if (healthRecord) {
+			healthStatus = {
+				status: healthRecord.status,
+				lastCheckAt: healthRecord.lastCheckAt,
+				lastHealthyAt: healthRecord.lastHealthyAt,
+				consecutiveFailures: healthRecord.consecutiveFailures,
+				circuitState: healthRecord.circuitState,
+				totalChecks: healthRecord.totalChecks,
+				totalRecoveries: healthRecord.totalRecoveries,
+			};
+		}
+	}
+
 	return {
 		subscription,
 		hasActiveSubscription: subscription?.status === 'active',
 		isGracePeriod: subscription?.status === 'grace_period',
 		vpsStatus,
+		healthStatus,
 	};
 };

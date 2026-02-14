@@ -279,6 +279,59 @@
 		const timeout = setTimeout(() => (restartMessage = null), 8000);
 		return () => clearTimeout(timeout);
 	});
+
+	// ─── Health status helpers ──────────────────────────────────────
+
+	function healthDotColor(status: string | null): string {
+		switch (status) {
+			case 'healthy': return 'bg-green-500';
+			case 'unhealthy': return 'bg-yellow-500';
+			case 'down': return 'bg-red-500';
+			case 'circuit_open': return 'bg-red-500';
+			default: return 'bg-gray-400';
+		}
+	}
+
+	function healthBadgeColor(status: string | null): string {
+		switch (status) {
+			case 'healthy': return 'bg-green-100 text-green-800';
+			case 'unhealthy': return 'bg-yellow-100 text-yellow-800';
+			case 'down': return 'bg-red-100 text-red-800';
+			case 'circuit_open': return 'bg-red-100 text-red-800';
+			default: return 'bg-gray-100 text-gray-600';
+		}
+	}
+
+	function healthBannerBg(status: string | null): string {
+		switch (status) {
+			case 'healthy': return 'bg-green-50 border-green-200';
+			case 'unhealthy': return 'bg-yellow-50 border-yellow-200';
+			case 'down': return 'bg-red-50 border-red-200';
+			case 'circuit_open': return 'bg-red-50 border-red-200';
+			default: return 'bg-gray-50 border-gray-200';
+		}
+	}
+
+	function healthLabel(status: string | null): string {
+		switch (status) {
+			case 'healthy': return 'Healthy';
+			case 'unhealthy': return 'Unhealthy';
+			case 'down': return 'Down';
+			case 'circuit_open': return 'Recovery Failed';
+			default: return 'Monitoring Starting';
+		}
+	}
+
+	function timeAgo(date: Date | string | null): string {
+		if (!date) return 'Not yet checked';
+		const now = Date.now();
+		const then = typeof date === 'string' ? new Date(date).getTime() : date.getTime();
+		const diffSec = Math.floor((now - then) / 1000);
+		if (diffSec < 60) return `${diffSec}s ago`;
+		if (diffSec < 3600) return `${Math.floor(diffSec / 60)}m ago`;
+		if (diffSec < 86400) return `${Math.floor(diffSec / 3600)}h ago`;
+		return `${Math.floor(diffSec / 86400)}d ago`;
+	}
 </script>
 
 <svelte:head>
@@ -377,6 +430,51 @@
 						<p class="text-sm font-medium text-gray-500 mb-1">Uptime</p>
 						<p class="text-sm text-gray-900">{serverUptime || 'Loading...'}</p>
 					</div>
+				</div>
+			</div>
+		</div>
+
+		<!-- Section 1.5: Health Monitor Banner -->
+		<div class="rounded-lg border mb-6 {healthBannerBg(data.healthStatus?.status ?? null)}">
+			<div class="px-6 py-4">
+				<div class="flex items-center justify-between flex-wrap gap-3">
+					<div class="flex items-center gap-3">
+						<!-- Health dot -->
+						<span class="relative flex h-3 w-3">
+							{#if data.healthStatus?.status === 'healthy'}
+								<span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-500 opacity-75"></span>
+							{/if}
+							<span class="relative inline-flex rounded-full h-3 w-3 {healthDotColor(data.healthStatus?.status ?? null)}"></span>
+						</span>
+						<!-- Label + badge -->
+						<div class="flex items-center gap-2">
+							<span class="text-sm font-medium text-gray-700">Health Monitor</span>
+							<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium {healthBadgeColor(data.healthStatus?.status ?? null)}">
+								{healthLabel(data.healthStatus?.status ?? null)}
+							</span>
+						</div>
+						<!-- Consecutive failures if unhealthy -->
+						{#if data.healthStatus?.status === 'unhealthy' && data.healthStatus.consecutiveFailures > 0}
+							<span class="text-xs text-yellow-700">({data.healthStatus.consecutiveFailures} consecutive failure{data.healthStatus.consecutiveFailures !== 1 ? 's' : ''})</span>
+						{/if}
+						<!-- Circuit open note -->
+						{#if data.healthStatus?.status === 'circuit_open'}
+							<span class="text-xs text-red-700 font-medium">Admin has been notified</span>
+						{/if}
+						<!-- Separator + last checked -->
+						<span class="text-xs text-gray-500">
+							Last checked: {timeAgo(data.healthStatus?.lastCheckAt ?? null)}
+						</span>
+					</div>
+					<!-- Right side: lifetime counters -->
+					{#if data.healthStatus}
+						<div class="flex items-center gap-4 text-xs text-gray-500">
+							<span>{data.healthStatus.totalChecks} check{data.healthStatus.totalChecks !== 1 ? 's' : ''}</span>
+							{#if data.healthStatus.totalRecoveries > 0}
+								<span>{data.healthStatus.totalRecoveries} recover{data.healthStatus.totalRecoveries !== 1 ? 'ies' : 'y'}</span>
+							{/if}
+						</div>
+					{/if}
 				</div>
 			</div>
 		</div>
