@@ -124,10 +124,10 @@ function buildYaml(username: string, sshPublicKey: string, callbackUrl: string):
 		`  - ["su", "-", "${username}", "-c", "/home/${username}/.bun/bin/bun install -g @anthropic-ai/claude-code"]`
 	);
 
-	// 5. Clone Rachel8 repository
-	lines.push('  # Clone Rachel8 repository');
+	// 5. Clone Rachel repository (from public repo)
+	lines.push('  # Clone Rachel repository');
 	lines.push(
-		`  - ["su", "-", "${username}", "-c", "git clone https://github.com/polly3223/Rachel8.git /home/${username}/rachel8"]`
+		`  - ["su", "-", "${username}", "-c", "git clone https://github.com/polly3223/rachel.git /home/${username}/rachel8"]`
 	);
 
 	// 6. Install Rachel8 dependencies
