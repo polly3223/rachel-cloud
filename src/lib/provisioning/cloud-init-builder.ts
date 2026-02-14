@@ -87,6 +87,9 @@ function buildYaml(username: string, sshPublicKey: string, callbackUrl: string):
 	lines.push('  - git');
 	lines.push('  - curl');
 	lines.push('  - unzip');
+	lines.push('  - ffmpeg');
+	lines.push('  - build-essential');
+	lines.push('  - cmake');
 
 	// -------------------------------------------------------------------
 	// Run commands: install runtimes, clone repo, set up environment
