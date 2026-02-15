@@ -52,14 +52,5 @@
 			</div>
 		</div>
 
-		<!-- Referral banner -->
-		<div class="mt-12 text-center">
-			<div class="inline-flex items-center gap-3 px-6 py-3 rounded-xl border border-violet-500/20 bg-violet-500/5">
-				<span class="text-lg">{$t.pricing.referralEmoji}</span>
-				<span class="text-sm text-gray-300">
-					<span class="font-semibold text-violet-400">{$t.pricing.referralHighlight}</span> &mdash; {$t.pricing.referralText}
-				</span>
-			</div>
-		</div>
 	</div>
 </section>

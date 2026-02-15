@@ -7,7 +7,7 @@ const en: Translations = {
 		h1Line2: 'like a superhuman',
 		subtitle:
 			'Rachel is an AI assistant on Telegram that builds landing pages, tracks your leads, manages contacts, schedules reminders, creates documents, and handles research — so you can focus on closing deals.',
-		cta1: 'Start for \u20AC40/mo',
+		cta1: 'Start for $20/mo',
 		cta2: 'See how it works',
 		subtext: 'Open source \u00B7 You own your data \u00B7 Cancel anytime'
 	},
@@ -34,7 +34,7 @@ const en: Translations = {
 
 	features: {
 		label: 'What Rachel can do for you',
-		title: 'Like hiring a full-time assistant for \u20AC40/mo',
+		title: 'Like hiring a full-time assistant for $20/mo',
 		subtitle:
 			'Rachel handles the work that eats up your day, so you can spend your time where it actually matters.',
 		feature1: {
@@ -98,7 +98,7 @@ const en: Translations = {
 			'Think about how many hours you spend on admin, research, and follow-ups. Rachel gives you those hours back.',
 		planBadge: 'Everything included',
 		planName: 'Rachel Cloud',
-		price: '\u20AC40',
+		price: '$20',
 		priceUnit: '/month',
 		features: [
 			'Your own AI assistant on Telegram \u2014 available 24/7',
@@ -109,12 +109,9 @@ const en: Translations = {
 			'Monitored 24/7 with auto-recovery',
 			'Cancel anytime \u2014 no contracts, no tricks'
 		],
-		cta: 'Start now \u2014 \u20AC40/mo',
+		cta: 'Start now \u2014 $20/mo',
 		subtext:
 			'+ your Claude subscription (separate) \u00B7 Together they pay for themselves in hours saved',
-		referralEmoji: '\uD83C\uDF81',
-		referralHighlight: 'Give \u20AC10, Get \u20AC10',
-		referralText: 'share Rachel with a friend and you both save'
 	},
 
 	openSource: {
@@ -123,7 +120,7 @@ const en: Translations = {
 		paragraph1:
 			"Rachel's code is 100% open source. Your data lives on your own private server \u2014 we never see it, we never sell it, we never touch it.",
 		paragraph2:
-			"Want to host it yourself? Go ahead \u2014 it's free. Want us to handle everything? That's Rachel Cloud for \u20AC40/mo.",
+			"Want to host it yourself? Go ahead \u2014 it's free. Want us to handle everything? That's Rachel Cloud for $20/mo.",
 		starButton: 'Star',
 		githubButton: 'View on GitHub'
 	},
@@ -167,11 +164,6 @@ const en: Translations = {
 				answer:
 					'Absolutely. No contracts, no cancellation fees, no lock-in. Cancel whenever you want with one click.'
 			},
-			{
-				question: 'What is the referral program?',
-				answer:
-					'Share Rachel with a friend and you both get \u20AC10 off. They save on their first month, you save on your next one. Simple as that.'
-			}
 		]
 	},
 
@@ -181,10 +173,7 @@ const en: Translations = {
 		navGetStarted: 'Get Started',
 		navLogin: 'Login',
 		navGitHub: 'GitHub',
-		copyright: 'Rachel Cloud \u00B7 Open source \u00B7 You own your data',
-		referralEmoji: '\uD83C\uDF81',
-		referralText: 'Give \u20AC10, Get \u20AC10',
-		referralLink: 'refer a friend'
+		copyright: 'Rachel Cloud \u00B7 Open source \u00B7 You own your data'
 	}
 };
 

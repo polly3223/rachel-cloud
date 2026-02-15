@@ -7,7 +7,7 @@ const it: Translations = {
 		h1Line2: 'come un supereroe',
 		subtitle:
 			'Rachel \u00E8 un\'assistente AI su Telegram che crea landing page, traccia i tuoi contatti, gestisce la rubrica, programma promemoria, genera documenti e fa ricerche \u2014 cos\u00EC tu puoi concentrarti su ci\u00F2 che conta: chiudere i deal.',
-		cta1: 'Inizia a \u20AC40/mese',
+		cta1: 'Inizia a $20/mese',
 		cta2: 'Scopri come funziona',
 		subtext: 'Open source \u00B7 I tuoi dati restano tuoi \u00B7 Disdici quando vuoi'
 	},
@@ -34,7 +34,7 @@ const it: Translations = {
 
 	features: {
 		label: 'Cosa pu\u00F2 fare Rachel per te',
-		title: 'Come assumere un\'assistente a tempo pieno per \u20AC40/mese',
+		title: 'Come assumere un\'assistente a tempo pieno per $20/mese',
 		subtitle:
 			'Rachel si occupa del lavoro che ti ruba la giornata, cos\u00EC puoi dedicare il tuo tempo a ci\u00F2 che conta davvero.',
 		feature1: {
@@ -98,7 +98,7 @@ const it: Translations = {
 			'Pensa a quante ore spendi in amministrazione, ricerche e follow-up. Rachel ti restituisce quelle ore.',
 		planBadge: 'Tutto incluso',
 		planName: 'Rachel Cloud',
-		price: '\u20AC40',
+		price: '$20',
 		priceUnit: '/mese',
 		features: [
 			'La tua assistente AI su Telegram \u2014 disponibile 24/7',
@@ -109,12 +109,9 @@ const it: Translations = {
 			'Monitoraggio 24/7 con ripristino automatico',
 			'Disdici quando vuoi \u2014 nessun vincolo, nessun trucco'
 		],
-		cta: 'Inizia ora \u2014 \u20AC40/mese',
+		cta: 'Inizia ora \u2014 $20/mese',
 		subtext:
 			'+ il tuo abbonamento Claude (separato) \u00B7 Insieme si ripagano in ore risparmiate',
-		referralEmoji: '\uD83C\uDF81',
-		referralHighlight: 'Regala \u20AC10, Ricevi \u20AC10',
-		referralText: 'condividi Rachel con un amico e risparmiate entrambi'
 	},
 
 	openSource: {
@@ -123,7 +120,7 @@ const it: Translations = {
 		paragraph1:
 			'Il codice di Rachel \u00E8 100% open source. I tuoi dati vivono sul tuo server privato \u2014 non li vediamo, non li vendiamo, non li tocchiamo.',
 		paragraph2:
-			'Vuoi installarlo da solo? Fai pure \u2014 \u00E8 gratis. Vuoi che ci pensiamo noi a tutto? Ecco Rachel Cloud a \u20AC40/mese.',
+			'Vuoi installarlo da solo? Fai pure \u2014 \u00E8 gratis. Vuoi che ci pensiamo noi a tutto? Ecco Rachel Cloud a $20/mese.',
 		starButton: 'Star',
 		githubButton: 'Vedi su GitHub'
 	},
@@ -167,11 +164,6 @@ const it: Translations = {
 				answer:
 					'Certo. Nessun contratto, nessuna penale, nessun vincolo. Disdici quando vuoi con un click.'
 			},
-			{
-				question: 'Come funziona il programma referral?',
-				answer:
-					'Condividi Rachel con un amico e ottenete entrambi \u20AC10 di sconto. Loro risparmiano sul primo mese, tu risparmi sul prossimo. Semplice.'
-			}
 		]
 	},
 
@@ -181,10 +173,7 @@ const it: Translations = {
 		navGetStarted: 'Inizia ora',
 		navLogin: 'Accedi',
 		navGitHub: 'GitHub',
-		copyright: 'Rachel Cloud \u00B7 Open source \u00B7 I tuoi dati restano tuoi',
-		referralEmoji: '\uD83C\uDF81',
-		referralText: 'Regala \u20AC10, Ricevi \u20AC10',
-		referralLink: 'invita un amico'
+		copyright: 'Rachel Cloud \u00B7 Open source \u00B7 I tuoi dati restano tuoi'
 	}
 };
 

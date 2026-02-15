@@ -28,12 +28,9 @@
 			</nav>
 		</div>
 
-		<div class="mt-8 pt-6 border-t border-white/5 flex flex-col sm:flex-row items-center justify-between gap-4">
+		<div class="mt-8 pt-6 border-t border-white/5 text-center">
 			<p class="text-xs text-gray-700">
 				&copy; {new Date().getFullYear()} {$t.footer.copyright}
-			</p>
-			<p class="text-xs text-gray-700">
-				{$t.footer.referralEmoji} <span class="text-gray-500">{$t.footer.referralText}</span> &mdash; <a href="/signup" class="text-violet-400 hover:text-violet-300 transition-colors">{$t.footer.referralLink}</a>
 			</p>
 		</div>
 	</div>

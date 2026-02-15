@@ -77,9 +77,6 @@ export interface Translations {
 		features: string[];
 		cta: string;
 		subtext: string;
-		referralEmoji: string;
-		referralHighlight: string;
-		referralText: string;
 	};
 	openSource: {
 		label: string;
@@ -101,9 +98,6 @@ export interface Translations {
 		navLogin: string;
 		navGitHub: string;
 		copyright: string;
-		referralEmoji: string;
-		referralText: string;
-		referralLink: string;
 	};
 }
 

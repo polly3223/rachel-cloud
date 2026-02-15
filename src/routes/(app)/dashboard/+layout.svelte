@@ -16,8 +16,7 @@
 	const navLinks = [
 		{ href: '/dashboard', label: 'Overview', icon: 'home' },
 		{ href: '/dashboard/billing', label: 'Billing', icon: 'credit-card' },
-		{ href: '/dashboard/claude', label: 'Claude Connection', icon: 'link' },
-		{ href: '/dashboard/referrals', label: 'Referrals', icon: 'gift' }
+		{ href: '/dashboard/claude', label: 'Claude Connection', icon: 'link' }
 	];
 
 	// Check if a link is active
