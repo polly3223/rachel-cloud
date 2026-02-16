@@ -68,18 +68,35 @@ The shared Rachel bot receives ALL messages. Router logic:
 - OR keep minimal web admin dashboard (auth via Telegram Login Widget)
 
 ### What Happens to the Web App?
-**Mostly goes away.** What remains:
-- Landing page (public, no auth needed)
-- Admin dashboard (optional — could use Telegram Login Widget for auth)
-- Polar checkout redirect page
+**Keep it, but simplify auth.** Replace Better Auth with Telegram Login Widget:
+- Landing page (public, with "Log in with Telegram" button for existing users)
+- User dashboard (status, logs, restart, billing) — auth via Telegram Login Widget
+- Admin dashboard — auth via Telegram Login Widget + admin telegram_id check
+- Polar checkout page — receives telegram_id from session
 - API endpoints for Polar webhooks + orchestrator
 
-### What About the User Dashboard?
-Move it to Telegram:
+### Telegram Login Widget
+Official Telegram auth for websites. User clicks "Log in with Telegram" → confirms in Telegram app → website receives user data (id, first_name, username, photo_url) + HMAC-SHA256 hash for verification.
+
+**Setup:**
+1. Create bot via @BotFather (use same shared Rachel bot)
+2. `/setdomain` to link get-rachel.com to the bot
+3. Embed widget JS on login page
+4. Verify hash server-side: `HMAC-SHA256(data_check_string, SHA256(bot_token)) == hash`
+5. Create lightweight session (cookie with telegram_id, signed)
+
+**Data returned:**
+- `id` (telegram user ID — this becomes our primary key)
+- `first_name`, `last_name`, `username`, `photo_url`
+- `auth_date` (Unix timestamp — check for freshness)
+- `hash` (HMAC-SHA256 for verification)
+
+### Telegram Commands (in-bot UX)
+Users can also manage basic things via bot commands:
 - `/status` → container status, uptime
 - `/restart` → restart container
-- `/logs` → recent logs
-- `/billing` → subscription info, cancel link
+- `/logs` → recent log lines
+- `/billing` → subscription info, link to web dashboard for payment
 - `/help` → available commands
 
 ## Architecture Change
@@ -95,11 +112,13 @@ User → Web signup → Pay → Create Telegram bot → Deploy container
 
 ### After (v3)
 ```
-User → Message @RachelAI → /start → Pay → Container deployed
+User → Message @RachelAI on Telegram → /start → Get link to web dashboard
                 ↓
-         Telegram user ID
+         Web dashboard (Telegram Login Widget) → Pay via Polar → Container deployed
                 ↓
-         Shared bot → Router → User's Container → Response
+         Back on Telegram: shared bot → Router → User's Container → Response
+                ↓
+         Web dashboard also available for: status, logs, restart, billing
 ```
 
 ## Key Decisions Needed
@@ -116,14 +135,14 @@ User → Message @RachelAI → /start → Pay → Container deployed
    - Option C: Each container still has its own bot token (keep current model)
    - **Recommendation:** Option A — simplest, orchestrator already knows container IPs
 
-3. **Keep web admin dashboard?**
-   - Option A: Admin via Telegram commands only
-   - Option B: Minimal web dashboard with Telegram Login Widget auth
-   - **Recommendation:** Option B — admin needs tables, charts, bulk operations
+3. **Keep web dashboard?**
+   - ✅ **DECIDED: Yes** — keep full web dashboard for payments, status, logs, billing
+   - Auth via Telegram Login Widget (replaces Better Auth)
+   - Admin dashboard also via Telegram Login Widget + admin telegram_id env check
 
 4. **Keep landing page?**
    - Yes — still needed for marketing, SEO, explaining the product
-   - Just remove signup/login buttons, replace with "Message @RachelAI on Telegram"
+   - CTA: "Message @RachelAI on Telegram" + "Log in" via Telegram Login Widget
 
 ## Database Schema Changes
 
@@ -166,12 +185,15 @@ CREATE TABLE subscriptions (
 
 ## Dependencies to Remove
 - `better-auth` + `@better-auth/*` plugins
-- `@polar-sh/better-auth` (replace with direct Polar SDK)
-- Google OAuth config
-- Session/cookie handling
+- `@polar-sh/better-auth` (replace with direct Polar SDK webhook handling)
+- Google OAuth config (`GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET`)
+
+## Dependencies to Add
+- None — Telegram Login Widget is a client-side JS embed, hash verification is pure crypto (built-in)
 
 ## Estimated Scope
-- **Remove:** ~3,000 LOC (auth, OAuth, session, related UI)
-- **Add:** ~500 LOC (Telegram router, new user model, webhook handler)
-- **Modify:** Landing page, admin pages, Polar integration
-- **Impact:** Massive simplification of the entire stack
+- **Remove:** ~2,000 LOC (Better Auth, Claude OAuth, login/signup pages, Google OAuth)
+- **Add:** ~800 LOC (Telegram Login Widget auth, session management, message router, bot commands, Polar webhook rewrite)
+- **Modify:** Landing page, dashboard auth guards, admin auth, Polar integration, onboarding
+- **Keep:** User dashboard, admin dashboard, billing pages (just change auth method)
+- **Impact:** Simpler auth stack, better UX (one-click Telegram login), no passwords/emails

@@ -124,13 +124,13 @@
 - [ ] **TGAUTH-05**: Polar webhook on payment → auto-provision container for user
 - [ ] **TGAUTH-06**: Message router: incoming message → look up user → forward to their container → return response
 
-### Remove Better Auth
+### Replace Better Auth with Telegram Login Widget
 
-- [ ] **TGAUTH-07**: Remove Better Auth library and all auth config/client/session code
+- [ ] **TGAUTH-07**: Remove Better Auth library and replace with Telegram Login Widget for web auth
 - [ ] **TGAUTH-08**: Remove Claude OAuth flow (claude-oauth.ts, claude-token-manager.ts, claudeTokens table)
 - [ ] **TGAUTH-09**: Remove Better Auth DB tables (user, session, account, verification)
-- [ ] **TGAUTH-10**: Remove login/signup web pages
-- [ ] **TGAUTH-11**: Remove session-based route guards from app routes
+- [ ] **TGAUTH-10**: Replace login/signup pages with Telegram Login Widget page
+- [ ] **TGAUTH-11**: Replace session-based route guards with Telegram-authenticated sessions (verify HMAC-SHA256 hash from widget, create lightweight session keyed on telegram_id)
 
 ### Database Redesign
 
@@ -146,11 +146,13 @@
 - [ ] **TGUX-04**: User can view billing info and cancel via `/billing` command
 - [ ] **TGUX-05**: User can get help via `/help` command
 
-### Web App Simplification
+### Web App (Telegram Login Widget)
 
-- [ ] **WEB-01**: Landing page updated — CTA becomes "Message @RachelAI on Telegram" instead of signup form
-- [ ] **WEB-02**: Admin dashboard uses Telegram Login Widget for authentication (or env-based admin Telegram ID)
-- [ ] **WEB-03**: Remove all authenticated user web routes (dashboard, billing, onboarding pages)
+- [ ] **WEB-01**: Landing page updated — CTA becomes "Message @RachelAI on Telegram" + Telegram Login Widget for existing users
+- [ ] **WEB-02**: User web dashboard kept — authenticated via Telegram Login Widget (status, logs, restart, billing)
+- [ ] **WEB-03**: Admin dashboard authenticated via Telegram Login Widget (admin = specific telegram_id)
+- [ ] **WEB-04**: Polar checkout page works with Telegram-authenticated sessions
+- [ ] **WEB-05**: Onboarding simplified — no BotFather setup, just subscribe and go
 
 ## Future Requirements (Deferred)
 
@@ -168,7 +170,7 @@
 | Custom domain per user | Telegram is the interface |
 | Local LLM inference | Z.ai API only for now |
 | Multi-region deployment | Single Hetzner datacenter for MVP |
-| Web-based user dashboard | Telegram commands replace it |
+| Email/password auth | Telegram Login Widget replaces it |
 | Per-user Telegram bots | Shared bot is simpler for users |
 
 ## Traceability
@@ -199,11 +201,11 @@
 | CLEAN-01..08 | Phase 13 | — | Pending |
 | TGAUTH-01..14 | Phase 14 | — | Pending |
 | TGUX-01..05 | Phase 14 | — | Pending |
-| WEB-01..03 | Phase 14 | — | Pending |
+| WEB-01..05 | Phase 14 | — | Pending |
 
 **v3.0 Coverage:**
-- Total requirements: 30
-- Mapped to phases: 30 ✓
+- Total requirements: 32
+- Mapped to phases: 32 ✓
 - Unmapped: 0
 
 ---

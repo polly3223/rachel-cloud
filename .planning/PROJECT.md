@@ -76,11 +76,11 @@ A user can go from signup to talking to their own personal AI agent on Telegram 
 **Target features:**
 - Remove ~2,500 LOC of dead VPS/SSH/Hetzner code
 - Single shared Rachel Telegram bot (no more per-user BotFather setup)
-- Telegram user ID as primary key (no web accounts)
+- Telegram user ID as primary key (no email/password accounts)
 - Message routing: shared bot → user's container
-- Telegram commands for user management (/status, /restart, /logs, /billing)
-- Simplified landing page (CTA = "Message @RachelAI")
-- Remove Better Auth, Claude OAuth, session management
+- Web dashboard kept — auth via Telegram Login Widget (one-click login)
+- Telegram bot commands for quick management (/status, /restart, /logs, /billing)
+- Replace Better Auth + Claude OAuth with Telegram Login Widget
 
 **Previous milestones:**
 - v1.0 (Phases 1-8): VPS-based, per-user Telegram bots, Better Auth + Claude OAuth ✅

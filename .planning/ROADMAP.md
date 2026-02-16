@@ -288,20 +288,22 @@ Plans:
 ### Success Criteria
 1. Single shared Rachel bot receives messages from all users
 2. Messages are routed to the correct user's container based on Telegram user ID
-3. New user sends `/start` → subscribes via Polar → container auto-provisioned → chatting in <2 minutes
-4. User can manage their instance via Telegram commands (/status, /restart, /logs, /billing, /help)
-5. Better Auth, Claude OAuth, and all session-based auth code removed
-6. Landing page CTA is "Message @RachelAI on Telegram"
-7. Admin dashboard accessible via Telegram Login Widget or admin Telegram ID
-8. DB schema uses `telegram_id` as user primary key
+3. New user sends `/start` → gets link to web dashboard → subscribes via Polar → container auto-provisioned → chatting in <2 minutes
+4. Web dashboard authenticated via Telegram Login Widget (user sees status, logs, billing)
+5. User can also manage basic things via Telegram commands (/status, /restart, /logs, /billing, /help)
+6. Better Auth, Claude OAuth, and Google OAuth code removed
+7. Landing page has "Message @RachelAI on Telegram" CTA + Telegram Login Widget for returning users
+8. Admin dashboard accessible via Telegram Login Widget + admin telegram_id check
+9. DB schema uses `telegram_id` as user primary key
 
 ### Plans
 - [ ] 14-01-PLAN.md — New DB schema: users table (telegram_id PK), update subscriptions FK (Wave 1)
-- [ ] 14-02-PLAN.md — Shared bot message router: receive → lookup user → forward to container → respond (Wave 1)
-- [ ] 14-03-PLAN.md — Polar integration: checkout link with telegram_id metadata, webhook provisions container (Wave 2)
-- [ ] 14-04-PLAN.md — Telegram UX commands: /start, /status, /restart, /logs, /billing, /help (Wave 2)
-- [ ] 14-05-PLAN.md — Remove Better Auth: delete auth lib, login/signup pages, session guards, Claude OAuth (Wave 3)
-- [ ] 14-06-PLAN.md — Update landing page + admin dashboard for Telegram-only model (Wave 3)
+- [ ] 14-02-PLAN.md — Telegram Login Widget: embed, hash verification, lightweight session management (Wave 1)
+- [ ] 14-03-PLAN.md — Shared bot message router: receive → lookup user → forward to container → respond (Wave 2)
+- [ ] 14-04-PLAN.md — Polar integration: checkout with telegram_id, webhook provisions container (Wave 2)
+- [ ] 14-05-PLAN.md — Telegram bot commands: /start, /status, /restart, /logs, /billing, /help (Wave 3)
+- [ ] 14-06-PLAN.md — Remove Better Auth + Claude OAuth; update dashboard/admin auth guards (Wave 3)
+- [ ] 14-07-PLAN.md — Update landing page, onboarding flow, and admin dashboard (Wave 4)
 
 ---
 
