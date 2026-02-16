@@ -59,12 +59,23 @@ A user can go from signup to talking to their own personal AI agent on Telegram 
 
 | Decision | Rationale | Outcome |
 |----------|-----------|---------|
-| Dedicated VPS per user (not shared/containerized) | Security isolation, simplicity, Rachel8 designed for single-server, €3.49/mo is cheap enough | — Pending |
-| Users bring own Claude subscription via OAuth | No AI cost margin pressure, users control spend, smoothest UX | — Pending |
-| Users create own Telegram bot | Simpler architecture, user owns their bot, no message routing needed | — Pending |
-| Single $20/month price | Simplicity, good margins (~75%), easy to communicate | — Pending |
-| Open-source Rachel8 as marketing | Free distribution channel, builds trust, community contributions | — Pending |
-| Claude OAuth 2.0 + PKCE for auth | No API key pasting, works with existing Claude subscriptions, best UX | — Pending |
+| Dedicated VPS per user (not shared/containerized) | Security isolation, simplicity, Rachel8 designed for single-server, €3.49/mo is cheap enough | ✅ Shipped v1.0 — now pivoting to Docker for v2.0 |
+| Users bring own Claude subscription via OAuth | No AI cost margin pressure, users control spend, smoothest UX | ✅ Shipped — keeping as option alongside all-inclusive |
+| Users create own Telegram bot | Simpler architecture, user owns their bot, no message routing needed | ✅ Shipped |
+| Single $20/month price | Simplicity, good margins (~75%), easy to communicate | ✅ Shipped |
+| Open-source Rachel8 as marketing | Free distribution channel, builds trust, community contributions | ✅ Shipped |
+| Claude OAuth 2.0 + PKCE for auth | No API key pasting, works with existing Claude subscriptions, best UX | ✅ Shipped |
+
+## Current Milestone: v2.0 Docker Multi-Tenant
+
+**Goal:** Replace per-user VPS provisioning with Docker containers on a single server, sharing a Z.ai GLM subscription to provide an all-inclusive $20/mo product with no external LLM subscription needed.
+
+**Target features:**
+- Docker container per user (filesystem, memory, CPU isolation)
+- LLM proxy server (rate limiting, usage tracking, Z.ai key management)
+- Container orchestrator (replaces Hetzner VPS provisioning)
+- Updated control plane (Docker management instead of SSH/VPS)
+- All-inclusive pricing tier (no BYOS requirement)
 
 ---
-*Last updated: 2026-02-14 after initialization*
+*Last updated: 2026-02-16 — v2.0 Docker Multi-Tenant milestone started*
