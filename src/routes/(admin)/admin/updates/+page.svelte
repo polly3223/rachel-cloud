@@ -260,10 +260,10 @@
 										</span>
 									</td>
 									<td class="px-6 py-4 whitespace-nowrap">
-										<code class="text-xs font-mono text-gray-500">{shortImage(container.previousImage ?? container.previousVersion ?? null)}</code>
+										<code class="text-xs font-mono text-gray-500">{shortImage(container.previousImage ?? null)}</code>
 									</td>
 									<td class="px-6 py-4 whitespace-nowrap">
-										<code class="text-xs font-mono text-gray-500">{shortImage(container.newImage ?? container.newVersion ?? null)}</code>
+										<code class="text-xs font-mono text-gray-500">{shortImage(container.newImage ?? null)}</code>
 									</td>
 									<td class="px-6 py-4 max-w-xs truncate text-xs text-red-600">
 										{container.error ?? ''}
@@ -287,7 +287,7 @@
 							<div class="flex flex-wrap gap-x-4 gap-y-1 text-xs text-gray-500">
 								<span>Container: <code class="font-mono">{container.containerName || container.ipAddress || '\u2014'}</code></span>
 								<span>
-									{shortImage(container.previousImage ?? container.previousVersion ?? null)} &rarr; {shortImage(container.newImage ?? container.newVersion ?? null)}
+									{shortImage(container.previousImage ?? null)} &rarr; {shortImage(container.newImage ?? null)}
 								</span>
 							</div>
 							{#if container.error}

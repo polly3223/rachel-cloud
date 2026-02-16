@@ -5,7 +5,7 @@
 	let deploying = $state(false);
 	let error = $state<string | null>(null);
 	let pollingStatus = $state<string | null>(data.subscription?.provisioningStatus ?? null);
-	let pollingIp = $state<string | null>(data.subscription?.vpsIpAddress ?? null);
+	let pollingContainerId = $state<string | null>(data.subscription?.containerId ?? null);
 	let pollingError = $state<string | null>(data.subscription?.provisioningError ?? null);
 	let pollTimer = $state<ReturnType<typeof setInterval> | null>(null);
 
@@ -117,7 +117,7 @@
 				const sub = result.data?.subscription ?? result.subscription;
 				if (sub) {
 					pollingStatus = sub.provisioningStatus;
-					pollingIp = sub.vpsIpAddress;
+					pollingContainerId = sub.containerId;
 					pollingError = sub.provisioningError;
 					if (pollingStatus === 'ready' || pollingStatus === 'failed' || !isProvisioning(pollingStatus)) {
 						stopPolling();

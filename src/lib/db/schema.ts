@@ -84,22 +84,16 @@ export const subscriptions = sqliteTable('subscriptions', {
 		.$defaultFn(() => 'none'),
 	currentPeriodEnd: integer('current_period_end', { mode: 'timestamp' }),
 	gracePeriodEndsAt: integer('grace_period_ends_at', { mode: 'timestamp' }),
+	// Legacy column name — means "container provisioned" in Docker model
 	vpsProvisioned: integer('vps_provisioned', { mode: 'boolean' })
 		.notNull()
 		.$defaultFn(() => false),
 
-	// Docker container fields (Phase 12)
+	// Docker container fields
 	containerId: text('container_id'),
 	containerName: text('container_name'),
 
-	// Legacy VPS tracking fields (kept nullable for migration safety)
-	hetznerServerId: integer('hetzner_server_id'),
-	hetznerSshKeyId: integer('hetzner_ssh_key_id'),
-	vpsIpAddress: text('vps_ip_address'),
-	vpsHostname: text('vps_hostname'),
-	sshPrivateKey: text('ssh_private_key'),
-
-	// Provisioning status (shared between VPS and Docker)
+	// Provisioning status
 	provisioningStatus: text('provisioning_status', {
 		enum: ['pending', 'creating', 'starting', 'ready', 'failed']
 	}),
@@ -107,62 +101,11 @@ export const subscriptions = sqliteTable('subscriptions', {
 	provisionedAt: integer('provisioned_at', { mode: 'timestamp' }),
 	deprovisionedAt: integer('deprovisioned_at', { mode: 'timestamp' }),
 
-	// Docker image tracking (Phase 12)
+	// Docker image tracking
 	currentImage: text('current_image'),
 	targetImage: text('target_image'),
 	previousImage: text('previous_image'),
 
-	// Legacy update tracking fields (kept for migration safety)
-	currentVersion: text('current_version'),
-	targetVersion: text('target_version'),
-	updateStatus: text('update_status', {
-		enum: ['idle', 'updating', 'success', 'failed', 'rolled_back']
-	}).$defaultFn(() => 'idle'),
-	previousVersion: text('previous_version'),
-	lastUpdateAt: integer('last_update_at', { mode: 'timestamp' }),
-
-	createdAt: integer('created_at', { mode: 'timestamp' })
-		.$defaultFn(() => new Date())
-		.notNull(),
-	updatedAt: integer('updated_at', { mode: 'timestamp' })
-		.$defaultFn(() => new Date())
-		.$onUpdateFn(() => new Date())
-		.notNull()
-});
-
-// Health checks table (health monitoring state per user VPS)
-export const healthChecks = sqliteTable('health_checks', {
-	id: text('id').primaryKey(),
-	userId: text('user_id')
-		.notNull()
-		.unique()
-		.references(() => users.id, { onDelete: 'cascade' }),
-	status: text('status', { enum: ['healthy', 'unhealthy', 'down', 'circuit_open'] })
-		.notNull()
-		.$defaultFn(() => 'healthy'),
-	consecutiveFailures: integer('consecutive_failures')
-		.notNull()
-		.$defaultFn(() => 0),
-	circuitState: text('circuit_state', { enum: ['closed', 'open', 'half_open'] })
-		.notNull()
-		.$defaultFn(() => 'closed'),
-	circuitOpenedAt: integer('circuit_opened_at', { mode: 'timestamp' }),
-	lastCheckAt: integer('last_check_at', { mode: 'timestamp' }),
-	lastHealthyAt: integer('last_healthy_at', { mode: 'timestamp' }),
-	lastFailureAt: integer('last_failure_at', { mode: 'timestamp' }),
-	lastRestartAttemptAt: integer('last_restart_attempt_at', { mode: 'timestamp' }),
-	lastNotifiedDownAt: integer('last_notified_down_at', { mode: 'timestamp' }),
-	lastNotifiedUpAt: integer('last_notified_up_at', { mode: 'timestamp' }),
-	lastError: text('last_error'),
-	totalChecks: integer('total_checks')
-		.notNull()
-		.$defaultFn(() => 0),
-	totalFailures: integer('total_failures')
-		.notNull()
-		.$defaultFn(() => 0),
-	totalRecoveries: integer('total_recoveries')
-		.notNull()
-		.$defaultFn(() => 0),
 	createdAt: integer('created_at', { mode: 'timestamp' })
 		.$defaultFn(() => new Date())
 		.notNull(),
