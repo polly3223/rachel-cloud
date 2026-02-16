@@ -167,7 +167,95 @@ Plans:
 
 ---
 
+## v2.0 — Docker Multi-Tenant
+
+---
+
+## Phase 9: Dockerfile & Image Build
+
+**Goal:** Create a production-ready Docker image for Rachel8 that can be spun up as isolated user containers.
+**Requirements:** DOCK-01, DOCK-02, DOCK-03, DOCK-04, DOCK-06
+
+### Success Criteria
+1. `docker build` produces a Rachel8 image with Bun, all deps, and skills pre-installed
+2. Container starts and Rachel bot responds on Telegram within 30 seconds
+3. Each container has isolated filesystem — user A cannot access user B's data
+4. Container respects memory limit (512MB) and CPU limit (0.5 cores)
+5. Container auto-restarts on crash via Docker restart policy
+6. Container env vars configure: Telegram bot token, proxy URL, user ID, Groq key
+
+### Plans
+- [ ] 09-01-PLAN.md — Dockerfile, .dockerignore, build script, base image selection (Wave 1)
+- [ ] 09-02-PLAN.md — Container config: env vars, volumes, network, resource limits, restart policy (Wave 1)
+- [ ] 09-03-PLAN.md — Integration test: build image, run container, verify Rachel responds on Telegram (Wave 2)
+
+---
+
+## Phase 10: LLM Proxy Server
+
+**Goal:** Build a lightweight proxy that sits between containers and Z.ai, handling auth, rate limiting, and usage tracking.
+**Requirements:** PROX-01, PROX-02, PROX-03, PROX-04, PROX-05, PROX-06
+
+### Success Criteria
+1. Proxy receives Anthropic-compatible POST /v1/messages and forwards to Z.ai with correct auth
+2. Proxy streams responses back to container without corruption
+3. Per-user rate limit enforced — returns 429 when exceeded
+4. Usage log records every request: user ID, timestamp, input/output tokens
+5. Z.ai API key never appears in container env or logs
+6. Proxy handles Z.ai downtime gracefully (retries, clear error to user)
+
+### Plans
+- [ ] 10-01-PLAN.md — Bun HTTP server, request forwarding, Z.ai auth injection, response streaming (Wave 1)
+- [ ] 10-02-PLAN.md — Per-user rate limiting (SQLite), usage tracking, logging (Wave 1)
+- [ ] 10-03-PLAN.md — Error handling, retries, health endpoint, systemd service (Wave 2)
+
+---
+
+## Phase 11: Container Orchestrator
+
+**Goal:** Replace Hetzner VPS provisioning with Docker container lifecycle management.
+**Requirements:** ORCH-01, ORCH-02, ORCH-03, ORCH-04, ORCH-05, DOCK-05, DOCK-07
+
+### Success Criteria
+1. Admin can create a new user container from control plane in under 10 seconds
+2. Admin can stop/restart/remove a container without affecting other users
+3. Container health is visible in admin dashboard (running, stopped, restarting, exited)
+4. Crashed containers are detected within 60 seconds
+5. All containers can be updated to new image version with rolling restart
+6. Deprovisioned containers have all user data cleaned up
+
+### Plans
+- [ ] 11-01-PLAN.md — Docker API client (dockerode or shell exec), create/start/stop/remove/inspect (Wave 1)
+- [ ] 11-02-PLAN.md — Health monitoring: poll container status, detect crashes, report to DB (Wave 1)
+- [ ] 11-03-PLAN.md — Rolling update: build new image, recreate containers one-by-one, rollback on failure (Wave 2)
+- [ ] 11-04-PLAN.md — Deprovision: stop container, remove volumes, clean user data (Wave 2)
+
+---
+
+## Phase 12: Control Plane Integration
+
+**Goal:** Update the SvelteKit control plane to work with Docker instead of Hetzner VPS.
+**Requirements:** CTRL-01, CTRL-02, CTRL-03, CTRL-04
+
+### Success Criteria
+1. User dashboard shows container status (running/stopped/error) with live updates
+2. Admin dashboard shows all containers with CPU/memory usage and request counts
+3. New user onboarding creates Docker container instead of Hetzner VPS
+4. Billing page offers all-inclusive $20/mo tier (no external sub required)
+5. End-to-end flow works: signup → pay → create bot → container running → chat on Telegram
+
+### Plans
+- [ ] 12-01-PLAN.md — Replace VPS provisioning API with Docker orchestrator calls (Wave 1)
+- [ ] 12-02-PLAN.md — Update user dashboard: container status, restart button, logs (Wave 1)
+- [ ] 12-03-PLAN.md — Update admin dashboard: container fleet view, resource usage, request stats (Wave 2)
+- [ ] 12-04-PLAN.md — Onboarding flow update: remove Claude OAuth, add all-inclusive option (Wave 2)
+- [ ] 12-05-PLAN.md — End-to-end testing: full signup-to-chat flow on Docker (Wave 3)
+
+---
+
 **Roadmap Summary:**
+
+### v1.0 (Complete)
 - Phase 1: Foundation (Auth) ✅
 - Phase 2: Payment & Onboarding ✅
 - Phase 3: Core Provisioning ✅
@@ -175,5 +263,12 @@ Plans:
 - Phase 5: User Experience ✅
 - Phase 6: Reliability ✅
 - Phase 7: Operations ✅
+- Phase 8: Polish & Gap Fixes ✅
 
-**All phases complete.** Rachel Cloud is feature-complete for initial launch.
+### v2.0 — Docker Multi-Tenant
+- Phase 9: Dockerfile & Image Build
+- Phase 10: LLM Proxy Server
+- Phase 11: Container Orchestrator
+- Phase 12: Control Plane Integration
+
+**4 phases** | **22 requirements** | All mapped ✓
