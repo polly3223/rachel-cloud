@@ -3,6 +3,7 @@
  *
  * Forwards Anthropic-compatible API requests to Z.ai,
  * injecting the shared API key and extracting per-user token usage.
+ * Non-streaming requests are retried on 5xx/network errors with exponential backoff.
  */
 
 import { config, log } from "./config";
@@ -17,6 +18,7 @@ export interface UsageData {
   durationMs: number;
   timestamp: number;
   streaming: boolean;
+  requestId: string;
 }
 
 // ---------- User ID extraction ----------
@@ -35,6 +37,82 @@ export function extractUserId(req: Request): string | null {
   return match ? match[1] : null;
 }
 
+// ---------- Retry logic ----------
+
+const MAX_RETRIES = 3;
+const RETRY_DELAYS = [1000, 2000, 4000]; // Exponential backoff: 1s, 2s, 4s
+
+/**
+ * Fetch with automatic retry for 5xx and network errors.
+ * Does NOT retry 4xx (client errors) — those are the container's problem.
+ */
+async function fetchWithRetry(
+  url: string,
+  options: RequestInit,
+  requestId: string,
+  maxRetries: number = MAX_RETRIES,
+): Promise<Response> {
+  let lastError: Error | null = null;
+
+  for (let attempt = 0; attempt <= maxRetries; attempt++) {
+    try {
+      const response = await fetch(url, options);
+
+      // Don't retry client errors (4xx)
+      if (response.status < 500) {
+        return response;
+      }
+
+      // 5xx — retry if attempts left
+      if (attempt < maxRetries) {
+        log.warn("Upstream 5xx, retrying", {
+          requestId,
+          status: response.status,
+          attempt: attempt + 1,
+          maxRetries,
+        });
+        await Bun.sleep(RETRY_DELAYS[attempt] || 4000);
+        continue;
+      }
+
+      // Final attempt failed with 5xx — return the response as-is
+      return response;
+    } catch (error) {
+      lastError = error as Error;
+
+      if (attempt < maxRetries) {
+        log.warn("Upstream network error, retrying", {
+          requestId,
+          error: String(error),
+          attempt: attempt + 1,
+          maxRetries,
+        });
+        await Bun.sleep(RETRY_DELAYS[attempt] || 4000);
+        continue;
+      }
+    }
+  }
+
+  // All retries exhausted with network errors
+  throw lastError || new Error("All retry attempts failed");
+}
+
+// ---------- Error response helpers ----------
+
+function proxyErrorResponse(
+  status: number,
+  errorType: string,
+  message: string,
+): Response {
+  return new Response(
+    JSON.stringify({
+      type: "error",
+      error: { type: errorType, message },
+    }),
+    { status, headers: { "content-type": "application/json" } },
+  );
+}
+
 // ---------- Upstream forwarding ----------
 
 const UPSTREAM_TIMEOUT_MS = 120_000;
@@ -43,6 +121,9 @@ const UPSTREAM_TIMEOUT_MS = 120_000;
  * Forward an Anthropic-compatible request to Z.ai with auth injection.
  * Returns the proxied response and a promise that resolves to usage data
  * once the response is fully consumed (streaming) or read (non-streaming).
+ *
+ * Non-streaming requests are retried up to 3 times on 5xx/network errors.
+ * Streaming requests are NOT retried (SSE streams cannot be replayed).
  */
 export async function forwardToZai(
   req: Request,
@@ -50,20 +131,15 @@ export async function forwardToZai(
   endpoint: string = "/v1/messages",
 ): Promise<{ response: Response; usagePromise: Promise<UsageData> }> {
   const startTime = Date.now();
+  const requestId = crypto.randomUUID();
 
   let body: any;
   try {
     body = await req.json();
   } catch {
     return {
-      response: new Response(
-        JSON.stringify({
-          type: "error",
-          error: { type: "invalid_request_error", message: "Invalid JSON body" },
-        }),
-        { status: 400, headers: { "content-type": "application/json" } },
-      ),
-      usagePromise: Promise.resolve(emptyUsage(userId, startTime)),
+      response: proxyErrorResponse(400, "invalid_request_error", "Invalid JSON body"),
+      usagePromise: Promise.resolve(emptyUsage(userId, requestId, startTime)),
     };
   }
 
@@ -82,45 +158,57 @@ export async function forwardToZai(
   const beta = req.headers.get("anthropic-beta");
   if (beta) upstreamHeaders["anthropic-beta"] = beta;
 
-  log.debug("Forwarding request", { userId, model, streaming: isStreaming, endpoint });
+  log.debug("Forwarding request", {
+    requestId,
+    userId,
+    model,
+    streaming: isStreaming,
+    endpoint,
+  });
 
-  // Fetch from upstream
-  let upstreamRes: Response;
-  try {
-    upstreamRes = await fetch(upstreamUrl, {
-      method: "POST",
-      headers: upstreamHeaders,
-      body: JSON.stringify(body),
-      signal: AbortSignal.timeout(UPSTREAM_TIMEOUT_MS),
-    });
-  } catch (err) {
-    log.error("Upstream connection failed", { userId, error: String(err) });
-    return {
-      response: new Response(
-        JSON.stringify({
-          type: "error",
-          error: { type: "proxy_error", message: "Upstream connection failed" },
-        }),
-        { status: 502, headers: { "content-type": "application/json" } },
-      ),
-      usagePromise: Promise.resolve(emptyUsage(userId, startTime)),
-    };
-  }
+  const fetchOptions: RequestInit = {
+    method: "POST",
+    headers: upstreamHeaders,
+    body: JSON.stringify(body),
+    signal: AbortSignal.timeout(UPSTREAM_TIMEOUT_MS),
+  };
 
-  // If upstream returned an error, pass it through unchanged
-  if (!upstreamRes.ok && !isStreaming) {
-    const errorBody = await upstreamRes.text();
-    return {
-      response: new Response(errorBody, {
-        status: upstreamRes.status,
-        headers: { "content-type": upstreamRes.headers.get("content-type") || "application/json" },
-      }),
-      usagePromise: Promise.resolve(emptyUsage(userId, startTime)),
-    };
-  }
-
-  // ---------- Non-streaming response ----------
+  // ---------- Non-streaming: fetch with retry ----------
   if (!isStreaming) {
+    let upstreamRes: Response;
+    try {
+      upstreamRes = await fetchWithRetry(upstreamUrl, fetchOptions, requestId);
+    } catch (err) {
+      const isTimeout =
+        err instanceof Error && err.name === "TimeoutError";
+      log.error("Upstream failed after retries", {
+        requestId,
+        userId,
+        error: String(err),
+      });
+      return {
+        response: isTimeout
+          ? proxyErrorResponse(504, "timeout_error", "Upstream request timed out")
+          : proxyErrorResponse(502, "proxy_error", "Failed to reach upstream API after retries"),
+        usagePromise: Promise.resolve(emptyUsage(userId, requestId, startTime)),
+      };
+    }
+
+    // Pass through upstream errors unchanged
+    if (!upstreamRes.ok) {
+      const errorBody = await upstreamRes.text();
+      return {
+        response: new Response(errorBody, {
+          status: upstreamRes.status,
+          headers: {
+            "content-type":
+              upstreamRes.headers.get("content-type") || "application/json",
+          },
+        }),
+        usagePromise: Promise.resolve(emptyUsage(userId, requestId, startTime)),
+      };
+    }
+
     const responseJson = await upstreamRes.json();
     const inputTokens = responseJson?.usage?.input_tokens ?? 0;
     const outputTokens = responseJson?.usage?.output_tokens ?? 0;
@@ -133,6 +221,7 @@ export async function forwardToZai(
       durationMs: Date.now() - startTime,
       timestamp: Math.floor(startTime / 1000),
       streaming: false,
+      requestId,
     };
 
     return {
@@ -144,8 +233,26 @@ export async function forwardToZai(
     };
   }
 
-  // ---------- Streaming response (SSE) ----------
-  return handleStreamingResponse(upstreamRes, userId, model, startTime);
+  // ---------- Streaming: single attempt (no retry) ----------
+  let upstreamRes: Response;
+  try {
+    upstreamRes = await fetch(upstreamUrl, fetchOptions);
+  } catch (err) {
+    const isTimeout = err instanceof Error && err.name === "TimeoutError";
+    log.error("Upstream connection failed (streaming)", {
+      requestId,
+      userId,
+      error: String(err),
+    });
+    return {
+      response: isTimeout
+        ? proxyErrorResponse(504, "timeout_error", "Upstream request timed out")
+        : proxyErrorResponse(502, "proxy_error", "Upstream connection failed"),
+      usagePromise: Promise.resolve(emptyUsage(userId, requestId, startTime)),
+    };
+  }
+
+  return handleStreamingResponse(upstreamRes, userId, model, requestId, startTime);
 }
 
 // ---------- SSE streaming handler ----------
@@ -154,6 +261,7 @@ function handleStreamingResponse(
   upstreamRes: Response,
   userId: string,
   model: string,
+  requestId: string,
   startTime: number,
 ): { response: Response; usagePromise: Promise<UsageData> } {
   const decoder = new TextDecoder();
@@ -197,6 +305,7 @@ function handleStreamingResponse(
         durationMs: Date.now() - startTime,
         timestamp: Math.floor(startTime / 1000),
         streaming: true,
+        requestId,
       });
     },
   });
@@ -221,7 +330,10 @@ function handleStreamingResponse(
       }
 
       // Only parse JSON for events we care about
-      if (!dataStr || (eventType !== "message_start" && eventType !== "message_delta")) {
+      if (
+        !dataStr ||
+        (eventType !== "message_start" && eventType !== "message_delta")
+      ) {
         continue;
       }
 
@@ -240,7 +352,7 @@ function handleStreamingResponse(
 
   // Pipe upstream body through the TransformStream
   if (!upstreamRes.body) {
-    resolveUsage!(emptyUsage(userId, startTime));
+    resolveUsage!(emptyUsage(userId, requestId, startTime));
     return {
       response: new Response(null, { status: 502 }),
       usagePromise,
@@ -263,7 +375,11 @@ function handleStreamingResponse(
 
 // ---------- Helpers ----------
 
-function emptyUsage(userId: string, startTime: number): UsageData {
+function emptyUsage(
+  userId: string,
+  requestId: string,
+  startTime: number,
+): UsageData {
   return {
     userId,
     model: "unknown",
@@ -272,5 +388,6 @@ function emptyUsage(userId: string, startTime: number): UsageData {
     durationMs: Date.now() - startTime,
     timestamp: Math.floor(startTime / 1000),
     streaming: false,
+    requestId,
   };
 }

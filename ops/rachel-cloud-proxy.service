@@ -1,0 +1,66 @@
+# Rachel Cloud LLM Proxy - systemd service
+#
+# Installation:
+#   1. Create secrets file:
+#      echo "ZAI_API_KEY=your-key-here" > /home/rachel/rachel-cloud/.env.proxy
+#      chmod 600 /home/rachel/rachel-cloud/.env.proxy
+#
+#   2. Install service:
+#      sudo cp ops/rachel-cloud-proxy.service /etc/systemd/system/
+#      sudo systemctl daemon-reload
+#      sudo systemctl enable rachel-cloud-proxy
+#      sudo systemctl start rachel-cloud-proxy
+#
+#   3. View logs:
+#      journalctl -u rachel-cloud-proxy -f
+#
+#   4. Check status:
+#      systemctl status rachel-cloud-proxy
+#      curl http://localhost:9999/health
+
+[Unit]
+Description=Rachel Cloud LLM Proxy
+Documentation=https://github.com/polly3223/rachel-cloud
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=rachel
+Group=rachel
+WorkingDirectory=/home/rachel/rachel-cloud
+ExecStart=/home/rachel/.bun/bin/bun run src/proxy/server.ts
+Restart=always
+RestartSec=5
+
+# Environment file for secrets (ZAI_API_KEY)
+# Create this file manually: /home/rachel/rachel-cloud/.env.proxy
+# Contents: ZAI_API_KEY=your-zai-api-key-here
+EnvironmentFile=/home/rachel/rachel-cloud/.env.proxy
+
+# Default environment variables
+Environment=PROXY_PORT=9999
+Environment=LOG_LEVEL=info
+Environment=NODE_ENV=production
+
+# Security hardening
+NoNewPrivileges=true
+ProtectSystem=strict
+ProtectHome=read-only
+ReadWritePaths=/home/rachel/rachel-cloud/data
+PrivateTmp=true
+
+# Logging (stdout/stderr captured by journald)
+StandardOutput=journal
+StandardError=journal
+SyslogIdentifier=rachel-cloud-proxy
+
+# Resource limits
+LimitNOFILE=65536
+MemoryMax=256M
+
+# Watchdog (restart if unresponsive)
+WatchdogSec=30
+
+[Install]
+WantedBy=multi-user.target
