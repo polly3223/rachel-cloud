@@ -1,0 +1,63 @@
+# Rachel Cloud Container Orchestrator - systemd service
+#
+# Installation:
+#   1. Create secrets file:
+#      echo "ORCHESTRATOR_API_KEY=$(openssl rand -hex 32)" > /home/rachel/rachel-cloud/.env.orchestrator
+#      chmod 600 /home/rachel/rachel-cloud/.env.orchestrator
+#
+#   2. Install service:
+#      sudo cp ops/rachel-cloud-orchestrator.service /etc/systemd/system/
+#      sudo systemctl daemon-reload
+#      sudo systemctl enable rachel-cloud-orchestrator
+#      sudo systemctl start rachel-cloud-orchestrator
+#
+#   3. View logs:
+#      journalctl -u rachel-cloud-orchestrator -f
+#
+#   4. Check status:
+#      systemctl status rachel-cloud-orchestrator
+#      curl http://localhost:9998/health
+
+[Unit]
+Description=Rachel Cloud Container Orchestrator
+Documentation=https://github.com/polly3223/rachel-cloud
+After=network-online.target docker.service
+Wants=network-online.target
+Requires=docker.service
+
+[Service]
+Type=simple
+User=rachel
+Group=rachel
+SupplementaryGroups=docker
+WorkingDirectory=/home/rachel/rachel-cloud
+ExecStart=/home/rachel/.bun/bin/bun run src/orchestrator/server.ts
+Restart=always
+RestartSec=5
+
+# Environment file for secrets
+EnvironmentFile=/home/rachel/rachel-cloud/.env.orchestrator
+
+# Default environment variables
+Environment=ORCHESTRATOR_PORT=9998
+Environment=LOG_LEVEL=info
+Environment=NODE_ENV=production
+
+# Security hardening
+NoNewPrivileges=true
+ProtectSystem=strict
+ProtectHome=read-only
+ReadWritePaths=/home/rachel/rachel-cloud/data
+PrivateTmp=true
+
+# Logging
+StandardOutput=journal
+StandardError=journal
+SyslogIdentifier=rachel-cloud-orchestrator
+
+# Resource limits
+LimitNOFILE=65536
+MemoryMax=256M
+
+[Install]
+WantedBy=multi-user.target
