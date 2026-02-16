@@ -40,7 +40,7 @@
 					</ul>
 
 					<a
-						href="/signup"
+						href="/login"
 						class="block w-full px-8 py-3.5 rounded-xl font-medium text-white text-center bg-gradient-to-r from-emerald-600 to-emerald-500 hover:from-emerald-500 hover:to-emerald-400 transition-all duration-300 shadow-lg shadow-emerald-500/25 hover:shadow-emerald-500/40"
 					>
 						{$t.pricing.cta}

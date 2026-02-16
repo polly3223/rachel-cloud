@@ -16,19 +16,19 @@ const it: Translations = {
 		label: 'Come funziona',
 		title: 'Pronta in pochi minuti. Zero competenze tecniche.',
 		step1: {
-			title: 'Registrati in 60 secondi',
+			title: 'Scrivi a Rachel su Telegram',
 			description:
-				'Crea il tuo account, scegli il piano e collega il tuo abbonamento Claude. Fine \u2014 niente da scaricare, niente da installare.'
+				'Apri Telegram e manda /start a @RachelAIBot. Niente da scaricare, niente da installare, nessuna configurazione.'
 		},
 		step2: {
-			title: 'Collega Telegram',
+			title: 'Abbonati a $20/mese',
 			description:
-				'Segui la nostra guida semplicissima per collegare Telegram. Ti accompagniamo passo dopo passo \u2014 ci vogliono circa 2 minuti.'
+				'Scegli il tuo piano e paga in sicurezza. La tua Rachel personale si attiva automaticamente in meno di 30 secondi.'
 		},
 		step3: {
 			title: 'Inizia a dare ordini',
 			description:
-				'Apri Telegram e di\u2019 a Rachel cosa ti serve. Crea una landing page, trova contatti, imposta promemoria \u2014 \u00E8 pronta a lavorare per te.'
+				'Di\u2019 a Rachel cosa ti serve. Crea una landing page, trova contatti, imposta promemoria \u2014 \u00E8 pronta a lavorare per te 24/7.'
 		}
 	},
 
@@ -111,7 +111,7 @@ const it: Translations = {
 		],
 		cta: 'Inizia ora \u2014 $20/mese',
 		subtext:
-			'+ il tuo abbonamento Claude (separato) \u00B7 Insieme si ripagano in ore risparmiate',
+			'Tutto incluso \u00B7 Nessun costo nascosto \u00B7 Si ripaga in ore risparmiate',
 	},
 
 	openSource: {
@@ -147,12 +147,7 @@ const it: Translations = {
 			{
 				question: 'Cosa mi serve per iniziare?',
 				answer:
-					'Un account Telegram e un abbonamento Claude (di Anthropic). Rachel Cloud si occupa di tutto il resto \u2014 il server, la configurazione e il monitoraggio. Sarai operativo in meno di 5 minuti.'
-			},
-			{
-				question: 'Perch\u00E9 ho bisogno anche di un abbonamento Claude?',
-				answer:
-					'Rachel \u00E8 alimentata da Claude, uno dei modelli AI pi\u00F9 avanzati al mondo. Il tuo abbonamento Claude d\u00E0 a Rachel la sua intelligenza. Lo colleghi con un semplice login \u2014 nessuna configurazione tecnica. Il costo combinato di Rachel Cloud + Claude si ripaga velocemente se pensi alle ore risparmiate.'
+					'Solo un account Telegram. Apri Telegram, scrivi a @RachelAIBot, abbonati ed \u00E8 fatta. Rachel Cloud si occupa del server, della configurazione e del monitoraggio.'
 			},
 			{
 				question: 'I miei dati sono al sicuro?',

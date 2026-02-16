@@ -14,7 +14,7 @@
 
 	const title = 'Rachel Cloud - Your Personal AI Assistant on Telegram';
 	const description =
-		'Your personal AI assistant on Telegram. She builds pages, manages contacts, creates documents — all for €40/month.';
+		'Your personal AI assistant on Telegram. She builds pages, manages contacts, creates documents — all for $20/month.';
 	const canonicalUrl = 'https://get-rachel.com';
 	const ogImageUrl = `${canonicalUrl}/og-image.png`;
 
@@ -28,8 +28,8 @@
 			'Personal AI assistant powered by Claude, running 24/7 on Telegram. Managed hosting, zero setup.',
 		offers: {
 			'@type': 'Offer',
-			price: '40.00',
-			priceCurrency: 'EUR'
+			price: '20.00',
+			priceCurrency: 'USD'
 		},
 		url: canonicalUrl
 	};

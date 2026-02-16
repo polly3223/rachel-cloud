@@ -11,7 +11,7 @@
 			</div>
 
 			<nav class="flex items-center gap-6">
-				<a href="/signup" class="text-sm text-gray-500 hover:text-gray-300 transition-colors">
+				<a href="/login" class="text-sm text-gray-500 hover:text-gray-300 transition-colors">
 					{$t.footer.navGetStarted}
 				</a>
 				<a href="/login" class="text-sm text-gray-500 hover:text-gray-300 transition-colors">

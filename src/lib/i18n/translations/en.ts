@@ -16,19 +16,19 @@ const en: Translations = {
 		label: 'How it works',
 		title: 'Ready in minutes. No tech skills needed.',
 		step1: {
-			title: 'Sign up in 60 seconds',
+			title: 'Message Rachel on Telegram',
 			description:
-				"Create your account, pick your plan, and connect your Claude subscription. That's it — no downloads, no installs."
+				'Open Telegram and send /start to @RachelAIBot. No downloads, no installs, no complicated setup.'
 		},
 		step2: {
-			title: 'Connect Telegram',
+			title: 'Subscribe for $20/mo',
 			description:
-				'Follow our simple guide to link your Telegram. We walk you through every step — takes about 2 minutes.'
+				'Pick your plan and pay securely. Your personal Rachel instance spins up automatically in under 30 seconds.'
 		},
 		step3: {
 			title: 'Start giving orders',
 			description:
-				"Open Telegram and tell Rachel what you need. Build a landing page, find leads, set reminders — she's ready to work."
+				"Tell Rachel what you need. Build a landing page, find leads, set reminders — she's ready to work for you 24/7."
 		}
 	},
 
@@ -111,7 +111,7 @@ const en: Translations = {
 		],
 		cta: 'Start now \u2014 $20/mo',
 		subtext:
-			'+ your Claude subscription (separate) \u00B7 Together they pay for themselves in hours saved',
+			'Everything included \u00B7 No hidden fees \u00B7 Pays for itself in hours saved',
 	},
 
 	openSource: {
@@ -147,12 +147,7 @@ const en: Translations = {
 			{
 				question: 'What do I need to get started?',
 				answer:
-					"A Telegram account and a Claude subscription (from Anthropic). Rachel Cloud handles everything else \u2014 the server, the setup, and the monitoring. You'll be up and running in under 5 minutes."
-			},
-			{
-				question: 'Why do I also need a Claude subscription?',
-				answer:
-					'Rachel is powered by Claude, one of the most advanced AI models in the world. Your Claude subscription gives Rachel her brainpower. You connect it via a simple login \u2014 no technical setup. The combined cost of Rachel Cloud + Claude pays for itself quickly when you consider the hours saved.'
+					"Just a Telegram account. Open Telegram, message @RachelAIBot, subscribe, and you're ready to go. Rachel Cloud handles the server, the setup, and the monitoring."
 			},
 			{
 				question: 'Is my data safe?',
