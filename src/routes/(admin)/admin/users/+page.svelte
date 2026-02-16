@@ -122,8 +122,7 @@
 				return 'bg-green-100 text-green-800';
 			case 'pending':
 			case 'creating':
-			case 'cloud_init':
-			case 'injecting_secrets':
+			case 'starting':
 				return 'bg-yellow-100 text-yellow-800';
 			case 'failed':
 				return 'bg-red-100 text-red-800';
@@ -141,70 +140,12 @@
 				return 'Pending';
 			case 'creating':
 				return 'Creating';
-			case 'cloud_init':
-				return 'Cloud Init';
-			case 'injecting_secrets':
-				return 'Injecting Secrets';
+			case 'starting':
+				return 'Starting';
 			case 'failed':
 				return 'Failed';
 			default:
 				return 'Unknown';
-		}
-	}
-
-	function healthStatusColor(status: string | null): string {
-		switch (status) {
-			case 'healthy':
-				return 'bg-green-100 text-green-800';
-			case 'unhealthy':
-				return 'bg-yellow-100 text-yellow-800';
-			case 'down':
-				return 'bg-red-100 text-red-800';
-			case 'circuit_open':
-				return 'bg-red-100 text-red-800 font-bold';
-			default:
-				return 'bg-gray-100 text-gray-600';
-		}
-	}
-
-	function healthStatusLabel(status: string | null, failures: number): string {
-		switch (status) {
-			case 'healthy':
-				return 'Healthy';
-			case 'unhealthy':
-				return `Unhealthy (${failures})`;
-			case 'down':
-				return 'Down';
-			case 'circuit_open':
-				return 'Circuit Open';
-			default:
-				return 'N/A';
-		}
-	}
-
-	function circuitStateLabel(state: string | null): string {
-		switch (state) {
-			case 'closed':
-				return 'Closed';
-			case 'open':
-				return 'Open';
-			case 'half_open':
-				return 'Half Open';
-			default:
-				return '\u2014';
-		}
-	}
-
-	function circuitStateColor(state: string | null): string {
-		switch (state) {
-			case 'closed':
-				return 'text-green-700 bg-green-100';
-			case 'open':
-				return 'text-red-700 bg-red-100';
-			case 'half_open':
-				return 'text-yellow-700 bg-yellow-100';
-			default:
-				return 'text-gray-500 bg-gray-100';
 		}
 	}
 
@@ -320,10 +261,8 @@
 						<tr>
 							<th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">User</th>
 							<th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Subscription</th>
-							<th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">VPS</th>
-							<th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Health</th>
-							<th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">IP</th>
-							<th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Hetzner ID</th>
+							<th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Container</th>
+							<th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Image</th>
 							<th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Joined</th>
 							<th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"><span class="sr-only">Actions</span></th>
 						</tr>
@@ -363,20 +302,8 @@
 									</span>
 								</td>
 								<td class="px-6 py-4 whitespace-nowrap">
-									<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium {healthStatusColor(user.healthStatus)}">
-										{healthStatusLabel(user.healthStatus, user.consecutiveFailures)}
-									</span>
-								</td>
-								<td class="px-6 py-4 whitespace-nowrap">
-									{#if user.vpsIpAddress}
-										<code class="text-sm font-mono text-gray-700 bg-gray-100 px-2 py-0.5 rounded">{user.vpsIpAddress}</code>
-									{:else}
-										<span class="text-sm text-gray-400">&mdash;</span>
-									{/if}
-								</td>
-								<td class="px-6 py-4 whitespace-nowrap">
-									{#if user.hetznerServerId}
-										<code class="text-sm font-mono text-gray-700 bg-gray-100 px-2 py-0.5 rounded">{user.hetznerServerId}</code>
+									{#if user.currentImage}
+										<code class="text-sm font-mono text-gray-700 bg-gray-100 px-2 py-0.5 rounded">{user.currentImage}</code>
 									{:else}
 										<span class="text-sm text-gray-400">&mdash;</span>
 									{/if}
@@ -406,7 +333,7 @@
 							<!-- Expanded details row -->
 							{#if expandedUserId === user.id}
 								<tr class="bg-gray-50">
-									<td colspan="8" class="px-6 py-4">
+									<td colspan="6" class="px-6 py-4">
 										<div class="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
 											<div>
 												<p class="text-xs font-medium text-gray-500 uppercase tracking-wider mb-1">Provisioning Status</p>
@@ -415,24 +342,12 @@
 												</span>
 											</div>
 											<div>
-												<p class="text-xs font-medium text-gray-500 uppercase tracking-wider mb-1">Circuit State</p>
-												{#if user.circuitState}
-													<span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium {circuitStateColor(user.circuitState)}">
-														{circuitStateLabel(user.circuitState)}
-													</span>
+												<p class="text-xs font-medium text-gray-500 uppercase tracking-wider mb-1">Container Name</p>
+												{#if user.containerName}
+													<code class="text-xs font-mono text-gray-700 bg-gray-100 px-1.5 py-0.5 rounded">{user.containerName}</code>
 												{:else}
 													<span class="text-gray-400">&mdash;</span>
 												{/if}
-											</div>
-											<div>
-												<p class="text-xs font-medium text-gray-500 uppercase tracking-wider mb-1">Last Health Check</p>
-												<p class="text-gray-700">{formatDateTime(user.lastCheckAt)}</p>
-											</div>
-											<div>
-												<p class="text-xs font-medium text-gray-500 uppercase tracking-wider mb-1">Consecutive Failures</p>
-												<p class="{user.consecutiveFailures > 0 ? 'text-red-600 font-semibold' : 'text-gray-700'}">
-													{user.consecutiveFailures}
-												</p>
 											</div>
 											<div>
 												<p class="text-xs font-medium text-gray-500 uppercase tracking-wider mb-1">Provisioned At</p>
@@ -481,20 +396,17 @@
 						<!-- Status badges row -->
 						<div class="flex flex-wrap gap-2">
 							<span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium {provisioningStatusColor(user.provisioningStatus)}">
-								VPS: {provisioningStatusLabel(user.provisioningStatus, user.vpsProvisioned)}
-							</span>
-							<span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium {healthStatusColor(user.healthStatus)}">
-								{healthStatusLabel(user.healthStatus, user.consecutiveFailures)}
+								Container: {provisioningStatusLabel(user.provisioningStatus, user.vpsProvisioned)}
 							</span>
 						</div>
 
 						<!-- Metadata row -->
 						<div class="flex flex-wrap gap-x-4 gap-y-1 text-xs text-gray-500">
-							{#if user.vpsIpAddress}
-								<span>IP: <code class="font-mono text-gray-700">{user.vpsIpAddress}</code></span>
+							{#if user.currentImage}
+								<span>Image: <code class="font-mono text-gray-700">{user.currentImage}</code></span>
 							{/if}
-							{#if user.hetznerServerId}
-								<span>Hetzner: <code class="font-mono text-gray-700">{user.hetznerServerId}</code></span>
+							{#if user.containerName}
+								<span>Container: <code class="font-mono text-gray-700">{user.containerName}</code></span>
 							{/if}
 							<span>Joined: {formatDate(user.createdAt)}</span>
 						</div>
@@ -526,24 +438,12 @@
 										</span>
 									</div>
 									<div>
-										<p class="font-medium text-gray-500 uppercase tracking-wider mb-0.5">Circuit State</p>
-										{#if user.circuitState}
-											<span class="inline-flex items-center px-1.5 py-0.5 rounded-full text-xs font-medium {circuitStateColor(user.circuitState)}">
-												{circuitStateLabel(user.circuitState)}
-											</span>
+										<p class="font-medium text-gray-500 uppercase tracking-wider mb-0.5">Container</p>
+										{#if user.containerName}
+											<code class="font-mono text-gray-700 bg-gray-100 px-1 py-0.5 rounded">{user.containerName}</code>
 										{:else}
 											<span class="text-gray-400">&mdash;</span>
 										{/if}
-									</div>
-									<div>
-										<p class="font-medium text-gray-500 uppercase tracking-wider mb-0.5">Last Check</p>
-										<p class="text-gray-700">{formatDateTime(user.lastCheckAt)}</p>
-									</div>
-									<div>
-										<p class="font-medium text-gray-500 uppercase tracking-wider mb-0.5">Failures</p>
-										<p class="{user.consecutiveFailures > 0 ? 'text-red-600 font-semibold' : 'text-gray-700'}">
-											{user.consecutiveFailures}
-										</p>
 									</div>
 									<div class="col-span-2">
 										<p class="font-medium text-gray-500 uppercase tracking-wider mb-0.5">Provisioned At</p>

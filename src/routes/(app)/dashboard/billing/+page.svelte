@@ -167,7 +167,7 @@
 							<div class="flex">
 								<div class="ml-3">
 									<p class="text-sm text-yellow-700">
-										Your subscription has been canceled. Your VPS will be deprovisioned on{' '}
+										Your subscription has been canceled. Your instance will be deprovisioned on{' '}
 										<span class="font-semibold">{formatDate(data.subscription?.gracePeriodEndsAt)}</span>.
 									</p>
 									<p class="text-sm text-yellow-700 mt-2">
@@ -235,7 +235,7 @@
 			</div>
 			<div class="px-6 py-5">
 				<p class="text-sm text-gray-600 mb-4">
-					Cancel your subscription at any time. You'll have a 3-day grace period to reactivate before your VPS is deprovisioned.
+					Cancel your subscription at any time. You'll have a 3-day grace period to reactivate before your instance is deprovisioned.
 				</p>
 
 				{#if !showCancelConfirm}
@@ -257,7 +257,7 @@
 							<div class="ml-3 flex-1">
 								<h3 class="text-sm font-medium text-red-800">Are you sure?</h3>
 								<div class="mt-2 text-sm text-red-700">
-									<p>Your VPS will be deprovisioned after the 3-day grace period. You can reactivate your subscription during this time to keep your service active.</p>
+									<p>Your instance will be deprovisioned after the 3-day grace period. You can reactivate your subscription during this time to keep your service active.</p>
 								</div>
 								<div class="mt-4 flex gap-3">
 									<button

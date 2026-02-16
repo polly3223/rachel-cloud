@@ -1,19 +1,19 @@
 /**
  * GET /api/vps/logs
  *
- * Fetches recent log lines from the rachel8 service on the user's VPS via SSH.
+ * Fetches recent log lines from the user's Rachel container via the orchestrator.
  *
  * Query parameters:
  *   - lines: Number of log lines to fetch (default: 100, max: 500)
  *
- * Requires: authenticated session + active subscription with provisioned VPS.
+ * Requires: authenticated session + active subscription with provisioned container.
  */
 
 import { json } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { requireAuth } from '$lib/auth/session';
 import { getSubscription } from '$lib/billing/subscription-manager';
-import { fetchServiceLogs } from '$lib/provisioning/vps-status';
+import { orchestrator } from '$lib/orchestrator/client';
 
 export const GET: RequestHandler = async (event) => {
 	try {
@@ -30,14 +30,10 @@ export const GET: RequestHandler = async (event) => {
 			);
 		}
 
-		// Validate VPS is provisioned with required fields
-		if (
-			!subscription.vpsProvisioned ||
-			!subscription.vpsIpAddress ||
-			!subscription.sshPrivateKey
-		) {
+		// Validate container is provisioned
+		if (!subscription.vpsProvisioned || !subscription.containerId) {
 			return json(
-				{ logs: '', success: false, message: 'VPS is not provisioned' },
+				{ logs: '', success: false, message: 'Rachel is not deployed' },
 				{ status: 400 }
 			);
 		}
@@ -48,19 +44,17 @@ export const GET: RequestHandler = async (event) => {
 			500
 		);
 
-		// Fetch logs via SSH
-		const result = await fetchServiceLogs(
-			subscription.vpsIpAddress,
-			subscription.sshPrivateKey,
-			lines
-		);
+		// Fetch logs via orchestrator
+		const result = await orchestrator.getContainerLogs(session.user.id, {
+			tail: lines,
+		});
 
 		return json({
 			logs: result.logs,
-			success: result.success,
+			success: true,
 		});
 	} catch (error) {
-		console.error('VPS log fetch failed:', error);
+		console.error('Container log fetch failed:', error);
 		return json(
 			{ logs: '', success: false, message: 'Failed to fetch logs' },
 			{ status: 500 }

@@ -1,24 +1,24 @@
 /**
  * Admin dashboard data aggregation functions.
  *
- * Queries all users with their subscription and VPS status from the database,
- * then computes revenue metrics (MRR), cost estimates (Hetzner), and profit margin.
+ * Queries all users with their subscription and container status from the database,
+ * then computes revenue metrics (MRR), cost estimates (Docker host), and profit margin.
  *
  * All data comes from the local DB -- no external API calls are made here
- * to keep the dashboard load fast and avoid Hetzner rate limits.
+ * to keep the dashboard load fast.
  *
  * @module admin/data
  */
 
 import { db } from '$lib/db';
-import { users, subscriptions, healthChecks } from '$lib/db/schema';
+import { users, subscriptions } from '$lib/db/schema';
 import { eq } from 'drizzle-orm';
 
 // ---------------------------------------------------------------------------
 // Types
 // ---------------------------------------------------------------------------
 
-/** A single user row enriched with subscription and VPS data. */
+/** A single user row enriched with subscription and container data. */
 export interface AdminUser {
 	id: string;
 	email: string;
@@ -26,14 +26,11 @@ export interface AdminUser {
 	createdAt: Date;
 	subscriptionStatus: string | null;
 	vpsProvisioned: boolean;
-	vpsIpAddress: string | null;
-	hetznerServerId: number | null;
+	containerId: string | null;
+	containerName: string | null;
+	currentImage: string | null;
 	provisioningStatus: string | null;
 	provisionedAt: Date | null;
-	healthStatus: string | null;
-	consecutiveFailures: number;
-	lastCheckAt: Date | null;
-	circuitState: string | null;
 }
 
 /** Aggregated overview for the admin dashboard. */
@@ -43,12 +40,9 @@ export interface AdminOverview {
 	gracePeriodUsers: number;
 	canceledUsers: number;
 	totalMRR: number;
-	runningVPSCount: number;
+	runningContainerCount: number;
 	estimatedMonthlyCost: number;
 	profitMargin: number;
-	healthyVPSCount: number;
-	unhealthyVPSCount: number;
-	circuitOpenCount: number;
 	users: AdminUser[];
 }
 
@@ -56,11 +50,20 @@ export interface AdminOverview {
 // Constants
 // ---------------------------------------------------------------------------
 
-/** Revenue per active subscriber per month (EUR). */
-const PRICE_PER_SUBSCRIBER_EUR = 40;
+/** Revenue per active subscriber per month (USD). */
+const PRICE_PER_SUBSCRIBER_USD = 20;
 
-/** Estimated Hetzner cost per VPS per month (EUR). */
-const COST_PER_VPS_EUR = 3.49;
+/**
+ * Estimated Docker host cost per month (EUR).
+ * Single shared Hetzner server running all containers.
+ */
+const DOCKER_HOST_COST_EUR = 15;
+
+/**
+ * Maximum estimated Claude AI cost per month (EUR).
+ * Budget cap for Anthropic API usage across all containers.
+ */
+const AI_MAX_COST_EUR = 80;
 
 // ---------------------------------------------------------------------------
 // Public API
@@ -84,18 +87,14 @@ export async function getAdminOverview(): Promise<AdminOverview> {
 				createdAt: users.createdAt,
 				subscriptionStatus: subscriptions.status,
 				vpsProvisioned: subscriptions.vpsProvisioned,
-				vpsIpAddress: subscriptions.vpsIpAddress,
-				hetznerServerId: subscriptions.hetznerServerId,
+				containerId: subscriptions.containerId,
+				containerName: subscriptions.containerName,
+				currentImage: subscriptions.currentImage,
 				provisioningStatus: subscriptions.provisioningStatus,
 				provisionedAt: subscriptions.provisionedAt,
-				healthStatus: healthChecks.status,
-				consecutiveFailures: healthChecks.consecutiveFailures,
-				lastCheckAt: healthChecks.lastCheckAt,
-				circuitState: healthChecks.circuitState,
 			})
 			.from(users)
 			.leftJoin(subscriptions, eq(users.id, subscriptions.userId))
-			.leftJoin(healthChecks, eq(users.id, healthChecks.userId))
 			.orderBy(users.createdAt);
 
 		// Map rows to AdminUser[], handling SQLite boolean (0/1 → boolean)
@@ -106,14 +105,11 @@ export async function getAdminOverview(): Promise<AdminOverview> {
 			createdAt: row.createdAt,
 			subscriptionStatus: row.subscriptionStatus ?? null,
 			vpsProvisioned: !!(row.vpsProvisioned),
-			vpsIpAddress: row.vpsIpAddress ?? null,
-			hetznerServerId: row.hetznerServerId ?? null,
+			containerId: row.containerId ?? null,
+			containerName: row.containerName ?? null,
+			currentImage: row.currentImage ?? null,
 			provisioningStatus: row.provisioningStatus ?? null,
 			provisionedAt: row.provisionedAt ?? null,
-			healthStatus: row.healthStatus ?? null,
-			consecutiveFailures: row.consecutiveFailures ?? 0,
-			lastCheckAt: row.lastCheckAt ?? null,
-			circuitState: row.circuitState ?? null,
 		}));
 
 		// Aggregate counts
@@ -126,20 +122,13 @@ export async function getAdminOverview(): Promise<AdminOverview> {
 		const canceledUsers = mappedUsers.filter(
 			(u) => u.subscriptionStatus === 'canceled'
 		).length;
-		const runningVPSCount = mappedUsers.filter(
-			(u) => u.vpsProvisioned === true
+		const runningContainerCount = mappedUsers.filter(
+			(u) => u.vpsProvisioned === true && u.containerId !== null
 		).length;
-
-		// Health aggregates
-		const healthyVPSCount = mappedUsers.filter((u) => u.healthStatus === 'healthy').length;
-		const unhealthyVPSCount = mappedUsers.filter(
-			(u) => u.healthStatus === 'unhealthy' || u.healthStatus === 'down'
-		).length;
-		const circuitOpenCount = mappedUsers.filter((u) => u.healthStatus === 'circuit_open').length;
 
 		// Financial metrics
-		const totalMRR = activeSubscribers * PRICE_PER_SUBSCRIBER_EUR;
-		const estimatedMonthlyCost = runningVPSCount * COST_PER_VPS_EUR;
+		const totalMRR = activeSubscribers * PRICE_PER_SUBSCRIBER_USD;
+		const estimatedMonthlyCost = DOCKER_HOST_COST_EUR + AI_MAX_COST_EUR;
 		const profitMargin =
 			totalMRR > 0
 				? ((totalMRR - estimatedMonthlyCost) / totalMRR) * 100
@@ -151,12 +140,9 @@ export async function getAdminOverview(): Promise<AdminOverview> {
 			gracePeriodUsers,
 			canceledUsers,
 			totalMRR,
-			runningVPSCount,
+			runningContainerCount,
 			estimatedMonthlyCost,
 			profitMargin,
-			healthyVPSCount,
-			unhealthyVPSCount,
-			circuitOpenCount,
 			users: mappedUsers,
 		};
 	} catch (error) {

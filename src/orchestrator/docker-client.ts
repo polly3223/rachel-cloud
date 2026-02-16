@@ -204,6 +204,43 @@ export const docker = {
     return dockerJson("/networks");
   },
 
+  // ===== Logs =====
+
+  async getContainerLogs(
+    nameOrId: string,
+    options?: { tail?: number; since?: number; stdout?: boolean; stderr?: boolean },
+  ): Promise<string> {
+    const params = new URLSearchParams({
+      stdout: String(options?.stdout ?? true),
+      stderr: String(options?.stderr ?? true),
+      tail: String(options?.tail ?? 100),
+    });
+    if (options?.since) params.set('since', String(options.since));
+
+    const res = await dockerFetch(
+      `/containers/${encodeURIComponent(nameOrId)}/logs?${params}`,
+    );
+    if (!res.ok) throw new DockerApiError(res.status, 'logs', await res.text());
+    // Docker logs include 8-byte header frames for multiplexed streams.
+    // Strip them for clean text output.
+    const raw = await res.arrayBuffer();
+    const bytes = new Uint8Array(raw);
+    let output = '';
+    let offset = 0;
+    while (offset + 8 <= bytes.length) {
+      const size =
+        (bytes[offset + 4] << 24) |
+        (bytes[offset + 5] << 16) |
+        (bytes[offset + 6] << 8) |
+        bytes[offset + 7];
+      offset += 8;
+      if (offset + size > bytes.length) break;
+      output += new TextDecoder().decode(bytes.slice(offset, offset + size));
+      offset += size;
+    }
+    return output || new TextDecoder().decode(bytes);
+  },
+
   // ===== Utility =====
 
   async ping(): Promise<boolean> {

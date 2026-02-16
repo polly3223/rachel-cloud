@@ -143,9 +143,22 @@ export const auth = betterAuth({
 								gracePeriodEndsAt: null
 							});
 
-							// Set VPS to not provisioned immediately
+							// Deprovision container immediately via orchestrator (removeData=true)
+							try {
+								const { orchestrator } = await import('$lib/orchestrator/client');
+								await orchestrator.deprovisionContainer(existingSub.userId, true);
+							} catch (deprovErr) {
+								console.error('Failed to deprovision container on revocation:', deprovErr);
+							}
+
+							// Set container to not provisioned
 							await db.update(schema.subscriptions)
-								.set({ vpsProvisioned: false, updatedAt: new Date() })
+								.set({
+									vpsProvisioned: false,
+									containerId: null,
+									containerName: null,
+									updatedAt: new Date()
+								})
 								.where(eq(schema.subscriptions.userId, existingSub.userId));
 
 							console.log('Subscription revoked for user:', existingSub.userId);

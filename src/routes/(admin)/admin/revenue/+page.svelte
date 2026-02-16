@@ -16,7 +16,16 @@
 			? overview.estimatedMonthlyCost / overview.activeSubscribers
 			: 0
 	);
-	const grossMarginPerSubscriber = $derived(40 - 3.49);
+	// Docker shared model: fixed infra cost split across subscribers
+	const DOCKER_HOST_COST = 15;
+	const AI_BUDGET_COST = 80;
+	const TOTAL_FIXED_COST = DOCKER_HOST_COST + AI_BUDGET_COST;
+	const PRICE_PER_SUB = 20; // USD
+	const grossMarginPerSubscriber = $derived(
+		overview.activeSubscribers > 0
+			? PRICE_PER_SUB - TOTAL_FIXED_COST / overview.activeSubscribers
+			: PRICE_PER_SUB
+	);
 	const churned = $derived(overview.canceledUsers);
 	const signupToActiveRate = $derived(
 		overview.totalUsers > 0
@@ -42,7 +51,7 @@
 	// Formatting helpers
 	// -----------------------------------------------------------------------
 
-	function formatCurrency(amount: number, currency: string = '€'): string {
+	function formatCurrency(amount: number, currency: string = '$'): string {
 		return `${currency}${amount.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
 	}
 
@@ -182,14 +191,14 @@
 		<h2 class="text-lg font-semibold text-gray-900 mb-4">Cost Breakdown</h2>
 		<div class="grid grid-cols-1 md:grid-cols-3 gap-6">
 			<div class="border border-gray-100 rounded-lg p-4">
-				<p class="text-sm text-gray-500 mb-1">Hetzner VPS Cost</p>
-				<p class="text-xl font-semibold text-red-600">&euro;3.49<span class="text-sm font-normal text-gray-500"> / VPS / month</span></p>
-				<p class="text-xs text-gray-400 mt-1">{overview.runningVPSCount} running VPS{overview.runningVPSCount !== 1 ? 's' : ''}</p>
+				<p class="text-sm text-gray-500 mb-1">Docker Host (Hetzner)</p>
+				<p class="text-xl font-semibold text-red-600">&euro;{DOCKER_HOST_COST}<span class="text-sm font-normal text-gray-500"> / month</span></p>
+				<p class="text-xs text-gray-400 mt-1">Shared server, {overview.runningContainerCount} container{overview.runningContainerCount !== 1 ? 's' : ''}</p>
 			</div>
 			<div class="border border-gray-100 rounded-lg p-4">
 				<p class="text-sm text-gray-500 mb-1">Total Monthly Cost</p>
-				<p class="text-xl font-semibold text-red-600">&euro;{overview.estimatedMonthlyCost.toFixed(2)}<span class="text-sm font-normal text-gray-500"> / month</span></p>
-				<p class="text-xs text-gray-400 mt-1">{overview.runningVPSCount} &times; &euro;3.49</p>
+				<p class="text-xl font-semibold text-red-600">&euro;{overview.estimatedMonthlyCost.toFixed(0)}<span class="text-sm font-normal text-gray-500"> / month</span></p>
+				<p class="text-xs text-gray-400 mt-1">&euro;{DOCKER_HOST_COST} host + &euro;{AI_BUDGET_COST} AI budget</p>
 			</div>
 			<div class="border border-gray-100 rounded-lg p-4">
 				<p class="text-sm text-gray-500 mb-1">Cost per Subscriber</p>
@@ -205,18 +214,18 @@
 		<div class="grid grid-cols-1 md:grid-cols-3 gap-6">
 			<div class="border border-gray-100 rounded-lg p-4">
 				<p class="text-sm text-gray-500 mb-1">Revenue per Subscriber</p>
-				<p class="text-xl font-semibold text-green-600">&euro;40.00<span class="text-sm font-normal text-gray-500"> / month</span></p>
+				<p class="text-xl font-semibold text-green-600">${PRICE_PER_SUB}.00<span class="text-sm font-normal text-gray-500"> / month</span></p>
 				<p class="text-xs text-gray-400 mt-1">Fixed subscription price</p>
 			</div>
 			<div class="border border-gray-100 rounded-lg p-4">
 				<p class="text-sm text-gray-500 mb-1">Cost per Subscriber</p>
-				<p class="text-xl font-semibold text-red-600">&euro;3.49<span class="text-sm font-normal text-gray-500"> / month</span></p>
-				<p class="text-xs text-gray-400 mt-1">1 Hetzner VPS per subscriber</p>
+				<p class="text-xl font-semibold text-red-600">&euro;{costPerSubscriber.toFixed(2)}<span class="text-sm font-normal text-gray-500"> / month</span></p>
+				<p class="text-xs text-gray-400 mt-1">Shared Docker host + AI budget</p>
 			</div>
 			<div class="border border-gray-100 rounded-lg p-4">
 				<p class="text-sm text-gray-500 mb-1">Gross Margin per Subscriber</p>
-				<p class="text-xl font-semibold text-green-600">&euro;{grossMarginPerSubscriber.toFixed(2)}<span class="text-sm font-normal text-gray-500"> / month</span></p>
-				<p class="text-xs text-gray-400 mt-1">&euro;40.00 &minus; &euro;5.00 (approx.)</p>
+				<p class="text-xl font-semibold text-green-600">${grossMarginPerSubscriber.toFixed(2)}<span class="text-sm font-normal text-gray-500"> / month</span></p>
+				<p class="text-xs text-gray-400 mt-1">${PRICE_PER_SUB} &minus; &euro;{costPerSubscriber.toFixed(2)}</p>
 			</div>
 		</div>
 	</div>

@@ -133,6 +133,20 @@ async function handleGetStatus(url: URL): Promise<Response> {
   return jsonResponse({ status: "ok", container });
 }
 
+async function handleGetLogs(url: URL): Promise<Response> {
+  const userId = extractUserId(url);
+  if (!userId) return jsonResponse({ status: "error", message: "Missing userId" }, 400);
+
+  const tail = parseInt(url.searchParams.get("tail") || "100", 10);
+  const since = url.searchParams.get("since")
+    ? parseInt(url.searchParams.get("since")!, 10)
+    : undefined;
+
+  const containerName = `rachel-user-${userId}`;
+  const logs = await docker.getContainerLogs(containerName, { tail, since });
+  return jsonResponse({ status: "ok", logs });
+}
+
 async function handleList(): Promise<Response> {
   const containers = await listAllContainers();
   return jsonResponse({ status: "ok", containers });
@@ -224,6 +238,14 @@ const server = Bun.serve({
       // GET /containers — list all
       if (method === "GET" && path === "/containers") {
         return await handleList();
+      }
+
+      // GET /containers/:userId/logs — container logs
+      if (
+        method === "GET" &&
+        path.match(/^\/containers\/[^/]+\/logs$/)
+      ) {
+        return await handleGetLogs(url);
       }
 
       // GET /containers/:userId — single status

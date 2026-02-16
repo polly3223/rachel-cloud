@@ -88,20 +88,31 @@ export const subscriptions = sqliteTable('subscriptions', {
 		.notNull()
 		.$defaultFn(() => false),
 
-	// VPS tracking fields (Phase 3)
+	// Docker container fields (Phase 12)
+	containerId: text('container_id'),
+	containerName: text('container_name'),
+
+	// Legacy VPS tracking fields (kept nullable for migration safety)
 	hetznerServerId: integer('hetzner_server_id'),
 	hetznerSshKeyId: integer('hetzner_ssh_key_id'),
 	vpsIpAddress: text('vps_ip_address'),
 	vpsHostname: text('vps_hostname'),
+	sshPrivateKey: text('ssh_private_key'),
+
+	// Provisioning status (shared between VPS and Docker)
 	provisioningStatus: text('provisioning_status', {
-		enum: ['pending', 'creating', 'cloud_init', 'injecting_secrets', 'ready', 'failed']
+		enum: ['pending', 'creating', 'starting', 'ready', 'failed']
 	}),
 	provisioningError: text('provisioning_error'),
 	provisionedAt: integer('provisioned_at', { mode: 'timestamp' }),
 	deprovisionedAt: integer('deprovisioned_at', { mode: 'timestamp' }),
-	sshPrivateKey: text('ssh_private_key'),
 
-	// Update tracking fields (Phase 7)
+	// Docker image tracking (Phase 12)
+	currentImage: text('current_image'),
+	targetImage: text('target_image'),
+	previousImage: text('previous_image'),
+
+	// Legacy update tracking fields (kept for migration safety)
 	currentVersion: text('current_version'),
 	targetVersion: text('target_version'),
 	updateStatus: text('update_status', {

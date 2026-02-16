@@ -4,7 +4,7 @@
 	let { data } = $props();
 
 	const rollout = $derived(data.rolloutStatus);
-	const activeVPSCount = $derived(data.activeVPSCount);
+	const activeContainerCount = $derived(data.activeContainerCount);
 
 	// Auto-refresh when rollout is in progress
 	let pollInterval: ReturnType<typeof setInterval> | null = null;
@@ -54,7 +54,7 @@
 		}
 	}
 
-	function vpsStatusColor(status: string): string {
+	function containerStatusColor(status: string): string {
 		switch (status) {
 			case 'pending': return 'bg-gray-100 text-gray-700';
 			case 'updating': return 'bg-yellow-100 text-yellow-700';
@@ -66,7 +66,7 @@
 		}
 	}
 
-	function vpsStatusLabel(status: string): string {
+	function containerStatusLabel(status: string): string {
 		switch (status) {
 			case 'pending': return 'Pending';
 			case 'updating': return 'Updating...';
@@ -78,9 +78,12 @@
 		}
 	}
 
-	function shortHash(hash: string | null): string {
-		if (!hash) return '\u2014';
-		return hash.slice(0, 7);
+	function shortImage(image: string | null): string {
+		if (!image) return '\u2014';
+		// Show tag portion if present, otherwise short hash
+		const parts = image.split(':');
+		if (parts.length > 1) return parts[parts.length - 1].slice(0, 12);
+		return image.slice(0, 12);
 	}
 
 	function formatTime(iso: string | null): string {
@@ -98,7 +101,7 @@
 	<div class="mb-8">
 		<h1 class="text-3xl font-bold text-gray-900">Update Rollout</h1>
 		<p class="mt-1 text-sm text-gray-500">
-			Deploy new Rachel8 versions to user instances with gradual rollout
+			Deploy new Rachel images to user containers with gradual rollout
 		</p>
 	</div>
 
@@ -129,12 +132,12 @@
 
 			<div class="flex items-center gap-4">
 				<p class="text-sm text-gray-500">
-					{activeVPSCount} active VPS{activeVPSCount !== 1 ? 's' : ''}
+					{activeContainerCount} active container{activeContainerCount !== 1 ? 's' : ''}
 				</p>
 				<form method="POST" action="?/trigger">
 					<button
 						type="submit"
-						disabled={rollout.inProgress || activeVPSCount === 0}
+						disabled={rollout.inProgress || activeContainerCount === 0}
 						class="inline-flex items-center px-4 py-2 text-sm font-medium text-white bg-indigo-600 rounded-lg hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
 					>
 						{#if rollout.inProgress}
@@ -165,8 +168,8 @@
 	{#if rollout.stage !== 'idle'}
 		<div class="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-8">
 			<div class="bg-white rounded-lg shadow-sm border border-gray-200 p-4">
-				<p class="text-sm text-gray-500">Total VPSs</p>
-				<p class="text-2xl font-bold text-gray-900">{rollout.totalVPSs}</p>
+				<p class="text-sm text-gray-500">Total Containers</p>
+				<p class="text-2xl font-bold text-gray-900">{rollout.totalContainers ?? rollout.totalVPSs ?? 0}</p>
 			</div>
 			<div class="bg-white rounded-lg shadow-sm border border-gray-200 p-4">
 				<p class="text-sm text-gray-500">Updated</p>
@@ -216,12 +219,13 @@
 			</div>
 		</div>
 
-		<!-- Per-VPS Status Table -->
-		{#if rollout.vpsStatuses.length > 0}
+		<!-- Per-Container Status Table -->
+		{@const statuses = rollout.containerStatuses ?? rollout.vpsStatuses ?? []}
+		{#if statuses.length > 0}
 			<div class="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
 				<div class="px-6 py-4 border-b border-gray-200">
 					<h3 class="text-lg font-semibold text-gray-900">Instance Details</h3>
-					<p class="text-sm text-gray-500">{rollout.vpsStatuses.length} instance{rollout.vpsStatuses.length !== 1 ? 's' : ''}</p>
+					<p class="text-sm text-gray-500">{statuses.length} instance{statuses.length !== 1 ? 's' : ''}</p>
 				</div>
 
 				<!-- Desktop table -->
@@ -230,7 +234,7 @@
 						<thead class="bg-gray-50">
 							<tr>
 								<th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">User</th>
-								<th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">IP Address</th>
+								<th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Container</th>
 								<th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
 								<th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Previous</th>
 								<th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">New</th>
@@ -238,31 +242,31 @@
 							</tr>
 						</thead>
 						<tbody class="bg-white divide-y divide-gray-200">
-							{#each rollout.vpsStatuses as vps}
+							{#each statuses as container}
 								<tr class="hover:bg-gray-50 transition-colors">
-									<td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{vps.email}</td>
+									<td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{container.email}</td>
 									<td class="px-6 py-4 whitespace-nowrap">
-										<code class="text-sm font-mono text-gray-700 bg-gray-100 px-2 py-0.5 rounded">{vps.ipAddress}</code>
+										<code class="text-sm font-mono text-gray-700 bg-gray-100 px-2 py-0.5 rounded">{container.containerName || container.ipAddress || '\u2014'}</code>
 									</td>
 									<td class="px-6 py-4 whitespace-nowrap">
-										<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium {vpsStatusColor(vps.status)}">
-											{#if vps.status === 'updating'}
+										<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium {containerStatusColor(container.status)}">
+											{#if container.status === 'updating'}
 												<svg class="animate-spin -ml-0.5 mr-1.5 h-3 w-3" fill="none" viewBox="0 0 24 24">
 													<circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
 													<path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
 												</svg>
 											{/if}
-											{vpsStatusLabel(vps.status)}
+											{containerStatusLabel(container.status)}
 										</span>
 									</td>
 									<td class="px-6 py-4 whitespace-nowrap">
-										<code class="text-xs font-mono text-gray-500">{shortHash(vps.previousVersion)}</code>
+										<code class="text-xs font-mono text-gray-500">{shortImage(container.previousImage ?? container.previousVersion ?? null)}</code>
 									</td>
 									<td class="px-6 py-4 whitespace-nowrap">
-										<code class="text-xs font-mono text-gray-500">{shortHash(vps.newVersion)}</code>
+										<code class="text-xs font-mono text-gray-500">{shortImage(container.newImage ?? container.newVersion ?? null)}</code>
 									</td>
 									<td class="px-6 py-4 max-w-xs truncate text-xs text-red-600">
-										{vps.error ?? ''}
+										{container.error ?? ''}
 									</td>
 								</tr>
 							{/each}
@@ -272,22 +276,22 @@
 
 				<!-- Mobile card layout -->
 				<div class="md:hidden divide-y divide-gray-200">
-					{#each rollout.vpsStatuses as vps}
+					{#each statuses as container}
 						<div class="px-4 py-4 space-y-2">
 							<div class="flex items-center justify-between">
-								<p class="text-sm font-medium text-gray-900">{vps.email}</p>
-								<span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium {vpsStatusColor(vps.status)}">
-									{vpsStatusLabel(vps.status)}
+								<p class="text-sm font-medium text-gray-900">{container.email}</p>
+								<span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium {containerStatusColor(container.status)}">
+									{containerStatusLabel(container.status)}
 								</span>
 							</div>
 							<div class="flex flex-wrap gap-x-4 gap-y-1 text-xs text-gray-500">
-								<span>IP: <code class="font-mono">{vps.ipAddress}</code></span>
+								<span>Container: <code class="font-mono">{container.containerName || container.ipAddress || '\u2014'}</code></span>
 								<span>
-									{shortHash(vps.previousVersion)} &rarr; {shortHash(vps.newVersion)}
+									{shortImage(container.previousImage ?? container.previousVersion ?? null)} &rarr; {shortImage(container.newImage ?? container.newVersion ?? null)}
 								</span>
 							</div>
-							{#if vps.error}
-								<p class="text-xs text-red-600 truncate">{vps.error}</p>
+							{#if container.error}
+								<p class="text-xs text-red-600 truncate">{container.error}</p>
 							{/if}
 						</div>
 					{/each}
@@ -302,7 +306,7 @@
 			</svg>
 			<h3 class="mt-4 text-lg font-medium text-gray-900">No rollout in progress</h3>
 			<p class="mt-2 text-sm text-gray-500">
-				Click "Start Rollout" to deploy the latest Rachel8 version to all active instances.
+				Click "Start Rollout" to deploy the latest Rachel image to all active containers.
 				Updates roll out gradually: 10% &rarr; 50% &rarr; 100%.
 			</p>
 		</div>

@@ -6,7 +6,7 @@ import {
 } from '$lib/updates/rollout-orchestrator';
 import { db } from '$lib/db';
 import { subscriptions } from '$lib/db/schema';
-import { eq, and } from 'drizzle-orm';
+import { eq, and, isNotNull } from 'drizzle-orm';
 import { fail } from '@sveltejs/kit';
 import type { PageServerLoad, Actions } from './$types';
 
@@ -15,15 +15,16 @@ export const load: PageServerLoad = async (event) => {
 
 	const rolloutStatus = getRolloutStatus();
 
-	// Count active provisioned VPSs
-	const activeVPSs = await db
+	// Count active provisioned containers
+	const activeContainers = await db
 		.select({ userId: subscriptions.userId })
 		.from(subscriptions)
 		.where(
 			and(
 				eq(subscriptions.status, 'active'),
 				eq(subscriptions.vpsProvisioned, true),
-				eq(subscriptions.provisioningStatus, 'ready')
+				eq(subscriptions.provisioningStatus, 'ready'),
+				isNotNull(subscriptions.containerId)
 			)
 		);
 
@@ -33,7 +34,7 @@ export const load: PageServerLoad = async (event) => {
 			startedAt: rolloutStatus.startedAt?.toISOString() ?? null,
 			completedAt: rolloutStatus.completedAt?.toISOString() ?? null
 		},
-		activeVPSCount: activeVPSs.length
+		activeContainerCount: activeContainers.length
 	};
 };
 

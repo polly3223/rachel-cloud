@@ -1,13 +1,17 @@
 /**
- * Gradual rollout orchestrator for Rachel8 fleet updates.
+ * Gradual rollout orchestrator for Rachel Cloud fleet updates.
  *
- * Deploys updates across all active VPSs in three stages:
- *   Stage 1: 10% of VPSs (canary)
- *   Stage 2: 50% of VPSs (early majority)
- *   Stage 3: 100% of VPSs (full fleet)
+ * Triggers container image updates via the Docker orchestrator API.
+ * The orchestrator handles the actual Docker pull/recreate/healthcheck cycle.
+ * This module manages the rollout state for the admin UI.
+ *
+ * Deploys updates across all active containers in three stages:
+ *   Stage 1: 10% of containers (canary)
+ *   Stage 2: 50% of containers (early majority)
+ *   Stage 3: 100% of containers (full fleet)
  *
  * Between each stage, checks the failure rate. If more than 30% of a
- * stage's VPSs fail, the rollout halts automatically.
+ * stage's containers fail, the rollout halts automatically.
  *
  * Only one rollout can run at a time. Admin polls getRolloutStatus()
  * for real-time progress.
@@ -15,17 +19,16 @@
  * @module updates/rollout-orchestrator
  */
 
-import { updateVPS } from './update-engine';
+import { orchestrator, type UpdateResult } from '$lib/orchestrator/client';
 import { db } from '$lib/db';
 import { subscriptions, users } from '$lib/db/schema';
-import { eq, and } from 'drizzle-orm';
-import { decryptToken } from '$lib/crypto/encryption';
+import { eq, and, isNotNull } from 'drizzle-orm';
 
 // ---------------------------------------------------------------------------
 // Constants
 // ---------------------------------------------------------------------------
 
-/** Rollout stages: fraction of total VPSs to update in each stage. */
+/** Rollout stages: fraction of total containers to update in each stage. */
 const ROLLOUT_STAGES = [0.1, 0.5, 1.0];
 
 /** Stage names for human-readable status. */
@@ -35,10 +38,10 @@ const STAGE_NAMES: Record<number, RolloutStage> = {
 	2: 'stage_100'
 };
 
-/** Halt rollout if more than 30% of a stage's VPSs fail. */
+/** Halt rollout if more than 30% of a stage's containers fail. */
 const STAGE_FAILURE_THRESHOLD = 0.3;
 
-/** Maximum concurrent SSH connections during rollout. */
+/** Maximum concurrent container updates during rollout. */
 const CONCURRENCY_LIMIT = 5;
 
 /** Pause between stages (10 seconds). */
@@ -58,14 +61,14 @@ export type RolloutStage =
 	| 'failed'
 	| 'halted';
 
-/** Per-VPS update tracking during rollout. */
-export interface VPSUpdateStatus {
+/** Per-container update tracking during rollout. */
+export interface ContainerUpdateStatus {
 	userId: string;
 	email: string;
-	ipAddress: string;
+	containerName: string;
 	status: 'pending' | 'updating' | 'success' | 'failed' | 'rolled_back' | 'skipped';
-	previousVersion: string | null;
-	newVersion: string | null;
+	previousImage: string | null;
+	newImage: string | null;
 	error: string | null;
 }
 
@@ -75,13 +78,15 @@ export interface RolloutState {
 	stage: RolloutStage;
 	startedAt: Date | null;
 	completedAt: Date | null;
-	totalVPSs: number;
+	totalContainers: number;
 	updatedCount: number;
 	failedCount: number;
 	rolledBackCount: number;
 	currentStageProgress: number;
 	error: string | null;
-	vpsStatuses: VPSUpdateStatus[];
+	containerStatuses: ContainerUpdateStatus[];
+	/** @deprecated Alias for containerStatuses, kept for admin UI compat */
+	vpsStatuses: ContainerUpdateStatus[];
 }
 
 // ---------------------------------------------------------------------------
@@ -91,19 +96,21 @@ export interface RolloutState {
 let rolloutState: RolloutState = createIdleState();
 
 function createIdleState(): RolloutState {
-	return {
+	const state: RolloutState = {
 		inProgress: false,
 		stage: 'idle',
 		startedAt: null,
 		completedAt: null,
-		totalVPSs: 0,
+		totalContainers: 0,
 		updatedCount: 0,
 		failedCount: 0,
 		rolledBackCount: 0,
 		currentStageProgress: 0,
 		error: null,
-		vpsStatuses: []
+		containerStatuses: [],
+		get vpsStatuses() { return this.containerStatuses; }
 	};
+	return state;
 }
 
 // ---------------------------------------------------------------------------
@@ -116,7 +123,6 @@ function sleep(ms: number): Promise<void> {
 
 /**
  * Shuffle an array in-place using Fisher-Yates algorithm.
- * Random distribution ensures no bias in which VPSs are in the canary group.
  */
 function shuffleArray<T>(arr: T[]): T[] {
 	for (let i = arr.length - 1; i > 0; i--) {
@@ -128,7 +134,6 @@ function shuffleArray<T>(arr: T[]): T[] {
 
 /**
  * Process items in parallel batches with a concurrency limit.
- * Uses Promise.allSettled so one failure doesn't abort the batch.
  */
 async function processInBatches<T>(
 	items: T[],
@@ -142,26 +147,24 @@ async function processInBatches<T>(
 }
 
 // ---------------------------------------------------------------------------
-// Internal: VPS query
+// Internal: Container query
 // ---------------------------------------------------------------------------
 
-interface UpdatableVPS {
+interface UpdatableContainer {
 	userId: string;
 	email: string;
-	vpsIpAddress: string;
-	sshPrivateKey: string;
+	containerName: string;
 }
 
 /**
- * Query all active, provisioned VPSs eligible for updates.
+ * Query all active, provisioned containers eligible for updates.
  */
-async function getUpdatableVPSs(): Promise<UpdatableVPS[]> {
+async function getUpdatableContainers(): Promise<UpdatableContainer[]> {
 	const results = await db
 		.select({
 			userId: subscriptions.userId,
 			email: users.email,
-			vpsIpAddress: subscriptions.vpsIpAddress,
-			sshPrivateKey: subscriptions.sshPrivateKey
+			containerName: subscriptions.containerName,
 		})
 		.from(subscriptions)
 		.innerJoin(users, eq(subscriptions.userId, users.id))
@@ -169,16 +172,14 @@ async function getUpdatableVPSs(): Promise<UpdatableVPS[]> {
 			and(
 				eq(subscriptions.status, 'active'),
 				eq(subscriptions.vpsProvisioned, true),
-				eq(subscriptions.provisioningStatus, 'ready')
+				eq(subscriptions.provisioningStatus, 'ready'),
+				isNotNull(subscriptions.containerId)
 			)
 		);
 
 	return results.filter(
-		(r): r is UpdatableVPS =>
-			r.vpsIpAddress !== null &&
-			r.vpsIpAddress !== '' &&
-			r.sshPrivateKey !== null &&
-			r.sshPrivateKey !== ''
+		(r): r is UpdatableContainer =>
+			r.containerName !== null && r.containerName !== ''
 	);
 }
 
@@ -195,42 +196,48 @@ export function isRolloutInProgress(): boolean {
 
 /**
  * Get the current rollout status.
- * Returns a snapshot (clone) of the rollout state.
+ * Returns a snapshot of the rollout state.
  */
 export function getRolloutStatus(): RolloutState {
-	return { ...rolloutState, vpsStatuses: [...rolloutState.vpsStatuses] };
+	return {
+		...rolloutState,
+		containerStatuses: [...rolloutState.containerStatuses],
+		vpsStatuses: [...rolloutState.containerStatuses],
+		totalVPSs: rolloutState.totalContainers, // Legacy compat
+	} as RolloutState & { totalVPSs: number };
 }
 
 /**
- * Start a gradual rollout across all active VPSs.
+ * Start a gradual rollout across all active containers.
  *
  * Runs fire-and-forget -- the caller kicks it off, then polls
  * getRolloutStatus() for progress.
  *
+ * @param image Optional target image. If not specified, orchestrator uses latest.
  * @throws Error if a rollout is already in progress
  */
-export async function startRollout(): Promise<void> {
+export async function startRollout(image?: string): Promise<void> {
 	if (rolloutState.inProgress) {
 		throw new Error('Rollout already in progress');
 	}
 
 	try {
-		// Query all updatable VPSs
-		const allVPSs = await getUpdatableVPSs();
+		// Query all updatable containers
+		const allContainers = await getUpdatableContainers();
 
-		if (allVPSs.length === 0) {
-			console.log('[rollout] No active VPSs to update');
+		if (allContainers.length === 0) {
+			console.log('[rollout] No active containers to update');
 			rolloutState = {
 				...createIdleState(),
 				stage: 'completed',
 				completedAt: new Date(),
-				error: 'No active VPSs to update'
+				error: 'No active containers to update'
 			};
 			return;
 		}
 
 		// Shuffle for random stage distribution
-		shuffleArray(allVPSs);
+		shuffleArray(allContainers);
 
 		// Initialize rollout state
 		rolloutState = {
@@ -238,39 +245,39 @@ export async function startRollout(): Promise<void> {
 			stage: 'stage_10',
 			startedAt: new Date(),
 			completedAt: null,
-			totalVPSs: allVPSs.length,
+			totalContainers: allContainers.length,
 			updatedCount: 0,
 			failedCount: 0,
 			rolledBackCount: 0,
 			currentStageProgress: 0,
 			error: null,
-			vpsStatuses: allVPSs.map((vps) => ({
-				userId: vps.userId,
-				email: vps.email,
-				ipAddress: vps.vpsIpAddress,
+			containerStatuses: allContainers.map((c) => ({
+				userId: c.userId,
+				email: c.email,
+				containerName: c.containerName,
 				status: 'pending',
-				previousVersion: null,
-				newVersion: null,
+				previousImage: null,
+				newImage: null,
 				error: null
-			}))
+			})),
+			get vpsStatuses() { return this.containerStatuses; }
 		};
 
 		console.log(
-			`[rollout] Starting rollout for ${allVPSs.length} VPS${allVPSs.length === 1 ? '' : 's'}`
+			`[rollout] Starting rollout for ${allContainers.length} container${allContainers.length === 1 ? '' : 's'}`
 		);
 
-		// Track how many VPSs have been processed across stages
 		let processedCount = 0;
 
 		for (let stageIdx = 0; stageIdx < ROLLOUT_STAGES.length; stageIdx++) {
 			const stageFraction = ROLLOUT_STAGES[stageIdx];
 			const stageName = STAGE_NAMES[stageIdx];
 
-			// Calculate VPSs for this stage (cumulative)
-			const cumulativeTarget = Math.max(1, Math.ceil(allVPSs.length * stageFraction));
-			const stageVPSs = allVPSs.slice(processedCount, cumulativeTarget);
+			// Calculate containers for this stage (cumulative)
+			const cumulativeTarget = Math.max(1, Math.ceil(allContainers.length * stageFraction));
+			const stageContainers = allContainers.slice(processedCount, cumulativeTarget);
 
-			if (stageVPSs.length === 0) {
+			if (stageContainers.length === 0) {
 				continue;
 			}
 
@@ -278,56 +285,63 @@ export async function startRollout(): Promise<void> {
 			rolloutState.currentStageProgress = 0;
 
 			console.log(
-				`[rollout] Stage ${stageName}: updating ${stageVPSs.length} VPS${stageVPSs.length === 1 ? '' : 's'} (${processedCount + stageVPSs.length}/${allVPSs.length} cumulative)`
+				`[rollout] Stage ${stageName}: updating ${stageContainers.length} container${stageContainers.length === 1 ? '' : 's'} (${processedCount + stageContainers.length}/${allContainers.length} cumulative)`
 			);
 
 			let stageCompleted = 0;
 			let stageFailures = 0;
 
-			// Process this stage's VPSs with concurrency limit
-			await processInBatches(stageVPSs, CONCURRENCY_LIMIT, async (vps) => {
-				const statusIdx = rolloutState.vpsStatuses.findIndex(
-					(s) => s.userId === vps.userId
+			// Process this stage's containers via orchestrator
+			await processInBatches(stageContainers, CONCURRENCY_LIMIT, async (container) => {
+				const statusIdx = rolloutState.containerStatuses.findIndex(
+					(s) => s.userId === container.userId
 				);
 
 				if (statusIdx !== -1) {
-					rolloutState.vpsStatuses[statusIdx].status = 'updating';
+					rolloutState.containerStatuses[statusIdx].status = 'updating';
 				}
 
-				const result = await updateVPS(
-					vps.vpsIpAddress,
-					decryptToken(vps.sshPrivateKey),
-					vps.userId
-				);
+				try {
+					const response = await orchestrator.updateContainer(container.userId, image);
+					const result = response.result;
 
-				stageCompleted++;
+					stageCompleted++;
 
-				if (statusIdx !== -1) {
-					rolloutState.vpsStatuses[statusIdx].previousVersion =
-						result.previousVersion;
-					rolloutState.vpsStatuses[statusIdx].newVersion = result.newVersion;
+					if (statusIdx !== -1) {
+						rolloutState.containerStatuses[statusIdx].previousImage = result.previousImage;
+						rolloutState.containerStatuses[statusIdx].newImage = result.newImage;
 
-					if (result.success) {
-						rolloutState.vpsStatuses[statusIdx].status = 'success';
-						rolloutState.updatedCount++;
-					} else {
-						// Check if it was rolled back or just failed
-						const hasRolledBack = result.error?.includes('Rollback succeeded');
-						rolloutState.vpsStatuses[statusIdx].status = hasRolledBack
-							? 'rolled_back'
-							: 'failed';
-						rolloutState.vpsStatuses[statusIdx].error = result.error ?? null;
+						if (result.success) {
+							rolloutState.containerStatuses[statusIdx].status = 'success';
+							rolloutState.updatedCount++;
+						} else {
+							rolloutState.containerStatuses[statusIdx].status = result.rolledBack
+								? 'rolled_back'
+								: 'failed';
+							rolloutState.containerStatuses[statusIdx].error = result.error ?? null;
 
-						if (hasRolledBack) {
-							rolloutState.rolledBackCount++;
+							if (result.rolledBack) {
+								rolloutState.rolledBackCount++;
+							}
+							rolloutState.failedCount++;
+							stageFailures++;
 						}
-						rolloutState.failedCount++;
-						stageFailures++;
 					}
+				} catch (err) {
+					stageCompleted++;
+					const errorMsg = err instanceof Error ? err.message : String(err);
+
+					if (statusIdx !== -1) {
+						rolloutState.containerStatuses[statusIdx].status = 'failed';
+						rolloutState.containerStatuses[statusIdx].error = errorMsg;
+					}
+
+					rolloutState.failedCount++;
+					stageFailures++;
 				}
 
 				rolloutState.currentStageProgress = Math.round(
-					(stageCompleted / stageVPSs.length) * 100
+					(stageCompleted / stageContainers.length) * 100
 				);
 			});
 
@@ -335,20 +349,20 @@ export async function startRollout(): Promise<void> {
 
 			// Check failure threshold
 			const failureRate =
-				stageVPSs.length > 0 ? stageFailures / stageVPSs.length : 0;
+				stageContainers.length > 0 ? stageFailures / stageContainers.length : 0;
 
 			if (failureRate > STAGE_FAILURE_THRESHOLD) {
 				console.error(
 					`[rollout] Stage ${stageName}: failure rate ${(failureRate * 100).toFixed(0)}% exceeds threshold ${(STAGE_FAILURE_THRESHOLD * 100).toFixed(0)}%. Halting rollout.`
 				);
 
-				// Mark remaining VPSs as skipped
-				for (let i = processedCount; i < allVPSs.length; i++) {
-					const skipIdx = rolloutState.vpsStatuses.findIndex(
-						(s) => s.userId === allVPSs[i].userId
+				// Mark remaining containers as skipped
+				for (let i = processedCount; i < allContainers.length; i++) {
+					const skipIdx = rolloutState.containerStatuses.findIndex(
+						(s) => s.userId === allContainers[i].userId
 					);
 					if (skipIdx !== -1) {
-						rolloutState.vpsStatuses[skipIdx].status = 'skipped';
+						rolloutState.containerStatuses[skipIdx].status = 'skipped';
 					}
 				}
 
@@ -361,11 +375,11 @@ export async function startRollout(): Promise<void> {
 			}
 
 			console.log(
-				`[rollout] Stage ${stageName} completed (${stageFailures} failures out of ${stageVPSs.length})`
+				`[rollout] Stage ${stageName} completed (${stageFailures} failures out of ${stageContainers.length})`
 			);
 
 			// Inter-stage delay (except after last stage)
-			if (stageIdx < ROLLOUT_STAGES.length - 1 && processedCount < allVPSs.length) {
+			if (stageIdx < ROLLOUT_STAGES.length - 1 && processedCount < allContainers.length) {
 				console.log(
 					`[rollout] Waiting ${INTER_STAGE_DELAY_MS / 1000}s before next stage`
 				);

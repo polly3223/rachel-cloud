@@ -2,13 +2,13 @@ import schedule from 'node-schedule';
 import { db } from '$lib/db';
 import { subscriptions } from '$lib/db/schema';
 import { eq } from 'drizzle-orm';
-import { deprovisionVPS } from '$lib/provisioning/deprovision-vps';
+import { orchestrator } from '$lib/orchestrator/client';
 
 /**
- * Schedule a VPS deprovisioning job to run after the grace period ends.
+ * Schedule a container deprovisioning job to run after the grace period ends.
  * The job will only deprovision if the subscription is still in grace_period status.
  *
- * @param userId - The user ID whose VPS should be deprovisioned
+ * @param userId - The user ID whose container should be deprovisioned
  * @param subscriptionId - The subscription ID (for logging)
  */
 export async function scheduleGracePeriodDeprovision(
@@ -48,10 +48,10 @@ export async function scheduleGracePeriodDeprovision(
 
 				// Only deprovision if still in grace period
 				if (subscription.status === 'grace_period') {
-					console.log(`Deprovisioning VPS for user ${userId} (grace period expired)`);
+					console.log(`Deprovisioning container for user ${userId} (grace period expired)`);
 
-					// Call deprovision function
-					await deprovisionVPS(userId);
+					// Deprovision container via orchestrator (removeData=true since grace period expired)
+					await orchestrator.deprovisionContainer(userId, true);
 
 					// Update subscription status
 					await db
@@ -59,18 +59,20 @@ export async function scheduleGracePeriodDeprovision(
 						.set({
 							status: 'canceled',
 							vpsProvisioned: false,
+							containerId: null,
+							containerName: null,
 							updatedAt: new Date()
 						})
 						.where(eq(subscriptions.userId, userId));
 
-					console.log(`VPS deprovisioned for user ${userId}`);
+					console.log(`Container deprovisioned for user ${userId}`);
 				} else {
 					console.log(
 						`Skipping deprovisioning for user ${userId} - subscription status is ${subscription.status} (not grace_period)`
 					);
 				}
 			} catch (error) {
-				console.error(`Failed to deprovision VPS for user ${userId}:`, error);
+				console.error(`Failed to deprovision container for user ${userId}:`, error);
 				// TODO: Send alert to monitoring system
 			}
 		});
@@ -104,4 +106,3 @@ export function cancelGracePeriodJob(userId: string): boolean {
 	console.log(`No grace period job found for user ${userId}`);
 	return false;
 }
-

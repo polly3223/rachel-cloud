@@ -96,7 +96,7 @@
 					<div class="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-lg p-8 mb-8 border-2 border-blue-200">
 						<h2 class="text-2xl font-bold text-gray-900 mb-4">Rachel Cloud Monthly</h2>
 						<div class="mb-6">
-							<span class="text-5xl font-extrabold text-blue-600">&euro;40</span>
+							<span class="text-5xl font-extrabold text-blue-600">$20</span>
 							<span class="text-xl text-gray-600">/month</span>
 						</div>
 						<ul class="text-left space-y-3 mb-8 max-w-md mx-auto">
@@ -104,19 +104,19 @@
 								<svg class="w-6 h-6 text-green-500 mr-2 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
 									<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
 								</svg>
-								<span class="text-gray-700">Your own Telegram bot connected to Claude</span>
+								<span class="text-gray-700">Your own personal AI assistant on Telegram</span>
 							</li>
 							<li class="flex items-start">
 								<svg class="w-6 h-6 text-green-500 mr-2 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
 									<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
 								</svg>
-								<span class="text-gray-700">Dedicated VPS instance</span>
+								<span class="text-gray-700">Powered by Claude — reads files, browses the web, and more</span>
 							</li>
 							<li class="flex items-start">
 								<svg class="w-6 h-6 text-green-500 mr-2 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
 									<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
 								</svg>
-								<span class="text-gray-700">Fully managed and monitored</span>
+								<span class="text-gray-700">Fully managed and monitored 24/7</span>
 							</li>
 							<li class="flex items-start">
 								<svg class="w-6 h-6 text-green-500 mr-2 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -246,8 +246,8 @@
 				<!-- Provisioning Step -->
 				<div class="text-center">
 					<div class="mb-6">
-						<h1 class="text-3xl font-bold text-gray-900 mb-2">Deploying Your Rachel Instance</h1>
-						<p class="text-gray-600">Step 3 of 3: VPS provisioning</p>
+						<h1 class="text-3xl font-bold text-gray-900 mb-2">Deploy Your Rachel</h1>
+						<p class="text-gray-600">Step 3 of 3: Launch your assistant</p>
 					</div>
 
 					<div class="py-12">
@@ -256,20 +256,20 @@
 							<path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
 						</svg>
 
-						<h3 class="text-xl font-semibold text-gray-900 mb-2">Setting up your VPS...</h3>
+						<h3 class="text-xl font-semibold text-gray-900 mb-2">Ready to launch!</h3>
 						<p class="text-gray-600 max-w-md mx-auto">
-							We're provisioning your dedicated server and deploying Rachel. This usually takes 2-3 minutes.
+							Your subscription is active and your bot is set up. Head to the dashboard to deploy Rachel — it takes about 10 seconds.
 						</p>
 
 						<div class="mt-8 bg-blue-50 rounded-lg p-6 max-w-md mx-auto text-left space-y-2">
 							<p class="text-sm text-gray-700 flex items-center gap-2">
-								<span class="text-blue-500">●</span> Creating your dedicated VPS on Hetzner Cloud
+								<span class="text-blue-500">●</span> Creating your Rachel instance
 							</p>
 							<p class="text-sm text-gray-700 flex items-center gap-2">
-								<span class="text-blue-500">●</span> Installing Bun, Claude Code, and Rachel
+								<span class="text-blue-500">●</span> Configuring your Telegram bot
 							</p>
 							<p class="text-sm text-gray-700 flex items-center gap-2">
-								<span class="text-blue-500">●</span> Injecting your credentials securely via SSH
+								<span class="text-blue-500">●</span> Connecting to Claude AI
 							</p>
 							<p class="text-sm text-gray-700 flex items-center gap-2">
 								<span class="text-blue-500">●</span> Starting your Rachel bot service

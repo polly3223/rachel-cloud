@@ -104,14 +104,14 @@ export async function sendSubscriptionCanceledEmail(
 							<h1 style="margin: 0 0 20px 0; font-size: 24px; color: #ffc107;">Subscription Canceled</h1>
 							<p style="margin: 0 0 15px 0; font-size: 16px;">Hi ${userName},</p>
 							<p style="margin: 0 0 15px 0; font-size: 16px;">
-								Your Rachel Cloud subscription has been canceled. You have a 3-day grace period before your VPS is deprovisioned.
+								Your Rachel Cloud subscription has been canceled. You have a 3-day grace period before your instance is deprovisioned.
 							</p>
 							<div style="background-color: #fff3cd; border-left: 4px solid #ffc107; padding: 15px; margin: 20px 0; border-radius: 4px;">
 								<p style="margin: 0; font-weight: 600;">Grace Period Ends:</p>
 								<p style="margin: 5px 0 0 0; font-size: 18px; color: #856404;">${gracePeriodEnd.toLocaleString()}</p>
 							</div>
 							<p style="margin: 0 0 15px 0; font-size: 16px;">
-								During this time, your VPS will remain active. To keep your service, reactivate your subscription before the grace period ends.
+								During this time, your instance will remain active. To keep your service, reactivate your subscription before the grace period ends.
 							</p>
 							<div style="text-align: center; margin: 30px 0;">
 								<a href="${baseUrl}/dashboard/billing"

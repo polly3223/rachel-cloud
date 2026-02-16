@@ -9,12 +9,12 @@
 	let pollingError = $state<string | null>(data.subscription?.provisioningError ?? null);
 	let pollTimer = $state<ReturnType<typeof setInterval> | null>(null);
 
-	// ─── VPS dashboard state (for running instances) ────────────────
-	let serverStatus = $state<string>(data.vpsStatus?.status ?? 'unknown');
-	let serverIp = $state<string>(data.vpsStatus?.ip ?? data.subscription?.vpsIpAddress ?? '');
-	let serverDatacenter = $state<string>(data.vpsStatus?.datacenter ?? '');
-	let serverCreated = $state<string>(data.vpsStatus?.created ?? '');
-	let serverUptime = $state<string>('');
+	// ─── Container dashboard state (for running instances) ─────────
+	let containerState = $state<string>(data.containerStatus?.state ?? 'unknown');
+	let containerHealth = $state<string>(data.containerStatus?.health ?? 'unknown');
+	let containerUptime = $state<number>(data.containerStatus?.uptime ?? 0);
+	let containerImage = $state<string>(data.containerStatus?.image ?? '');
+	let containerName = $state<string>(data.containerStatus?.containerName ?? '');
 	let statusLoading = $state(false);
 
 	// Restart state
@@ -28,26 +28,19 @@
 	let logLines = $state(100);
 	let autoRefreshLogs = $state(false);
 
-	// Copy-to-clipboard state
-	let copied = $state(false);
-
 	// ─── Status display messages ────────────────────────────────────
 	const statusMessages: Record<string, { label: string; description: string }> = {
 		pending: {
 			label: 'Preparing',
-			description: 'Preparing your VPS...',
+			description: 'Preparing your Rachel...',
 		},
 		creating: {
-			label: 'Creating Server',
-			description: 'Creating server on Hetzner...',
+			label: 'Creating',
+			description: 'Creating your Rachel instance...',
 		},
-		cloud_init: {
-			label: 'Installing Software',
-			description: 'Installing software and configuring system...',
-		},
-		injecting_secrets: {
-			label: 'Connecting Accounts',
-			description: 'Connecting your Claude and Telegram accounts...',
+		starting: {
+			label: 'Starting',
+			description: 'Starting your Rachel...',
 		},
 		ready: {
 			label: 'Running',
@@ -55,39 +48,61 @@
 		},
 		failed: {
 			label: 'Failed',
-			description: 'Provisioning failed.',
+			description: 'Deployment failed.',
 		},
 	};
 
 	// Progress step tracking
-	const provisioningSteps = ['pending', 'creating', 'cloud_init', 'injecting_secrets'] as const;
+	const provisioningSteps = ['pending', 'creating', 'starting'] as const;
 	let currentStepIndex = $derived(provisioningSteps.indexOf((pollingStatus ?? 'pending') as typeof provisioningSteps[number]));
 
-	// VPS is provisioned and ready
-	let isVPSReady = $derived(
+	// Container is provisioned and ready
+	let isReady = $derived(
 		data.subscription?.vpsProvisioned && (pollingStatus === 'ready' || pollingStatus === null)
 	);
 
 	// Status indicator colors
 	let statusColor = $derived.by(() => {
-		switch (serverStatus) {
+		switch (containerState) {
 			case 'running':
 				return { bg: 'bg-green-500', ring: 'ring-green-300', label: 'Running', badge: 'bg-green-100 text-green-800' };
-			case 'off':
-			case 'stopping':
+			case 'exited':
+			case 'dead':
 				return { bg: 'bg-red-500', ring: 'ring-red-300', label: 'Stopped', badge: 'bg-red-100 text-red-800' };
-			case 'starting':
-			case 'initializing':
+			case 'created':
+			case 'restarting':
 				return { bg: 'bg-yellow-500', ring: 'ring-yellow-300', label: 'Starting', badge: 'bg-yellow-100 text-yellow-800' };
 			default:
-				return { bg: 'bg-gray-400', ring: 'ring-gray-300', label: serverStatus || 'Unknown', badge: 'bg-gray-100 text-gray-800' };
+				return { bg: 'bg-gray-400', ring: 'ring-gray-300', label: containerState || 'Unknown', badge: 'bg-gray-100 text-gray-800' };
 		}
 	});
+
+	// Health indicator
+	let healthColor = $derived.by(() => {
+		switch (containerHealth) {
+			case 'healthy':
+				return { bg: 'bg-green-500', label: 'Healthy', badge: 'bg-green-100 text-green-800' };
+			case 'unhealthy':
+				return { bg: 'bg-red-500', label: 'Unhealthy', badge: 'bg-red-100 text-red-800' };
+			case 'starting':
+				return { bg: 'bg-yellow-500', label: 'Starting', badge: 'bg-yellow-100 text-yellow-800' };
+			default:
+				return { bg: 'bg-gray-400', label: containerHealth || 'Unknown', badge: 'bg-gray-100 text-gray-800' };
+		}
+	});
+
+	// Format uptime
+	function formatUptime(seconds: number): string {
+		if (seconds < 60) return `${seconds}s`;
+		if (seconds < 3600) return `${Math.floor(seconds / 60)}m`;
+		if (seconds < 86400) return `${Math.floor(seconds / 3600)}h ${Math.floor((seconds % 3600) / 60)}m`;
+		return `${Math.floor(seconds / 86400)}d ${Math.floor((seconds % 86400) / 3600)}h`;
+	}
 
 	// ─── Provisioning polling ───────────────────────────────────────
 
 	function isProvisioning(status: string | null): boolean {
-		return status === 'pending' || status === 'creating' || status === 'cloud_init' || status === 'injecting_secrets';
+		return status === 'pending' || status === 'creating' || status === 'starting';
 	}
 
 	function startPolling() {
@@ -164,11 +179,11 @@
 			const response = await fetch('/api/vps/status');
 			if (!response.ok) throw new Error('Failed to fetch status');
 			const result = await response.json();
-			serverStatus = result.status;
-			serverIp = result.ip || serverIp;
-			serverDatacenter = result.datacenter || serverDatacenter;
-			serverUptime = result.uptime || '';
-			serverCreated = result.created || serverCreated;
+			containerState = result.status || containerState;
+			containerHealth = result.health || containerHealth;
+			containerUptime = result.uptime ?? containerUptime;
+			containerImage = result.image || containerImage;
+			containerName = result.containerName || containerName;
 		} catch (err) {
 			console.error('Status refresh failed:', err);
 		} finally {
@@ -221,26 +236,6 @@
 		}
 	}
 
-	// ─── Copy to clipboard ─────────────────────────────────────────
-
-	async function copyIp() {
-		try {
-			await navigator.clipboard.writeText(serverIp);
-			copied = true;
-			setTimeout(() => (copied = false), 2000);
-		} catch {
-			// Fallback for older browsers
-			const textArea = document.createElement('textarea');
-			textArea.value = serverIp;
-			document.body.appendChild(textArea);
-			textArea.select();
-			document.execCommand('copy');
-			document.body.removeChild(textArea);
-			copied = true;
-			setTimeout(() => (copied = false), 2000);
-		}
-	}
-
 	// ─── Effects ────────────────────────────────────────────────────
 
 	// Auto-start provisioning polling if page loads with in-progress status
@@ -253,7 +248,7 @@
 
 	// Auto-refresh VPS status every 30 seconds when running
 	$effect(() => {
-		if (!isVPSReady) return;
+		if (!isReady) return;
 		// Fetch initial uptime/status client-side
 		refreshStatus();
 		const interval = setInterval(() => refreshStatus(), 30000);
@@ -262,13 +257,13 @@
 
 	// Fetch logs on mount when VPS is ready
 	$effect(() => {
-		if (!isVPSReady) return;
+		if (!isReady) return;
 		fetchLogs();
 	});
 
 	// Auto-refresh logs when toggle is enabled
 	$effect(() => {
-		if (!autoRefreshLogs || !isVPSReady) return;
+		if (!autoRefreshLogs || !isReady) return;
 		const interval = setInterval(() => fetchLogs(), 10000);
 		return () => clearInterval(interval);
 	});
@@ -280,58 +275,6 @@
 		return () => clearTimeout(timeout);
 	});
 
-	// ─── Health status helpers ──────────────────────────────────────
-
-	function healthDotColor(status: string | null): string {
-		switch (status) {
-			case 'healthy': return 'bg-green-500';
-			case 'unhealthy': return 'bg-yellow-500';
-			case 'down': return 'bg-red-500';
-			case 'circuit_open': return 'bg-red-500';
-			default: return 'bg-gray-400';
-		}
-	}
-
-	function healthBadgeColor(status: string | null): string {
-		switch (status) {
-			case 'healthy': return 'bg-green-100 text-green-800';
-			case 'unhealthy': return 'bg-yellow-100 text-yellow-800';
-			case 'down': return 'bg-red-100 text-red-800';
-			case 'circuit_open': return 'bg-red-100 text-red-800';
-			default: return 'bg-gray-100 text-gray-600';
-		}
-	}
-
-	function healthBannerBg(status: string | null): string {
-		switch (status) {
-			case 'healthy': return 'bg-green-50 border-green-200';
-			case 'unhealthy': return 'bg-yellow-50 border-yellow-200';
-			case 'down': return 'bg-red-50 border-red-200';
-			case 'circuit_open': return 'bg-red-50 border-red-200';
-			default: return 'bg-gray-50 border-gray-200';
-		}
-	}
-
-	function healthLabel(status: string | null): string {
-		switch (status) {
-			case 'healthy': return 'Healthy';
-			case 'unhealthy': return 'Unhealthy';
-			case 'down': return 'Down';
-			case 'circuit_open': return 'Recovery Failed';
-			default: return 'Monitoring Starting';
-		}
-	}
-
-	function timeAgo(date: Date | string | null): string {
-		if (!date) return 'Not yet checked';
-		const now = Date.now();
-		const then = typeof date === 'string' ? new Date(date).getTime() : date.getTime();
-		const diffSec = Math.floor((now - then) / 1000);
-		if (diffSec < 60) return `${diffSec}s ago`;
-		if (diffSec < 3600) return `${Math.floor(diffSec / 60)}m ago`;
-		if (diffSec < 86400) return `${Math.floor(diffSec / 3600)}h ago`;
-		return `${Math.floor(diffSec / 86400)}d ago`;
-	}
 </script>
 
 <svelte:head>
@@ -356,7 +299,7 @@
 		</div>
 	{/if}
 
-	{#if isVPSReady}
+	{#if isReady}
 		<!-- ═══════ ENHANCED RUNNING DASHBOARD ═══════ -->
 
 		<!-- Section 1: Server Status Card -->
@@ -383,7 +326,7 @@
 						<p class="text-sm font-medium text-gray-500 mb-1">Status</p>
 						<div class="flex items-center gap-2">
 							<span class="relative flex h-3 w-3">
-								{#if serverStatus === 'running'}
+								{#if containerState === 'running'}
 									<span class="animate-ping absolute inline-flex h-full w-full rounded-full {statusColor.bg} opacity-75"></span>
 								{/if}
 								<span class="relative inline-flex rounded-full h-3 w-3 {statusColor.bg}"></span>
@@ -394,87 +337,30 @@
 						</div>
 					</div>
 
-					<!-- IP Address -->
+					<!-- Health -->
 					<div>
-						<p class="text-sm font-medium text-gray-500 mb-1">IP Address</p>
+						<p class="text-sm font-medium text-gray-500 mb-1">Health</p>
 						<div class="flex items-center gap-2">
-							<code class="text-sm font-mono text-gray-900">{serverIp || 'N/A'}</code>
-							{#if serverIp}
-								<button
-									onclick={copyIp}
-									class="text-gray-400 hover:text-gray-600 transition-colors"
-									title="Copy IP address"
-								>
-									{#if copied}
-										<svg class="w-4 h-4 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-											<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
-										</svg>
-									{:else}
-										<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-											<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
-										</svg>
-									{/if}
-								</button>
-							{/if}
+							<span class="relative flex h-3 w-3">
+								<span class="relative inline-flex rounded-full h-3 w-3 {healthColor.bg}"></span>
+							</span>
+							<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium {healthColor.badge}">
+								{healthColor.label}
+							</span>
 						</div>
-					</div>
-
-					<!-- Datacenter -->
-					<div>
-						<p class="text-sm font-medium text-gray-500 mb-1">Datacenter</p>
-						<p class="text-sm text-gray-900">{serverDatacenter || 'N/A'}</p>
 					</div>
 
 					<!-- Uptime -->
 					<div>
 						<p class="text-sm font-medium text-gray-500 mb-1">Uptime</p>
-						<p class="text-sm text-gray-900">{serverUptime || 'Loading...'}</p>
+						<p class="text-sm text-gray-900">{formatUptime(containerUptime)}</p>
 					</div>
-				</div>
-			</div>
-		</div>
 
-		<!-- Section 1.5: Health Monitor Banner -->
-		<div class="rounded-lg border mb-6 {healthBannerBg(data.healthStatus?.status ?? null)}">
-			<div class="px-6 py-4">
-				<div class="flex items-center justify-between flex-wrap gap-3">
-					<div class="flex items-center gap-3">
-						<!-- Health dot -->
-						<span class="relative flex h-3 w-3">
-							{#if data.healthStatus?.status === 'healthy'}
-								<span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-500 opacity-75"></span>
-							{/if}
-							<span class="relative inline-flex rounded-full h-3 w-3 {healthDotColor(data.healthStatus?.status ?? null)}"></span>
-						</span>
-						<!-- Label + badge -->
-						<div class="flex items-center gap-2">
-							<span class="text-sm font-medium text-gray-700">Health Monitor</span>
-							<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium {healthBadgeColor(data.healthStatus?.status ?? null)}">
-								{healthLabel(data.healthStatus?.status ?? null)}
-							</span>
-						</div>
-						<!-- Consecutive failures if unhealthy -->
-						{#if data.healthStatus?.status === 'unhealthy' && data.healthStatus.consecutiveFailures > 0}
-							<span class="text-xs text-yellow-700">({data.healthStatus.consecutiveFailures} consecutive failure{data.healthStatus.consecutiveFailures !== 1 ? 's' : ''})</span>
-						{/if}
-						<!-- Circuit open note -->
-						{#if data.healthStatus?.status === 'circuit_open'}
-							<span class="text-xs text-red-700 font-medium">Admin has been notified</span>
-						{/if}
-						<!-- Separator + last checked -->
-						<span class="text-xs text-gray-500">
-							Last checked: {timeAgo(data.healthStatus?.lastCheckAt ?? null)}
-						</span>
+					<!-- Image -->
+					<div>
+						<p class="text-sm font-medium text-gray-500 mb-1">Version</p>
+						<p class="text-sm text-gray-900 font-mono">{containerImage || 'N/A'}</p>
 					</div>
-					<!-- Right side: lifetime counters -->
-					{#if data.healthStatus}
-						<div class="flex items-center gap-4 text-xs text-gray-500">
-							<span>{data.healthStatus.totalChecks} check{data.healthStatus.totalChecks !== 1 ? 's' : ''}</span>
-							{#if data.healthStatus.totalRecoveries > 0}
-								<span>{data.healthStatus.totalRecoveries} recover{data.healthStatus.totalRecoveries !== 1 ? 'ies' : 'y'}</span>
-							{/if}
-						</div>
-					{/if}
 				</div>
 			</div>
 		</div>
@@ -601,52 +487,28 @@
 			</div>
 		</div>
 
-		<!-- Section 4: Connection Info Card -->
+		<!-- Section 4: Instance Info Card -->
 		<div class="bg-white shadow rounded-lg mb-6">
 			<div class="px-6 py-5 border-b border-gray-200">
-				<h2 class="text-xl font-semibold text-gray-900">Connection Info</h2>
+				<h2 class="text-xl font-semibold text-gray-900">Instance Info</h2>
 			</div>
 			<div class="px-6 py-5">
 				<dl class="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-4">
-					<div>
-						<dt class="text-sm font-medium text-gray-500">Server IP</dt>
-						<dd class="mt-1 flex items-center gap-2">
-							<code class="text-sm font-mono text-gray-900 bg-gray-100 px-2 py-0.5 rounded">{serverIp || 'N/A'}</code>
-							{#if serverIp}
-								<button
-									onclick={copyIp}
-									class="text-xs text-blue-600 hover:text-blue-800 transition-colors"
-								>
-									{copied ? 'Copied!' : 'Copy'}
-								</button>
-							{/if}
-						</dd>
-					</div>
-					{#if data.subscription?.vpsHostname}
+					{#if containerName}
 						<div>
-							<dt class="text-sm font-medium text-gray-500">Hostname</dt>
-							<dd class="mt-1 text-sm text-gray-900">{data.subscription.vpsHostname}</dd>
+							<dt class="text-sm font-medium text-gray-500">Container</dt>
+							<dd class="mt-1 text-sm font-mono text-gray-900">{containerName}</dd>
 						</div>
 					{/if}
-					<div>
-						<dt class="text-sm font-medium text-gray-500">Datacenter</dt>
-						<dd class="mt-1 text-sm text-gray-900">{serverDatacenter || 'N/A'}</dd>
-					</div>
-					{#if serverCreated}
+					{#if containerImage}
 						<div>
-							<dt class="text-sm font-medium text-gray-500">Provisioned</dt>
-							<dd class="mt-1 text-sm text-gray-900">
-								{new Date(serverCreated).toLocaleDateString('en-US', {
-									year: 'numeric',
-									month: 'long',
-									day: 'numeric',
-								})}
-							</dd>
+							<dt class="text-sm font-medium text-gray-500">Image</dt>
+							<dd class="mt-1 text-sm font-mono text-gray-900">{containerImage}</dd>
 						</div>
 					{/if}
 					{#if data.subscription?.provisionedAt}
 						<div>
-							<dt class="text-sm font-medium text-gray-500">Service Started</dt>
+							<dt class="text-sm font-medium text-gray-500">Deployed</dt>
 							<dd class="mt-1 text-sm text-gray-900">
 								{new Date(data.subscription.provisionedAt).toLocaleDateString('en-US', {
 									year: 'numeric',
@@ -656,6 +518,10 @@
 							</dd>
 						</div>
 					{/if}
+					<div>
+						<dt class="text-sm font-medium text-gray-500">Uptime</dt>
+						<dd class="mt-1 text-sm text-gray-900">{formatUptime(containerUptime)}</dd>
+					</div>
 				</dl>
 			</div>
 		</div>
@@ -764,7 +630,7 @@
 							</div>
 							<h3 class="text-lg font-medium text-gray-900 mb-2">Deploy Rachel</h3>
 							<p class="text-sm text-gray-600 mb-4">
-								Your subscription is active. Click the button below to create your dedicated server and start Rachel on Telegram. Setup takes about 90 seconds.
+								Your subscription is active. Click the button below to deploy Rachel on Telegram. Setup takes about 10 seconds.
 							</p>
 							<button
 								type="button"
@@ -805,7 +671,7 @@
 								href="/onboarding"
 								class="inline-flex items-center px-6 py-3 border border-transparent text-base font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors shadow-sm"
 							>
-								Subscribe Now — &euro;40/month
+								Subscribe Now — $20/month
 							</a>
 						</div>
 					</div>
