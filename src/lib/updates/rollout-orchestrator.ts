@@ -63,8 +63,8 @@ export type RolloutStage =
 
 /** Per-container update tracking during rollout. */
 export interface ContainerUpdateStatus {
-	userId: string;
-	email: string;
+	telegramId: number;
+	username: string | null;
 	containerName: string;
 	status: 'pending' | 'updating' | 'success' | 'failed' | 'rolled_back' | 'skipped';
 	previousImage: string | null;
@@ -85,8 +85,6 @@ export interface RolloutState {
 	currentStageProgress: number;
 	error: string | null;
 	containerStatuses: ContainerUpdateStatus[];
-	/** @deprecated Alias for containerStatuses, kept for admin UI compat */
-	vpsStatuses: ContainerUpdateStatus[];
 }
 
 // ---------------------------------------------------------------------------
@@ -96,7 +94,7 @@ export interface RolloutState {
 let rolloutState: RolloutState = createIdleState();
 
 function createIdleState(): RolloutState {
-	const state: RolloutState = {
+	return {
 		inProgress: false,
 		stage: 'idle',
 		startedAt: null,
@@ -107,10 +105,8 @@ function createIdleState(): RolloutState {
 		rolledBackCount: 0,
 		currentStageProgress: 0,
 		error: null,
-		containerStatuses: [],
-		get vpsStatuses() { return this.containerStatuses; }
+		containerStatuses: []
 	};
-	return state;
 }
 
 // ---------------------------------------------------------------------------
@@ -151,8 +147,8 @@ async function processInBatches<T>(
 // ---------------------------------------------------------------------------
 
 interface UpdatableContainer {
-	userId: string;
-	email: string;
+	telegramId: number;
+	username: string | null;
 	containerName: string;
 }
 
@@ -162,16 +158,16 @@ interface UpdatableContainer {
 async function getUpdatableContainers(): Promise<UpdatableContainer[]> {
 	const results = await db
 		.select({
-			userId: subscriptions.userId,
-			email: users.email,
+			telegramId: subscriptions.telegramId,
+			username: users.username,
 			containerName: subscriptions.containerName,
 		})
 		.from(subscriptions)
-		.innerJoin(users, eq(subscriptions.userId, users.id))
+		.innerJoin(users, eq(subscriptions.telegramId, users.telegramId))
 		.where(
 			and(
 				eq(subscriptions.status, 'active'),
-				eq(subscriptions.vpsProvisioned, true),
+				eq(subscriptions.containerProvisioned, true),
 				eq(subscriptions.provisioningStatus, 'ready'),
 				isNotNull(subscriptions.containerId)
 			)
@@ -202,9 +198,7 @@ export function getRolloutStatus(): RolloutState {
 	return {
 		...rolloutState,
 		containerStatuses: [...rolloutState.containerStatuses],
-		vpsStatuses: [...rolloutState.containerStatuses],
-		totalVPSs: rolloutState.totalContainers, // Legacy compat
-	} as RolloutState & { totalVPSs: number };
+	};
 }
 
 /**
@@ -252,15 +246,14 @@ export async function startRollout(image?: string): Promise<void> {
 			currentStageProgress: 0,
 			error: null,
 			containerStatuses: allContainers.map((c) => ({
-				userId: c.userId,
-				email: c.email,
+				telegramId: c.telegramId,
+				username: c.username,
 				containerName: c.containerName,
 				status: 'pending',
 				previousImage: null,
 				newImage: null,
 				error: null
-			})),
-			get vpsStatuses() { return this.containerStatuses; }
+			}))
 		};
 
 		console.log(
@@ -294,7 +287,7 @@ export async function startRollout(image?: string): Promise<void> {
 			// Process this stage's containers via orchestrator
 			await processInBatches(stageContainers, CONCURRENCY_LIMIT, async (container) => {
 				const statusIdx = rolloutState.containerStatuses.findIndex(
-					(s) => s.userId === container.userId
+					(s) => s.telegramId === container.telegramId
 				);
 
 				if (statusIdx !== -1) {
@@ -302,7 +295,7 @@ export async function startRollout(image?: string): Promise<void> {
 				}
 
 				try {
-					const response = await orchestrator.updateContainer(container.userId, image);
+					const response = await orchestrator.updateContainer(String(container.telegramId), image);
 					const result = response.result;
 
 					stageCompleted++;
@@ -359,7 +352,7 @@ export async function startRollout(image?: string): Promise<void> {
 				// Mark remaining containers as skipped
 				for (let i = processedCount; i < allContainers.length; i++) {
 					const skipIdx = rolloutState.containerStatuses.findIndex(
-						(s) => s.userId === allContainers[i].userId
+						(s) => s.telegramId === allContainers[i].telegramId
 					);
 					if (skipIdx !== -1) {
 						rolloutState.containerStatuses[skipIdx].status = 'skipped';

@@ -1,13 +1,15 @@
-import { requireAuth } from '$lib/auth/session';
+import { redirect } from '@sveltejs/kit';
 import { getSubscription } from '$lib/billing/subscription-manager';
 import type { PageServerLoad } from './$types';
 
 export const load: PageServerLoad = async (event) => {
-	// Require authentication
-	const session = await requireAuth(event);
+	const session = event.locals.session;
+	if (!session) {
+		throw redirect(302, '/login');
+	}
 
 	// Get user's subscription from database
-	const subscription = await getSubscription(session.user.id);
+	const subscription = await getSubscription(session.telegramId);
 
 	// Determine if user has an active subscription
 	const hasActiveSubscription = subscription?.status === 'active';

@@ -1,32 +1,35 @@
 import { redirect } from '@sveltejs/kit';
 import type { RequestEvent } from '@sveltejs/kit';
-import { requireAuth, type Session } from '$lib/auth/session';
+import type { TelegramSession } from '$lib/auth/session';
 
 /**
- * Check if the given email matches the ADMIN_EMAIL env var.
- * Comparison is case-insensitive per RFC 5321.
- * Returns false if ADMIN_EMAIL is not set.
+ * Check if the given Telegram user ID matches the ADMIN_TELEGRAM_ID env var.
+ * Returns false if ADMIN_TELEGRAM_ID is not set.
  */
-export function isAdmin(email: string): boolean {
-	const adminEmail = process.env.ADMIN_EMAIL;
-	if (!adminEmail) {
+export function isAdmin(telegramId: number): boolean {
+	const adminTelegramId = process.env.ADMIN_TELEGRAM_ID;
+	if (!adminTelegramId) {
 		return false;
 	}
-	return email.toLowerCase() === adminEmail.toLowerCase();
+	return telegramId === Number(adminTelegramId);
 }
 
 /**
  * Require admin authentication for a route.
  * Redirects to /login if not authenticated, or /dashboard if not admin.
  * @param event - SvelteKit RequestEvent
- * @returns Session object (guaranteed non-null, guaranteed admin)
+ * @returns TelegramSession object (guaranteed non-null, guaranteed admin)
  * @throws redirect(302, "/login") if not authenticated
  * @throws redirect(302, "/dashboard") if not admin
  */
-export async function requireAdmin(event: RequestEvent): Promise<NonNullable<Session>> {
-	const session = await requireAuth(event);
+export function requireAdmin(event: RequestEvent): TelegramSession {
+	const session = event.locals.session;
 
-	if (!isAdmin(session.user.email)) {
+	if (!session) {
+		throw redirect(302, '/login');
+	}
+
+	if (!isAdmin(session.telegramId)) {
 		throw redirect(302, '/dashboard');
 	}
 

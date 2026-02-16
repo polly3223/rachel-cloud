@@ -20,12 +20,12 @@ import { eq } from 'drizzle-orm';
 
 /** A single user row enriched with subscription and container data. */
 export interface AdminUser {
-	id: string;
-	email: string;
-	name: string | null;
+	telegramId: number;
+	firstName: string | null;
+	username: string | null;
 	createdAt: Date;
 	subscriptionStatus: string | null;
-	vpsProvisioned: boolean;
+	containerProvisioned: boolean;
 	containerId: string | null;
 	containerName: string | null;
 	currentImage: string | null;
@@ -81,12 +81,12 @@ export async function getAdminOverview(): Promise<AdminOverview> {
 	try {
 		const allUsers = await db
 			.select({
-				id: users.id,
-				email: users.email,
-				name: users.name,
+				telegramId: users.telegramId,
+				firstName: users.firstName,
+				username: users.username,
 				createdAt: users.createdAt,
 				subscriptionStatus: subscriptions.status,
-				vpsProvisioned: subscriptions.vpsProvisioned,
+				containerProvisioned: subscriptions.containerProvisioned,
 				containerId: subscriptions.containerId,
 				containerName: subscriptions.containerName,
 				currentImage: subscriptions.currentImage,
@@ -94,17 +94,17 @@ export async function getAdminOverview(): Promise<AdminOverview> {
 				provisionedAt: subscriptions.provisionedAt,
 			})
 			.from(users)
-			.leftJoin(subscriptions, eq(users.id, subscriptions.userId))
+			.leftJoin(subscriptions, eq(users.telegramId, subscriptions.telegramId))
 			.orderBy(users.createdAt);
 
-		// Map rows to AdminUser[], handling SQLite boolean (0/1 → boolean)
+		// Map rows to AdminUser[]
 		const mappedUsers: AdminUser[] = allUsers.map((row) => ({
-			id: row.id,
-			email: row.email,
-			name: row.name,
+			telegramId: row.telegramId,
+			firstName: row.firstName,
+			username: row.username,
 			createdAt: row.createdAt,
 			subscriptionStatus: row.subscriptionStatus ?? null,
-			vpsProvisioned: !!(row.vpsProvisioned),
+			containerProvisioned: !!(row.containerProvisioned),
 			containerId: row.containerId ?? null,
 			containerName: row.containerName ?? null,
 			currentImage: row.currentImage ?? null,
@@ -123,7 +123,7 @@ export async function getAdminOverview(): Promise<AdminOverview> {
 			(u) => u.subscriptionStatus === 'canceled'
 		).length;
 		const runningContainerCount = mappedUsers.filter(
-			(u) => u.vpsProvisioned === true && u.containerId !== null
+			(u) => u.containerProvisioned === true && u.containerId !== null
 		).length;
 
 		// Financial metrics

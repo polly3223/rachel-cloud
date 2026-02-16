@@ -12,7 +12,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 	try {
 		const session = locals.session;
 
-		if (!session || !session.user) {
+		if (!session) {
 			return json(
 				{
 					error: 'Unauthorized',
@@ -36,7 +36,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 		}
 
 		// Use the authenticated user's ID (not the one from the request body for security)
-		const success = await processReferral(session.user.id, referralCode);
+		const success = await processReferral(String(session.telegramId), referralCode);
 
 		return json({
 			success,

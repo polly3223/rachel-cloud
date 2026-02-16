@@ -1,40 +1,37 @@
 import { redirect } from '@sveltejs/kit';
 import type { PageServerLoad } from './$types';
-import { requireAuth } from '$lib/auth/session';
 import { db } from '$lib/db';
-import { subscriptions, telegramBots } from '$lib/db/schema';
+import { subscriptions } from '$lib/db/schema';
 import { eq } from 'drizzle-orm';
 
 export const load: PageServerLoad = async (event) => {
-	// Require authentication
-	const session = await requireAuth(event);
-	const userId = session.user.id;
+	const session = event.locals.session;
+	if (!session) {
+		throw redirect(302, '/login');
+	}
+	const telegramId = session.telegramId;
 
 	// Query subscription status
 	const subscription = await db.query.subscriptions.findFirst({
-		where: eq(subscriptions.userId, userId)
+		where: eq(subscriptions.telegramId, telegramId)
 	});
 
-	// Query telegram bot status
-	const bot = await db.query.telegramBots.findFirst({
-		where: eq(telegramBots.userId, userId)
-	});
+	// Simplified onboarding: just payment → auto-provisioning
+	// No more BotFather setup step — shared bot model
+	let step: 'payment' | 'provisioning' | 'ready';
 
-	// Determine current onboarding step
-	let step: 'payment' | 'telegram_bot' | 'provisioning';
-
-	if (!subscription || subscription.status === 'none') {
+	if (!subscription || subscription.status === 'none' || subscription.status === 'canceled') {
 		step = 'payment';
-	} else if (!bot || !bot.validated) {
-		step = 'telegram_bot';
-	} else {
+	} else if (!subscription.containerProvisioned || subscription.provisioningStatus !== 'ready') {
 		step = 'provisioning';
+	} else {
+		step = 'ready';
 	}
 
 	return {
 		step,
 		hasSubscription: subscription?.status === 'active',
-		hasBot: bot?.validated || false,
-		botUsername: bot?.botUsername || null
+		containerReady: subscription?.provisioningStatus === 'ready',
+		provisioningStatus: subscription?.provisioningStatus ?? null,
 	};
 };

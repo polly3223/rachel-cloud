@@ -9,8 +9,8 @@
 
 	let searchQuery = $state('');
 	let statusFilter = $state<'all' | 'active' | 'grace_period' | 'canceled' | 'none'>('all');
-	let expandedUserId = $state<string | null>(null);
-	let copiedEmail = $state<string | null>(null);
+	let expandedUserId = $state<number | null>(null);
+	let copiedId = $state<string | null>(null);
 
 	// -----------------------------------------------------------------------
 	// Filtered users (client-side)
@@ -29,13 +29,14 @@
 			});
 		}
 
-		// Filter by search query (email or name)
+		// Filter by search query (username, firstName, or telegramId)
 		if (searchQuery.trim()) {
 			const q = searchQuery.trim().toLowerCase();
 			result = result.filter(
 				(u) =>
-					u.email.toLowerCase().includes(q) ||
-					(u.name && u.name.toLowerCase().includes(q))
+					(u.username && u.username.toLowerCase().includes(q)) ||
+					(u.firstName && u.firstName.toLowerCase().includes(q)) ||
+					String(u.telegramId).includes(q)
 			);
 		}
 
@@ -46,16 +47,16 @@
 	// Actions
 	// -----------------------------------------------------------------------
 
-	function toggleExpanded(userId: string) {
+	function toggleExpanded(userId: number) {
 		expandedUserId = expandedUserId === userId ? null : userId;
 	}
 
-	async function copyEmail(email: string) {
+	async function copyIdentifier(text: string) {
 		try {
-			await navigator.clipboard.writeText(email);
-			copiedEmail = email;
+			await navigator.clipboard.writeText(text);
+			copiedId = text;
 			setTimeout(() => {
-				copiedEmail = null;
+				copiedId = null;
 			}, 2000);
 		} catch {
 			// Fallback: no-op if clipboard not available
@@ -179,7 +180,7 @@
 				<input
 					type="text"
 					bind:value={searchQuery}
-					placeholder="Search by email or name..."
+					placeholder="Search by username, name, or Telegram ID..."
 					class="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-lg text-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
 				/>
 				{#if searchQuery}
@@ -268,7 +269,7 @@
 						</tr>
 					</thead>
 					<tbody class="bg-white divide-y divide-gray-200">
-						{#each filteredUsers as user (user.id)}
+						{#each filteredUsers as user (user.telegramId)}
 							<!-- Main row -->
 							<tr class="hover:bg-gray-50 transition-colors">
 								<td class="px-6 py-4 whitespace-nowrap">
@@ -276,17 +277,17 @@
 										<div>
 											<button
 												type="button"
-												onclick={() => copyEmail(user.email)}
+												onclick={() => copyIdentifier(user.username || String(user.telegramId))}
 												class="text-sm font-medium text-gray-900 hover:text-indigo-600 transition-colors text-left cursor-pointer"
-												title="Click to copy email"
+												title="Click to copy"
 											>
-												{user.email}
+												{user.username || String(user.telegramId)}
 											</button>
-											{#if copiedEmail === user.email}
+											{#if copiedId === (user.username || String(user.telegramId))}
 												<span class="ml-1 text-xs text-green-600">Copied!</span>
 											{/if}
-											{#if user.name}
-												<p class="text-xs text-gray-500">{user.name}</p>
+											{#if user.firstName}
+												<p class="text-xs text-gray-500">{user.firstName}</p>
 											{/if}
 										</div>
 									</div>
@@ -298,7 +299,7 @@
 								</td>
 								<td class="px-6 py-4 whitespace-nowrap">
 									<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium {provisioningStatusColor(user.provisioningStatus)}">
-										{provisioningStatusLabel(user.provisioningStatus, user.vpsProvisioned)}
+										{provisioningStatusLabel(user.provisioningStatus, user.containerProvisioned)}
 									</span>
 								</td>
 								<td class="px-6 py-4 whitespace-nowrap">
@@ -314,12 +315,12 @@
 								<td class="px-6 py-4 whitespace-nowrap text-right">
 									<button
 										type="button"
-										onclick={() => toggleExpanded(user.id)}
+										onclick={() => toggleExpanded(user.telegramId)}
 										class="text-indigo-600 hover:text-indigo-800 text-sm font-medium transition-colors inline-flex items-center gap-1"
 									>
-										{expandedUserId === user.id ? 'Hide' : 'Details'}
+										{expandedUserId === user.telegramId ? 'Hide' : 'Details'}
 										<svg
-											class="w-4 h-4 transition-transform duration-200 {expandedUserId === user.id ? 'rotate-180' : ''}"
+											class="w-4 h-4 transition-transform duration-200 {expandedUserId === user.telegramId ? 'rotate-180' : ''}"
 											fill="none"
 											stroke="currentColor"
 											viewBox="0 0 24 24"
@@ -331,14 +332,14 @@
 							</tr>
 
 							<!-- Expanded details row -->
-							{#if expandedUserId === user.id}
+							{#if expandedUserId === user.telegramId}
 								<tr class="bg-gray-50">
 									<td colspan="6" class="px-6 py-4">
 										<div class="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
 											<div>
 												<p class="text-xs font-medium text-gray-500 uppercase tracking-wider mb-1">Provisioning Status</p>
 												<span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium {provisioningStatusColor(user.provisioningStatus)}">
-													{provisioningStatusLabel(user.provisioningStatus, user.vpsProvisioned)}
+													{provisioningStatusLabel(user.provisioningStatus, user.containerProvisioned)}
 												</span>
 											</div>
 											<div>
@@ -354,8 +355,8 @@
 												<p class="text-gray-700">{formatDateTime(user.provisionedAt)}</p>
 											</div>
 											<div>
-												<p class="text-xs font-medium text-gray-500 uppercase tracking-wider mb-1">User ID</p>
-												<code class="text-xs font-mono text-gray-500 bg-gray-100 px-1.5 py-0.5 rounded">{user.id}</code>
+												<p class="text-xs font-medium text-gray-500 uppercase tracking-wider mb-1">Telegram ID</p>
+												<code class="text-xs font-mono text-gray-500 bg-gray-100 px-1.5 py-0.5 rounded">{user.telegramId}</code>
 											</div>
 										</div>
 									</td>
@@ -368,24 +369,24 @@
 
 			<!-- Mobile card layout -->
 			<div class="lg:hidden divide-y divide-gray-200">
-				{#each filteredUsers as user (user.id)}
+				{#each filteredUsers as user (user.telegramId)}
 					<div class="px-4 py-4 space-y-3">
-						<!-- Header: email + subscription badge -->
+						<!-- Header: user + subscription badge -->
 						<div class="flex items-start justify-between gap-2">
 							<div class="min-w-0 flex-1">
 								<button
 									type="button"
-									onclick={() => copyEmail(user.email)}
+									onclick={() => copyIdentifier(user.username || String(user.telegramId))}
 									class="text-sm font-medium text-gray-900 hover:text-indigo-600 transition-colors text-left cursor-pointer truncate block max-w-full"
-									title="Click to copy email"
+									title="Click to copy"
 								>
-									{user.email}
+									{user.username || String(user.telegramId)}
 								</button>
-								{#if copiedEmail === user.email}
+								{#if copiedId === (user.username || String(user.telegramId))}
 									<span class="text-xs text-green-600">Copied!</span>
 								{/if}
-								{#if user.name}
-									<p class="text-xs text-gray-500">{user.name}</p>
+								{#if user.firstName}
+									<p class="text-xs text-gray-500">{user.firstName}</p>
 								{/if}
 							</div>
 							<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium flex-shrink-0 {statusColor(user.subscriptionStatus)}">
@@ -396,7 +397,7 @@
 						<!-- Status badges row -->
 						<div class="flex flex-wrap gap-2">
 							<span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium {provisioningStatusColor(user.provisioningStatus)}">
-								Container: {provisioningStatusLabel(user.provisioningStatus, user.vpsProvisioned)}
+								Container: {provisioningStatusLabel(user.provisioningStatus, user.containerProvisioned)}
 							</span>
 						</div>
 
@@ -414,12 +415,12 @@
 						<!-- Expand details -->
 						<button
 							type="button"
-							onclick={() => toggleExpanded(user.id)}
+							onclick={() => toggleExpanded(user.telegramId)}
 							class="text-indigo-600 hover:text-indigo-800 text-xs font-medium transition-colors inline-flex items-center gap-1"
 						>
-							{expandedUserId === user.id ? 'Hide details' : 'View details'}
+							{expandedUserId === user.telegramId ? 'Hide details' : 'View details'}
 							<svg
-								class="w-3 h-3 transition-transform duration-200 {expandedUserId === user.id ? 'rotate-180' : ''}"
+								class="w-3 h-3 transition-transform duration-200 {expandedUserId === user.telegramId ? 'rotate-180' : ''}"
 								fill="none"
 								stroke="currentColor"
 								viewBox="0 0 24 24"
@@ -428,13 +429,13 @@
 							</svg>
 						</button>
 
-						{#if expandedUserId === user.id}
+						{#if expandedUserId === user.telegramId}
 							<div class="bg-gray-50 rounded-lg p-3 space-y-2 text-xs">
 								<div class="grid grid-cols-2 gap-3">
 									<div>
 										<p class="font-medium text-gray-500 uppercase tracking-wider mb-0.5">Provisioning</p>
 										<span class="inline-flex items-center px-1.5 py-0.5 rounded-full text-xs font-medium {provisioningStatusColor(user.provisioningStatus)}">
-											{provisioningStatusLabel(user.provisioningStatus, user.vpsProvisioned)}
+											{provisioningStatusLabel(user.provisioningStatus, user.containerProvisioned)}
 										</span>
 									</div>
 									<div>
@@ -450,8 +451,8 @@
 										<p class="text-gray-700">{formatDateTime(user.provisionedAt)}</p>
 									</div>
 									<div class="col-span-2">
-										<p class="font-medium text-gray-500 uppercase tracking-wider mb-0.5">User ID</p>
-										<code class="font-mono text-gray-500 bg-gray-100 px-1 py-0.5 rounded break-all">{user.id}</code>
+										<p class="font-medium text-gray-500 uppercase tracking-wider mb-0.5">Telegram ID</p>
+										<code class="font-mono text-gray-500 bg-gray-100 px-1 py-0.5 rounded break-all">{user.telegramId}</code>
 									</div>
 								</div>
 							</div>

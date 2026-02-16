@@ -11,7 +11,7 @@ export const POST: RequestHandler = async ({ locals }) => {
 	try {
 		const session = locals.session;
 
-		if (!session || !session.user) {
+		if (!session) {
 			return json(
 				{
 					error: 'Unauthorized',
@@ -21,7 +21,7 @@ export const POST: RequestHandler = async ({ locals }) => {
 			);
 		}
 
-		const code = await generateReferralCode(session.user.id);
+		const code = await generateReferralCode(String(session.telegramId));
 		const link = getReferralLink(code);
 
 		return json({

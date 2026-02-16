@@ -6,10 +6,12 @@
  * Triggers container provisioning for the authenticated user via the orchestrator.
  * Provisioning is synchronous (~10 seconds) — returns when the container is ready.
  *
+ * In the Telegram-first model, the shared bot token is used for all containers.
+ * No per-user bot setup is needed.
+ *
  * Prerequisites:
- * - User must be authenticated
+ * - User must be authenticated (Telegram session)
  * - User must have an active subscription (status = 'active')
- * - User must have a validated Telegram bot token
  * - Container must not already be provisioned
  *
  * @module provision-deploy
@@ -17,22 +19,22 @@
 
 import { json } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
-import { requireAuth } from '$lib/auth/session';
 import { db } from '$lib/db';
-import { subscriptions, telegramBots } from '$lib/db/schema';
+import { subscriptions } from '$lib/db/schema';
 import { eq } from 'drizzle-orm';
 import { orchestrator } from '$lib/orchestrator/client';
-import { decrypt } from '$lib/crypto/encryption';
 
 export const POST: RequestHandler = async (event) => {
-	// Require authentication
-	const session = await requireAuth(event);
-	const userId = session.user.id;
+	const session = event.locals.session;
+	if (!session) {
+		return json({ error: 'Not authenticated' }, { status: 401 });
+	}
+	const telegramId = session.telegramId;
 
 	try {
 		// Get user's subscription
 		const subscription = await db.query.subscriptions.findFirst({
-			where: eq(subscriptions.userId, userId),
+			where: eq(subscriptions.telegramId, telegramId),
 		});
 
 		if (!subscription) {
@@ -50,7 +52,7 @@ export const POST: RequestHandler = async (event) => {
 		}
 
 		// Check if already provisioned
-		if (subscription.vpsProvisioned && subscription.containerId) {
+		if (subscription.containerProvisioned && subscription.containerId) {
 			return json(
 				{ error: 'Rachel is already deployed.' },
 				{ status: 400 },
@@ -69,18 +71,6 @@ export const POST: RequestHandler = async (event) => {
 			);
 		}
 
-		// Validate user has completed onboarding (Telegram bot token exists)
-		const telegramBot = await db.query.telegramBots.findFirst({
-			where: eq(telegramBots.userId, userId),
-		});
-
-		if (!telegramBot || !telegramBot.validated) {
-			return json(
-				{ error: 'Please complete Telegram bot setup in onboarding first.' },
-				{ status: 400 },
-			);
-		}
-
 		// Set provisioning status to creating
 		await db
 			.update(subscriptions)
@@ -89,16 +79,14 @@ export const POST: RequestHandler = async (event) => {
 				provisioningError: null,
 				updatedAt: new Date(),
 			})
-			.where(eq(subscriptions.userId, userId));
-
-		// Decrypt bot token for the orchestrator
-		const botToken = decrypt(telegramBot.encryptedToken);
+			.where(eq(subscriptions.telegramId, telegramId));
 
 		// Provision container via orchestrator (synchronous — ~10 seconds)
+		// In shared bot model, the bot token comes from env (TELEGRAM_BOT_TOKEN)
 		const result = await orchestrator.provisionContainer({
-			userId,
-			telegramBotToken: botToken,
-			ownerTelegramUserId: userId,
+			userId: String(telegramId),
+			telegramBotToken: process.env.TELEGRAM_BOT_TOKEN!,
+			ownerTelegramUserId: String(telegramId),
 		});
 
 		// Update DB with container info
@@ -108,20 +96,20 @@ export const POST: RequestHandler = async (event) => {
 				containerId: result.container.containerId,
 				containerName: result.container.containerName,
 				currentImage: result.container.image,
-				vpsProvisioned: true,
+				containerProvisioned: true,
 				provisioningStatus: 'ready',
 				provisioningError: null,
 				provisionedAt: new Date(),
 				updatedAt: new Date(),
 			})
-			.where(eq(subscriptions.userId, userId));
+			.where(eq(subscriptions.telegramId, telegramId));
 
 		return json({
 			message: 'Rachel is ready!',
 			container: result.container,
 		});
 	} catch (error) {
-		console.error(`[deploy] Error for userId=${userId}:`, error);
+		console.error(`[deploy] Error for telegramId=${telegramId}:`, error);
 
 		// Mark provisioning as failed
 		await db
@@ -131,7 +119,7 @@ export const POST: RequestHandler = async (event) => {
 				provisioningError: String(error),
 				updatedAt: new Date(),
 			})
-			.where(eq(subscriptions.userId, userId));
+			.where(eq(subscriptions.telegramId, telegramId));
 
 		return json(
 			{ error: 'Failed to deploy Rachel. Please try again.' },

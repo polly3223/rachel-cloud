@@ -8,19 +8,19 @@ import { scheduleGracePeriodDeprovision } from '$lib/jobs/grace-period-enforcer'
  * Uses upsert pattern to handle both new subscriptions and updates.
  */
 export async function updateSubscriptionStatus(params: {
-	userId: string;
+	telegramId: number;
 	polarCustomerId?: string;
 	polarSubscriptionId?: string;
 	status: 'none' | 'active' | 'grace_period' | 'canceled';
 	currentPeriodEnd?: Date;
 	gracePeriodEndsAt?: Date | null;
 }) {
-	const { userId, polarCustomerId, polarSubscriptionId, status, currentPeriodEnd, gracePeriodEndsAt } = params;
+	const { telegramId, polarCustomerId, polarSubscriptionId, status, currentPeriodEnd, gracePeriodEndsAt } = params;
 
 	try {
 		// Check if subscription exists
 		const existing = await db.query.subscriptions.findFirst({
-			where: eq(subscriptions.userId, userId)
+			where: eq(subscriptions.telegramId, telegramId)
 		});
 
 		if (existing) {
@@ -35,24 +35,24 @@ export async function updateSubscriptionStatus(params: {
 					gracePeriodEndsAt: gracePeriodEndsAt === null ? null : (gracePeriodEndsAt ?? existing.gracePeriodEndsAt),
 					updatedAt: new Date()
 				})
-				.where(eq(subscriptions.userId, userId));
+				.where(eq(subscriptions.telegramId, telegramId));
 		} else {
 			// Insert new subscription
 			await db.insert(subscriptions).values({
 				id: crypto.randomUUID(),
-				userId,
+				telegramId,
 				polarCustomerId: polarCustomerId ?? null,
 				polarSubscriptionId: polarSubscriptionId ?? null,
 				status,
 				currentPeriodEnd: currentPeriodEnd ?? null,
 				gracePeriodEndsAt: gracePeriodEndsAt ?? null,
-				vpsProvisioned: false,
+				containerProvisioned: false,
 				createdAt: new Date(),
 				updatedAt: new Date()
 			});
 		}
 
-		console.log(`Subscription updated for user ${userId}: status=${status}`);
+		console.log(`Subscription updated for user ${telegramId}: status=${status}`);
 	} catch (error) {
 		console.error('Failed to update subscription status:', error);
 		throw error;
@@ -62,10 +62,10 @@ export async function updateSubscriptionStatus(params: {
 /**
  * Get a user's subscription record from the database.
  */
-export async function getSubscription(userId: string) {
+export async function getSubscription(telegramId: number) {
 	try {
 		const subscription = await db.query.subscriptions.findFirst({
-			where: eq(subscriptions.userId, userId)
+			where: eq(subscriptions.telegramId, telegramId)
 		});
 
 		return subscription ?? null;
@@ -82,7 +82,7 @@ export async function getSubscription(userId: string) {
  *
  * @returns The grace period end date
  */
-export async function scheduleGracePeriod(userId: string, subscriptionId: string) {
+export async function scheduleGracePeriod(telegramId: number, subscriptionId: string) {
 	try {
 		const gracePeriodEnd = new Date();
 		gracePeriodEnd.setDate(gracePeriodEnd.getDate() + 3); // 3 days grace period
@@ -95,12 +95,12 @@ export async function scheduleGracePeriod(userId: string, subscriptionId: string
 				gracePeriodEndsAt: gracePeriodEnd,
 				updatedAt: new Date()
 			})
-			.where(eq(subscriptions.userId, userId));
+			.where(eq(subscriptions.telegramId, telegramId));
 
 		// Schedule the deprovisioning job
-		await scheduleGracePeriodDeprovision(userId, subscriptionId);
+		await scheduleGracePeriodDeprovision(telegramId, subscriptionId);
 
-		console.log(`Grace period scheduled for user ${userId}, ends at ${gracePeriodEnd.toISOString()}`);
+		console.log(`Grace period scheduled for user ${telegramId}, ends at ${gracePeriodEnd.toISOString()}`);
 
 		return gracePeriodEnd;
 	} catch (error) {

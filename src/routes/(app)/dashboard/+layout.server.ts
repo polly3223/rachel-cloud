@@ -1,11 +1,19 @@
-import { requireAuth } from '$lib/auth/session';
+import { redirect } from '@sveltejs/kit';
 import type { LayoutServerLoad } from './$types';
 
 export const load: LayoutServerLoad = async (event) => {
-	// Require authentication - redirects to /login if not authenticated
-	const session = await requireAuth(event);
+	const session = event.locals.session;
+	if (!session) {
+		throw redirect(302, '/login');
+	}
 
 	return {
-		user: session.user
+		user: {
+			telegramId: session.telegramId,
+			firstName: session.firstName,
+			lastName: session.lastName,
+			username: session.username,
+			photoUrl: session.photoUrl,
+		}
 	};
 };

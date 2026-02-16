@@ -3,63 +3,18 @@
 
 	let { data } = $props();
 
-	// Local state for telegram bot step
-	let botToken = $state('');
-	let validating = $state(false);
-	let error = $state<string | null>(null);
-	let success = $state(false);
-	let validatedBotUsername = $state<string | null>(null);
-
 	// Calculate progress percentage
 	const progressPercentage = $derived(() => {
 		if (data.step === 'payment') return 33;
-		if (data.step === 'telegram_bot') return 66;
-		return 100;
+		if (data.step === 'provisioning') return 66;
+		if (data.step === 'ready') return 100;
+		return 0;
 	});
 
 	// Handle checkout for subscription
 	async function handleCheckout() {
-		// Redirect to Better Auth checkout endpoint
-		// The Polar plugin will handle the redirect to Polar checkout page
+		// Redirect to checkout endpoint
 		window.location.href = '/api/auth/checkout?slug=rachel-cloud-monthly';
-	}
-
-	// Handle bot token validation
-	async function handleBotValidation(e: Event) {
-		e.preventDefault();
-		error = null;
-		validating = true;
-
-		try {
-			const response = await fetch('/api/onboarding/validate-bot', {
-				method: 'POST',
-				headers: {
-					'Content-Type': 'application/json'
-				},
-				body: JSON.stringify({ token: botToken })
-			});
-
-			const result = await response.json();
-
-			if (!response.ok) {
-				error = result.error || 'Failed to validate bot token';
-				validating = false;
-				return;
-			}
-
-			// Success
-			success = true;
-			validatedBotUsername = result.botUsername;
-			validating = false;
-
-			// Wait a moment to show success message, then reload to proceed to next step
-			setTimeout(() => {
-				window.location.reload();
-			}, 1500);
-		} catch (err) {
-			error = 'An error occurred. Please try again.';
-			validating = false;
-		}
 	}
 </script>
 
@@ -138,116 +93,12 @@
 					<p class="mt-4 text-sm text-gray-500">Cancel anytime with a 3-day grace period</p>
 				</div>
 
-			{:else if data.step === 'telegram_bot'}
-				<!-- Telegram Bot Step -->
-				<div>
-					<div class="mb-6">
-						<h1 class="text-3xl font-bold text-gray-900 mb-2">Connect Your Telegram Bot</h1>
-						<p class="text-gray-600">Step 2 of 3: Set up your bot</p>
-					</div>
-
-					<!-- BotFather Instructions -->
-					<div class="bg-blue-50 border-l-4 border-blue-400 p-6 mb-8">
-						<h3 class="text-lg font-semibold text-blue-900 mb-4">How to create a Telegram bot:</h3>
-						<ol class="space-y-3 text-gray-700">
-							<li class="flex items-start">
-								<span class="font-bold text-blue-600 mr-3 flex-shrink-0">1.</span>
-								<span>Open Telegram and search for <span class="font-mono bg-white px-2 py-1 rounded">@BotFather</span></span>
-							</li>
-							<li class="flex items-start">
-								<span class="font-bold text-blue-600 mr-3 flex-shrink-0">2.</span>
-								<span>Send the command <span class="font-mono bg-white px-2 py-1 rounded">/newbot</span> and follow the prompts</span>
-							</li>
-							<li class="flex items-start">
-								<span class="font-bold text-blue-600 mr-3 flex-shrink-0">3.</span>
-								<span>Choose a name for your bot (e.g., "My Rachel Bot")</span>
-							</li>
-							<li class="flex items-start">
-								<span class="font-bold text-blue-600 mr-3 flex-shrink-0">4.</span>
-								<span>Choose a username for your bot (must end with "bot", e.g., "my_rachel_bot")</span>
-							</li>
-							<li class="flex items-start">
-								<span class="font-bold text-blue-600 mr-3 flex-shrink-0">5.</span>
-								<span>BotFather will provide an API token - copy it and paste below</span>
-							</li>
-						</ol>
-					</div>
-
-					<!-- Token Input Form -->
-					<form onsubmit={handleBotValidation} class="space-y-6">
-						{#if error}
-							<div class="rounded-md bg-red-50 p-4 border border-red-200">
-								<div class="flex">
-									<svg class="h-5 w-5 text-red-400 mr-2 flex-shrink-0" viewBox="0 0 20 20" fill="currentColor">
-										<path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd" />
-									</svg>
-									<span class="text-sm font-medium text-red-800">{error}</span>
-								</div>
-							</div>
-						{/if}
-
-						{#if success}
-							<div class="rounded-md bg-green-50 p-4 border border-green-200">
-								<div class="flex">
-									<svg class="h-5 w-5 text-green-400 mr-2 flex-shrink-0" viewBox="0 0 20 20" fill="currentColor">
-										<path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
-									</svg>
-									<div>
-										<span class="text-sm font-medium text-green-800">
-											Bot validated successfully!
-											{#if validatedBotUsername}
-												(@{validatedBotUsername})
-											{/if}
-										</span>
-									</div>
-								</div>
-							</div>
-						{/if}
-
-						<div>
-							<label for="bot-token" class="block text-sm font-medium text-gray-700 mb-2">
-								Bot API Token
-							</label>
-							<input
-								id="bot-token"
-								type="password"
-								bind:value={botToken}
-								disabled={validating || success}
-								placeholder="123456789:ABCdefGHIjklMNOpqrsTUVwxyz"
-								required
-								class="appearance-none block w-full px-4 py-3 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm disabled:opacity-50 disabled:cursor-not-allowed font-mono"
-							/>
-							<p class="mt-2 text-sm text-gray-500">
-								The token should look like: 123456789:ABCdefGHIjklMNOpqrsTUVwxyz
-							</p>
-						</div>
-
-						<button
-							type="submit"
-							disabled={validating || success}
-							class="w-full flex justify-center py-3 px-4 border border-transparent text-base font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-						>
-							{#if validating}
-								<svg class="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-									<circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-									<path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-								</svg>
-								Validating...
-							{:else if success}
-								Validated!
-							{:else}
-								Validate & Continue
-							{/if}
-						</button>
-					</form>
-				</div>
-
 			{:else if data.step === 'provisioning'}
 				<!-- Provisioning Step -->
 				<div class="text-center">
 					<div class="mb-6">
 						<h1 class="text-3xl font-bold text-gray-900 mb-2">Deploy Your Rachel</h1>
-						<p class="text-gray-600">Step 3 of 3: Launch your assistant</p>
+						<p class="text-gray-600">Step 2 of 3: Launch your assistant</p>
 					</div>
 
 					<div class="py-12">
@@ -256,28 +107,55 @@
 							<path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
 						</svg>
 
-						<h3 class="text-xl font-semibold text-gray-900 mb-2">Ready to launch!</h3>
+						<h3 class="text-xl font-semibold text-gray-900 mb-2">Setting up your instance...</h3>
 						<p class="text-gray-600 max-w-md mx-auto">
-							Your subscription is active and your bot is set up. Head to the dashboard to deploy Rachel — it takes about 10 seconds.
+							Your subscription is active. We're deploying Rachel for you now — this usually takes about 10 seconds.
 						</p>
 
 						<div class="mt-8 bg-blue-50 rounded-lg p-6 max-w-md mx-auto text-left space-y-2">
 							<p class="text-sm text-gray-700 flex items-center gap-2">
-								<span class="text-blue-500">●</span> Creating your Rachel instance
+								<span class="text-blue-500">&#9679;</span> Creating your Rachel instance
 							</p>
 							<p class="text-sm text-gray-700 flex items-center gap-2">
-								<span class="text-blue-500">●</span> Configuring your Telegram bot
+								<span class="text-blue-500">&#9679;</span> Configuring your Telegram bot
 							</p>
 							<p class="text-sm text-gray-700 flex items-center gap-2">
-								<span class="text-blue-500">●</span> Connecting to Claude AI
+								<span class="text-blue-500">&#9679;</span> Connecting to Claude AI
 							</p>
 							<p class="text-sm text-gray-700 flex items-center gap-2">
-								<span class="text-blue-500">●</span> Starting your Rachel bot service
+								<span class="text-blue-500">&#9679;</span> Starting your Rachel bot service
 							</p>
 							<p class="text-xs text-gray-500 mt-3">
 								You'll be redirected to your dashboard automatically when ready.
 							</p>
 						</div>
+					</div>
+				</div>
+
+			{:else if data.step === 'ready'}
+				<!-- Ready Step -->
+				<div class="text-center">
+					<div class="mb-6">
+						<h1 class="text-3xl font-bold text-gray-900 mb-2">You're All Set!</h1>
+						<p class="text-gray-600">Step 3 of 3: Ready to go</p>
+					</div>
+
+					<div class="py-12">
+						<svg class="h-16 w-16 text-green-500 mx-auto mb-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+							<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+						</svg>
+
+						<h3 class="text-xl font-semibold text-gray-900 mb-2">Rachel is running!</h3>
+						<p class="text-gray-600 max-w-md mx-auto mb-8">
+							Your personal AI assistant is deployed and ready. Head to the dashboard to manage your instance.
+						</p>
+
+						<a
+							href="/dashboard"
+							class="inline-flex justify-center py-3 px-6 border border-transparent text-lg font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors"
+						>
+							Go to Dashboard
+						</a>
 					</div>
 				</div>
 			{/if}

@@ -1,66 +1,15 @@
 import { sqliteTable, text, integer } from 'drizzle-orm/sqlite-core';
+import { relations } from 'drizzle-orm';
 
-// Users table
+// Users table — keyed on Telegram user ID
 export const users = sqliteTable('users', {
-	id: text('id').primaryKey(),
-	email: text('email').notNull().unique(),
-	emailVerified: integer('email_verified', { mode: 'boolean' }),
-	name: text('name'),
-	image: text('image'),
-	referralCode: text('referral_code').unique(),
-	createdAt: integer('created_at', { mode: 'timestamp' })
-		.$defaultFn(() => new Date())
-		.notNull(),
-	updatedAt: integer('updated_at', { mode: 'timestamp' })
-		.$defaultFn(() => new Date())
-		.$onUpdateFn(() => new Date())
-		.notNull()
-});
-
-// Sessions table
-export const sessions = sqliteTable('sessions', {
-	id: text('id').primaryKey(),
-	userId: text('user_id')
-		.notNull()
-		.references(() => users.id, { onDelete: 'cascade' }),
-	expiresAt: integer('expires_at', { mode: 'timestamp' }).notNull(),
-	ipAddress: text('ip_address'),
-	userAgent: text('user_agent'),
-	createdAt: integer('created_at', { mode: 'timestamp' })
-		.$defaultFn(() => new Date())
-		.notNull()
-});
-
-// Accounts table (for OAuth providers)
-export const accounts = sqliteTable('accounts', {
-	id: text('id').primaryKey(),
-	userId: text('user_id')
-		.notNull()
-		.references(() => users.id, { onDelete: 'cascade' }),
-	provider: text('provider').notNull(),
-	providerAccountId: text('provider_account_id').notNull(),
-	accessToken: text('access_token'),
-	refreshToken: text('refresh_token'),
-	expiresAt: integer('expires_at', { mode: 'timestamp' }),
-	createdAt: integer('created_at', { mode: 'timestamp' })
-		.$defaultFn(() => new Date())
-		.notNull(),
-	updatedAt: integer('updated_at', { mode: 'timestamp' })
-		.$defaultFn(() => new Date())
-		.$onUpdateFn(() => new Date())
-		.notNull()
-});
-
-// Claude OAuth tokens table (encrypted storage)
-export const claudeTokens = sqliteTable('claude_tokens', {
-	id: text('id').primaryKey(),
-	userId: text('user_id')
-		.notNull()
-		.unique()
-		.references(() => users.id, { onDelete: 'cascade' }),
-	encryptedAccessToken: text('encrypted_access_token').notNull(),
-	encryptedRefreshToken: text('encrypted_refresh_token').notNull(),
-	expiresAt: integer('expires_at', { mode: 'timestamp' }).notNull(),
+	telegramId: integer('telegram_id').primaryKey(),
+	firstName: text('first_name'),
+	lastName: text('last_name'),
+	username: text('username'), // @username on Telegram
+	photoUrl: text('photo_url'),
+	languageCode: text('language_code'),
+	email: text('email'), // Optional — from Polar if available
 	createdAt: integer('created_at', { mode: 'timestamp' })
 		.$defaultFn(() => new Date())
 		.notNull(),
@@ -73,10 +22,10 @@ export const claudeTokens = sqliteTable('claude_tokens', {
 // Subscriptions table (Polar billing integration)
 export const subscriptions = sqliteTable('subscriptions', {
 	id: text('id').primaryKey(),
-	userId: text('user_id')
+	telegramId: integer('telegram_id')
 		.notNull()
 		.unique()
-		.references(() => users.id, { onDelete: 'cascade' }),
+		.references(() => users.telegramId, { onDelete: 'cascade' }),
 	polarCustomerId: text('polar_customer_id'),
 	polarSubscriptionId: text('polar_subscription_id'),
 	status: text('status', { enum: ['none', 'active', 'grace_period', 'canceled'] })
@@ -84,8 +33,8 @@ export const subscriptions = sqliteTable('subscriptions', {
 		.$defaultFn(() => 'none'),
 	currentPeriodEnd: integer('current_period_end', { mode: 'timestamp' }),
 	gracePeriodEndsAt: integer('grace_period_ends_at', { mode: 'timestamp' }),
-	// Legacy column name — means "container provisioned" in Docker model
-	vpsProvisioned: integer('vps_provisioned', { mode: 'boolean' })
+	// Container provisioned flag
+	containerProvisioned: integer('container_provisioned', { mode: 'boolean' })
 		.notNull()
 		.$defaultFn(() => false),
 
@@ -115,45 +64,17 @@ export const subscriptions = sqliteTable('subscriptions', {
 		.notNull()
 });
 
-// Telegram bots table (encrypted token storage)
-export const telegramBots = sqliteTable('telegram_bots', {
-	id: text('id').primaryKey(),
-	userId: text('user_id')
-		.notNull()
-		.unique()
-		.references(() => users.id, { onDelete: 'cascade' }),
-	botUsername: text('bot_username'),
-	encryptedToken: text('encrypted_token').notNull(),
-	validated: integer('validated', { mode: 'boolean' })
-		.notNull()
-		.$defaultFn(() => false),
-	createdAt: integer('created_at', { mode: 'timestamp' })
-		.$defaultFn(() => new Date())
-		.notNull(),
-	updatedAt: integer('updated_at', { mode: 'timestamp' })
-		.$defaultFn(() => new Date())
-		.$onUpdateFn(() => new Date())
-		.notNull()
-});
+// Relations
+export const usersRelations = relations(users, ({ one }) => ({
+	subscription: one(subscriptions, {
+		fields: [users.telegramId],
+		references: [subscriptions.telegramId]
+	})
+}));
 
-// Referral tracking
-export const referrals = sqliteTable('referrals', {
-	id: text('id').primaryKey(),
-	referrerId: text('referrer_id')
-		.notNull()
-		.references(() => users.id, { onDelete: 'cascade' }),
-	referredId: text('referred_id')
-		.references(() => users.id, { onDelete: 'set null' }),
-	referralCode: text('referral_code').notNull().unique(),
-	status: text('status', { enum: ['pending', 'completed', 'credited'] })
-		.notNull()
-		.$defaultFn(() => 'pending'),
-	creditAmountCents: integer('credit_amount_cents')
-		.notNull()
-		.$defaultFn(() => 1000), // €10 in cents
-	completedAt: integer('completed_at', { mode: 'timestamp' }),
-	creditedAt: integer('credited_at', { mode: 'timestamp' }),
-	createdAt: integer('created_at', { mode: 'timestamp' })
-		.$defaultFn(() => new Date())
-		.notNull(),
-});
+export const subscriptionsRelations = relations(subscriptions, ({ one }) => ({
+	user: one(users, {
+		fields: [subscriptions.telegramId],
+		references: [users.telegramId]
+	})
+}));

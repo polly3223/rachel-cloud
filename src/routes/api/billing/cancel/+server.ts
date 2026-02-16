@@ -7,14 +7,13 @@ import { getSubscription } from '$lib/billing/subscription-manager';
  * POST /api/billing/cancel
  *
  * Cancel the user's active subscription.
- * This triggers a 3-day grace period before VPS deprovisioning.
+ * This triggers a 3-day grace period before container deprovisioning.
  */
 export const POST: RequestHandler = async ({ locals }) => {
 	try {
-		// Get session from Better Auth
 		const session = locals.session;
 
-		if (!session || !session.user) {
+		if (!session) {
 			return json(
 				{
 					error: 'Unauthorized',
@@ -24,10 +23,8 @@ export const POST: RequestHandler = async ({ locals }) => {
 			);
 		}
 
-		const userId = session.user.id;
-
 		// Get user's subscription from database
-		const subscription = await getSubscription(userId);
+		const subscription = await getSubscription(session.telegramId);
 
 		if (!subscription) {
 			return json(
@@ -60,7 +57,6 @@ export const POST: RequestHandler = async ({ locals }) => {
 		}
 
 		// Call Polar API to cancel subscription at period end
-		// Using update() with cancelAtPeriodEnd = true to schedule cancellation
 		await polarClient.subscriptions.update({
 			id: subscription.polarSubscriptionId,
 			subscriptionUpdate: {
@@ -69,7 +65,7 @@ export const POST: RequestHandler = async ({ locals }) => {
 		});
 
 		// The webhook handler will update the database and schedule grace period
-		console.log(`Subscription scheduled for cancellation at period end for user ${userId}`);
+		console.log(`Subscription scheduled for cancellation at period end for user ${session.telegramId}`);
 
 		return json({
 			success: true,

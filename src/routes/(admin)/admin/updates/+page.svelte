@@ -169,7 +169,7 @@
 		<div class="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-8">
 			<div class="bg-white rounded-lg shadow-sm border border-gray-200 p-4">
 				<p class="text-sm text-gray-500">Total Containers</p>
-				<p class="text-2xl font-bold text-gray-900">{rollout.totalContainers ?? rollout.totalVPSs ?? 0}</p>
+				<p class="text-2xl font-bold text-gray-900">{rollout.totalContainers}</p>
 			</div>
 			<div class="bg-white rounded-lg shadow-sm border border-gray-200 p-4">
 				<p class="text-sm text-gray-500">Updated</p>
@@ -220,7 +220,7 @@
 		</div>
 
 		<!-- Per-Container Status Table -->
-		{@const statuses = rollout.containerStatuses ?? rollout.vpsStatuses ?? []}
+		{@const statuses = rollout.containerStatuses ?? []}
 		{#if statuses.length > 0}
 			<div class="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
 				<div class="px-6 py-4 border-b border-gray-200">
@@ -244,9 +244,9 @@
 						<tbody class="bg-white divide-y divide-gray-200">
 							{#each statuses as container}
 								<tr class="hover:bg-gray-50 transition-colors">
-									<td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{container.email}</td>
+									<td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{container.username || String(container.telegramId)}</td>
 									<td class="px-6 py-4 whitespace-nowrap">
-										<code class="text-sm font-mono text-gray-700 bg-gray-100 px-2 py-0.5 rounded">{container.containerName || container.ipAddress || '\u2014'}</code>
+										<code class="text-sm font-mono text-gray-700 bg-gray-100 px-2 py-0.5 rounded">{container.containerName || '\u2014'}</code>
 									</td>
 									<td class="px-6 py-4 whitespace-nowrap">
 										<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium {containerStatusColor(container.status)}">
@@ -279,13 +279,13 @@
 					{#each statuses as container}
 						<div class="px-4 py-4 space-y-2">
 							<div class="flex items-center justify-between">
-								<p class="text-sm font-medium text-gray-900">{container.email}</p>
+								<p class="text-sm font-medium text-gray-900">{container.username || String(container.telegramId)}</p>
 								<span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium {containerStatusColor(container.status)}">
 									{containerStatusLabel(container.status)}
 								</span>
 							</div>
 							<div class="flex flex-wrap gap-x-4 gap-y-1 text-xs text-gray-500">
-								<span>Container: <code class="font-mono">{container.containerName || container.ipAddress || '\u2014'}</code></span>
+								<span>Container: <code class="font-mono">{container.containerName || '\u2014'}</code></span>
 								<span>
 									{shortImage(container.previousImage ?? null)} &rarr; {shortImage(container.newImage ?? null)}
 								</span>

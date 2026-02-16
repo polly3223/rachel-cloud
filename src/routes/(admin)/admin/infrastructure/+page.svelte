@@ -9,7 +9,7 @@
 
 	/** Only users that have a provisioned container. */
 	const provisionedUsers = $derived(
-		overview.users.filter((u) => u.vpsProvisioned && u.containerId)
+		overview.users.filter((u) => u.containerProvisioned && u.containerId)
 	);
 
 	// Cost calculations (Docker shared model)
@@ -187,7 +187,7 @@
 						{#each provisionedUsers as user}
 							<tr class="hover:bg-gray-50 transition-colors">
 								<td class="px-6 py-4 whitespace-nowrap">
-									<p class="text-sm font-medium text-gray-900">{user.email}</p>
+									<p class="text-sm font-medium text-gray-900">{user.username || String(user.telegramId)}</p>
 								</td>
 								<td class="px-6 py-4 whitespace-nowrap">
 									{#if user.containerName}
@@ -222,7 +222,7 @@
 				{#each provisionedUsers as user}
 					<div class="px-4 py-4 space-y-2">
 						<div class="flex items-center justify-between">
-							<p class="text-sm font-medium text-gray-900">{user.email}</p>
+							<p class="text-sm font-medium text-gray-900">{user.username || String(user.telegramId)}</p>
 							<span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium {provisioningStatusColor(user.provisioningStatus)}">
 								{provisioningStatusLabel(user.provisioningStatus)}
 							</span>

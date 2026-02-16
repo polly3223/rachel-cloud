@@ -11,7 +11,7 @@ export const GET: RequestHandler = async ({ locals }) => {
 	try {
 		const session = locals.session;
 
-		if (!session || !session.user) {
+		if (!session) {
 			return json(
 				{
 					error: 'Unauthorized',
@@ -21,7 +21,7 @@ export const GET: RequestHandler = async ({ locals }) => {
 			);
 		}
 
-		const stats = await getReferralStats(session.user.id);
+		const stats = await getReferralStats(String(session.telegramId));
 
 		return json({
 			success: true,

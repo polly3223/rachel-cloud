@@ -232,9 +232,9 @@
 							<tr class="hover:bg-gray-50 transition-colors">
 								<td class="px-6 py-4 whitespace-nowrap">
 									<div>
-										<p class="text-sm font-medium text-gray-900">{user.email}</p>
-										{#if user.name}
-											<p class="text-xs text-gray-500">{user.name}</p>
+										<p class="text-sm font-medium text-gray-900">{user.username || String(user.telegramId)}</p>
+										{#if user.firstName}
+											<p class="text-xs text-gray-500">{user.firstName}</p>
 										{/if}
 									</div>
 								</td>
@@ -245,7 +245,7 @@
 								</td>
 								<td class="px-6 py-4 whitespace-nowrap">
 									<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium {provisioningStatusColor(user.provisioningStatus)}">
-										{provisioningStatusLabel(user.provisioningStatus, user.vpsProvisioned)}
+										{provisioningStatusLabel(user.provisioningStatus, user.containerProvisioned)}
 									</span>
 								</td>
 								<td class="px-6 py-4 whitespace-nowrap">
@@ -273,9 +273,9 @@
 					<div class="px-4 py-4 space-y-2">
 						<div class="flex items-center justify-between">
 							<div>
-								<p class="text-sm font-medium text-gray-900">{user.email}</p>
-								{#if user.name}
-									<p class="text-xs text-gray-500">{user.name}</p>
+								<p class="text-sm font-medium text-gray-900">{user.username || String(user.telegramId)}</p>
+								{#if user.firstName}
+									<p class="text-xs text-gray-500">{user.firstName}</p>
 								{/if}
 							</div>
 							<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium {statusColor(user.subscriptionStatus)}">
@@ -284,7 +284,7 @@
 						</div>
 						<div class="flex flex-wrap gap-x-4 gap-y-1 text-xs text-gray-500">
 							<span>
-								Container: <span class="inline-flex items-center px-1.5 py-0.5 rounded-full text-xs font-medium {provisioningStatusColor(user.provisioningStatus)}">{provisioningStatusLabel(user.provisioningStatus, user.vpsProvisioned)}</span>
+								Container: <span class="inline-flex items-center px-1.5 py-0.5 rounded-full text-xs font-medium {provisioningStatusColor(user.provisioningStatus)}">{provisioningStatusLabel(user.provisioningStatus, user.containerProvisioned)}</span>
 							</span>
 							{#if user.currentImage}
 								<span>Image: <code class="font-mono text-gray-700">{user.currentImage}</code></span>

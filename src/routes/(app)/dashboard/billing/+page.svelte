@@ -1,6 +1,4 @@
 <script lang="ts">
-	import { authClient } from '$lib/auth/client';
-
 	let { data } = $props();
 
 	// State for cancellation flow

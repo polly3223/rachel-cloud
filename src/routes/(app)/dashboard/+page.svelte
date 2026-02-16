@@ -58,7 +58,7 @@
 
 	// Container is provisioned and ready
 	let isReady = $derived(
-		data.subscription?.vpsProvisioned && (pollingStatus === 'ready' || pollingStatus === null)
+		data.subscription?.containerProvisioned && (pollingStatus === 'ready' || pollingStatus === null)
 	);
 
 	// Status indicator colors
@@ -681,7 +681,7 @@
 	{/if}
 
 	<!-- Quick Links Card -->
-	{#if data.hasActiveSubscription || data.subscription?.vpsProvisioned}
+	{#if data.hasActiveSubscription || data.subscription?.containerProvisioned}
 		<div class="bg-white shadow rounded-lg">
 			<div class="px-6 py-5 border-b border-gray-200">
 				<h2 class="text-xl font-semibold text-gray-900">Quick Links</h2>

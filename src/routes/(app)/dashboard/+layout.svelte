@@ -1,6 +1,5 @@
 <script lang="ts">
 	import { page } from '$app/stores';
-	import { authClient } from '$lib/auth/client';
 
 	let { data, children } = $props();
 
@@ -8,15 +7,15 @@
 	let mobileMenuOpen = $state(false);
 
 	async function handleSignOut() {
-		await authClient.signOut();
+		// Clear session cookie by calling logout endpoint
+		await fetch('/api/auth/logout', { method: 'POST' });
 		window.location.href = '/login';
 	}
 
-	// Navigation links
+	// Navigation links (removed Claude Connection — shared bot model)
 	const navLinks = [
 		{ href: '/dashboard', label: 'Overview', icon: 'home' },
-		{ href: '/dashboard/billing', label: 'Billing', icon: 'credit-card' },
-		{ href: '/dashboard/claude', label: 'Claude Connection', icon: 'link' }
+		{ href: '/dashboard/billing', label: 'Billing', icon: 'credit-card' }
 	];
 
 	// Check if a link is active
@@ -102,23 +101,25 @@
 			<div class="flex-shrink-0 border-t border-gray-200 p-4">
 				<div class="flex items-center mb-3">
 					<div class="flex-shrink-0">
-						{#if data.user.image}
-							<img class="h-8 w-8 rounded-full" src={data.user.image} alt="" />
+						{#if data.user.photoUrl}
+							<img class="h-8 w-8 rounded-full" src={data.user.photoUrl} alt="" />
 						{:else}
 							<div class="h-8 w-8 rounded-full bg-blue-600 flex items-center justify-center">
 								<span class="text-sm font-medium text-white">
-									{data.user.name ? data.user.name.charAt(0).toUpperCase() : data.user.email.charAt(0).toUpperCase()}
+									{data.user.firstName ? data.user.firstName.charAt(0).toUpperCase() : '?'}
 								</span>
 							</div>
 						{/if}
 					</div>
 					<div class="ml-3 flex-1 min-w-0">
 						<p class="text-sm font-medium text-gray-900 truncate">
-							{data.user.name || 'User'}
+							{data.user.firstName || 'User'}
 						</p>
-						<p class="text-xs text-gray-500 truncate">
-							{data.user.email}
-						</p>
+						{#if data.user.username}
+							<p class="text-xs text-gray-500 truncate">
+								@{data.user.username}
+							</p>
+						{/if}
 					</div>
 				</div>
 				<button
@@ -184,23 +185,25 @@
 				<div class="flex-shrink-0 border-t border-gray-200 p-4">
 					<div class="flex items-center mb-3">
 						<div class="flex-shrink-0">
-							{#if data.user.image}
-								<img class="h-8 w-8 rounded-full" src={data.user.image} alt="" />
+							{#if data.user.photoUrl}
+								<img class="h-8 w-8 rounded-full" src={data.user.photoUrl} alt="" />
 							{:else}
 								<div class="h-8 w-8 rounded-full bg-blue-600 flex items-center justify-center">
 									<span class="text-sm font-medium text-white">
-										{data.user.name ? data.user.name.charAt(0).toUpperCase() : data.user.email.charAt(0).toUpperCase()}
+										{data.user.firstName ? data.user.firstName.charAt(0).toUpperCase() : '?'}
 									</span>
 								</div>
 							{/if}
 						</div>
 						<div class="ml-3 flex-1 min-w-0">
 							<p class="text-sm font-medium text-gray-900 truncate">
-								{data.user.name || 'User'}
+								{data.user.firstName || 'User'}
 							</p>
-							<p class="text-xs text-gray-500 truncate">
-								{data.user.email}
-							</p>
+							{#if data.user.username}
+								<p class="text-xs text-gray-500 truncate">
+									@{data.user.username}
+								</p>
+							{/if}
 						</div>
 					</div>
 					<button

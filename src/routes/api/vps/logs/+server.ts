@@ -11,17 +11,18 @@
 
 import { json } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
-import { requireAuth } from '$lib/auth/session';
 import { getSubscription } from '$lib/billing/subscription-manager';
 import { orchestrator } from '$lib/orchestrator/client';
 
 export const GET: RequestHandler = async (event) => {
 	try {
-		// Require authenticated session
-		const session = await requireAuth(event);
+		const session = event.locals.session;
+		if (!session) {
+			return json({ logs: '', success: false, message: 'Not authenticated' }, { status: 401 });
+		}
 
 		// Get user's subscription
-		const subscription = await getSubscription(session.user.id);
+		const subscription = await getSubscription(session.telegramId);
 
 		if (!subscription) {
 			return json(
@@ -31,7 +32,7 @@ export const GET: RequestHandler = async (event) => {
 		}
 
 		// Validate container is provisioned
-		if (!subscription.vpsProvisioned || !subscription.containerId) {
+		if (!subscription.containerProvisioned || !subscription.containerId) {
 			return json(
 				{ logs: '', success: false, message: 'Rachel is not deployed' },
 				{ status: 400 }
@@ -45,7 +46,7 @@ export const GET: RequestHandler = async (event) => {
 		);
 
 		// Fetch logs via orchestrator
-		const result = await orchestrator.getContainerLogs(session.user.id, {
+		const result = await orchestrator.getContainerLogs(String(session.telegramId), {
 			tail: lines,
 		});
 

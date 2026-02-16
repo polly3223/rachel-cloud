@@ -17,12 +17,12 @@ export const load: PageServerLoad = async (event) => {
 
 	// Count active provisioned containers
 	const activeContainers = await db
-		.select({ userId: subscriptions.userId })
+		.select({ telegramId: subscriptions.telegramId })
 		.from(subscriptions)
 		.where(
 			and(
 				eq(subscriptions.status, 'active'),
-				eq(subscriptions.vpsProvisioned, true),
+				eq(subscriptions.containerProvisioned, true),
 				eq(subscriptions.provisioningStatus, 'ready'),
 				isNotNull(subscriptions.containerId)
 			)

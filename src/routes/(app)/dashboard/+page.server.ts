@@ -1,14 +1,16 @@
-import { requireAuth } from '$lib/auth/session';
+import { redirect } from '@sveltejs/kit';
 import { getSubscription } from '$lib/billing/subscription-manager';
 import { orchestrator } from '$lib/orchestrator/client';
 import type { PageServerLoad } from './$types';
 
 export const load: PageServerLoad = async (event) => {
-	// Require authentication
-	const session = await requireAuth(event);
+	const session = event.locals.session;
+	if (!session) {
+		throw redirect(302, '/login');
+	}
 
 	// Get user's subscription from database
-	const subscription = await getSubscription(session.user.id);
+	const subscription = await getSubscription(session.telegramId);
 
 	// Load container status from orchestrator if provisioned
 	let containerStatus: {
@@ -19,9 +21,9 @@ export const load: PageServerLoad = async (event) => {
 		containerName: string;
 	} | null = null;
 
-	if (subscription?.vpsProvisioned && subscription.containerId) {
+	if (subscription?.containerProvisioned && subscription.containerId) {
 		try {
-			const result = await orchestrator.getContainerStatus(session.user.id);
+			const result = await orchestrator.getContainerStatus(String(session.telegramId));
 			if (result) {
 				containerStatus = {
 					state: result.container.state,
