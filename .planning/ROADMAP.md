@@ -253,6 +253,58 @@ Plans:
 
 ---
 
+---
+
+## v3.0 — Telegram-First & Cleanup
+
+---
+
+## Phase 13: Dead Code Cleanup
+
+**Goal:** Remove all legacy Hetzner VPS, SSH, and health monitoring code that was replaced by the Docker orchestrator in v2.0.
+**Requirements:** CLEAN-01, CLEAN-02, CLEAN-03, CLEAN-04, CLEAN-05, CLEAN-06, CLEAN-07, CLEAN-08
+
+### Success Criteria
+1. All Hetzner/SSH provisioning files deleted (~14 files, ~2,500 LOC)
+2. `ssh2` dependency removed from package.json
+3. `healthChecks` table removed from schema
+4. Legacy VPS columns removed from subscriptions schema
+5. Cloud-init callback endpoint removed
+6. Application builds and all existing functionality works unchanged
+7. No remaining imports from deleted modules
+
+### Plans
+- [ ] 13-01-PLAN.md — Delete provisioning, monitoring, and update-engine files; remove ssh2 dep (Wave 1)
+- [ ] 13-02-PLAN.md — Schema cleanup: remove healthChecks table, legacy VPS columns; create migration (Wave 1)
+- [ ] 13-03-PLAN.md — Verify build, grep for dead references, final cleanup (Wave 2)
+
+---
+
+## Phase 14: Telegram-Only Authentication
+
+**Goal:** Replace the entire web-based auth system with Telegram as the sole authentication mechanism. One shared Rachel bot, users identified by Telegram user ID, no web signup needed.
+**Requirements:** TGAUTH-01..14, TGUX-01..05, WEB-01..03
+
+### Success Criteria
+1. Single shared Rachel bot receives messages from all users
+2. Messages are routed to the correct user's container based on Telegram user ID
+3. New user sends `/start` → subscribes via Polar → container auto-provisioned → chatting in <2 minutes
+4. User can manage their instance via Telegram commands (/status, /restart, /logs, /billing, /help)
+5. Better Auth, Claude OAuth, and all session-based auth code removed
+6. Landing page CTA is "Message @RachelAI on Telegram"
+7. Admin dashboard accessible via Telegram Login Widget or admin Telegram ID
+8. DB schema uses `telegram_id` as user primary key
+
+### Plans
+- [ ] 14-01-PLAN.md — New DB schema: users table (telegram_id PK), update subscriptions FK (Wave 1)
+- [ ] 14-02-PLAN.md — Shared bot message router: receive → lookup user → forward to container → respond (Wave 1)
+- [ ] 14-03-PLAN.md — Polar integration: checkout link with telegram_id metadata, webhook provisions container (Wave 2)
+- [ ] 14-04-PLAN.md — Telegram UX commands: /start, /status, /restart, /logs, /billing, /help (Wave 2)
+- [ ] 14-05-PLAN.md — Remove Better Auth: delete auth lib, login/signup pages, session guards, Claude OAuth (Wave 3)
+- [ ] 14-06-PLAN.md — Update landing page + admin dashboard for Telegram-only model (Wave 3)
+
+---
+
 **Roadmap Summary:**
 
 ### v1.0 (Complete)
@@ -265,10 +317,14 @@ Plans:
 - Phase 7: Operations ✅
 - Phase 8: Polish & Gap Fixes ✅
 
-### v2.0 — Docker Multi-Tenant
-- Phase 9: Dockerfile & Image Build
-- Phase 10: LLM Proxy Server
-- Phase 11: Container Orchestrator
-- Phase 12: Control Plane Integration
+### v2.0 — Docker Multi-Tenant (Complete)
+- Phase 9: Dockerfile & Image Build ✅
+- Phase 10: LLM Proxy Server ✅
+- Phase 11: Container Orchestrator ✅
+- Phase 12: Control Plane Integration ✅
 
-**4 phases** | **22 requirements** | All mapped ✓
+### v3.0 — Telegram-First & Cleanup
+- Phase 13: Dead Code Cleanup
+- Phase 14: Telegram-Only Authentication
+
+**2 phases** | **30 requirements** | All mapped ✓

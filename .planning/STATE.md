@@ -2,15 +2,15 @@
 
 ## Project Reference
 See: .planning/PROJECT.md (updated 2026-02-16)
-**Core value:** A user can go from signup to talking to their own personal AI agent on Telegram in under 2 minutes
-**Current focus:** v2.0 Docker Multi-Tenant
+**Core value:** A user can go from messaging Rachel on Telegram to having their own AI agent in under 2 minutes
+**Current focus:** v3.0 Telegram-First & Cleanup
 
 ## Current Position
 
-Phase: Not started (defining requirements)
-Plan: —
-Status: Defining requirements
-Last activity: 2026-02-16 — Milestone v2.0 Docker Multi-Tenant started
+Phase: Phase 13 — Dead Code Cleanup
+Plan: Not started (research complete)
+Status: Milestone defined, ready to plan
+Last activity: 2026-02-16 — v3.0 milestone created, Phase 12 committed
 
 ## v1.0 Summary (Phases 1-8 Complete)
 - Authentication (Better Auth, Claude OAuth, AES-256-GCM)
@@ -21,6 +21,12 @@ Last activity: 2026-02-16 — Milestone v2.0 Docker Multi-Tenant started
 - Health Monitoring (circuit breaker, auto-recovery)
 - Auto-Updates (gradual rollout 10%→50%→100%)
 - Polish & Gap Fixes
+
+## v2.0 Summary (Phases 9-12 Complete)
+- Dockerfile & Image Build
+- LLM Proxy Server (rate limiting, usage tracking, Z.ai auth)
+- Container Orchestrator (Docker API, health monitoring, rolling updates)
+- Control Plane Integration (all admin/user pages rewired to Docker)
 
 ## Phase History
 
@@ -34,6 +40,16 @@ Last activity: 2026-02-16 — Milestone v2.0 Docker Multi-Tenant started
 - Phase 7: Auto-Updates & Rollout System ✅
 - Phase 8: Polish & Gap Fixes ✅
 
+### v2.0 Phases (All Complete)
+- Phase 9: Dockerfile & Image Build ✅
+- Phase 10: LLM Proxy Server ✅
+- Phase 11: Container Orchestrator ✅
+- Phase 12: Control Plane Integration ✅
+
+### v3.0 Phases
+- Phase 13: Dead Code Cleanup — Not started
+- Phase 14: Telegram-Only Authentication — Not started
+
 ## Key Learnings (Accumulated)
 - Baileys WhatsApp: use startSock() recursion pattern, not complex abstraction
 - Cloudflare quick tunnels conflict with named tunnel config
@@ -42,6 +58,8 @@ Last activity: 2026-02-16 — Milestone v2.0 Docker Multi-Tenant started
 - Docker containers provide good isolation for non-technical users
 - Z.ai GLM pricing: Lite $9/mo, Pro $27/mo, Max $72/mo (quarterly) — no explicit device limits
 - One Z.ai Max plan could serve 10-30 light users based on quota math
+- Shared Telegram bot is simpler for users than BotFather setup
+- Telegram user ID is a stable, permanent identifier — ideal as primary key
 
 ## Blockers
 (None)

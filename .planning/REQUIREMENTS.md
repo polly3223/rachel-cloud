@@ -100,6 +100,58 @@
 - [ ] **CTRL-03**: Onboarding flow creates Docker container instead of Hetzner VPS
 - [ ] **CTRL-04**: Billing supports all-inclusive tier ($20/mo, no external LLM sub required)
 
+---
+
+## v3.0 Requirements — Telegram-First & Cleanup
+
+### Dead Code Cleanup
+
+- [ ] **CLEAN-01**: Remove all Hetzner provisioning code (hetzner-client, provision-vps, deprovision-vps, cloud-init-builder, ssh-injector, ssh-exec, ssh-keys, vps-status, types)
+- [ ] **CLEAN-02**: Remove SSH-based health monitoring (health-checker, health-notifications, circuit-breaker)
+- [ ] **CLEAN-03**: Remove SSH-based update engine (update-engine.ts)
+- [ ] **CLEAN-04**: Remove cloud-init callback API endpoint
+- [ ] **CLEAN-05**: Remove `healthChecks` table from schema
+- [ ] **CLEAN-06**: Remove legacy VPS columns from subscriptions schema (hetznerServerId, hetznerSshKeyId, vpsIpAddress, vpsHostname, sshPrivateKey, currentVersion, targetVersion, previousVersion, lastUpdateAt)
+- [ ] **CLEAN-07**: Remove `ssh2` npm dependency
+- [ ] **CLEAN-08**: Verify zero runtime regressions after cleanup
+
+### Telegram Authentication
+
+- [ ] **TGAUTH-01**: Single shared Rachel Telegram bot handles all user conversations
+- [ ] **TGAUTH-02**: Users identified by Telegram user ID (integer, primary key)
+- [ ] **TGAUTH-03**: New user sends `/start` → receives welcome + subscription prompt
+- [ ] **TGAUTH-04**: Subscription checkout link includes Telegram user ID as metadata
+- [ ] **TGAUTH-05**: Polar webhook on payment → auto-provision container for user
+- [ ] **TGAUTH-06**: Message router: incoming message → look up user → forward to their container → return response
+
+### Remove Better Auth
+
+- [ ] **TGAUTH-07**: Remove Better Auth library and all auth config/client/session code
+- [ ] **TGAUTH-08**: Remove Claude OAuth flow (claude-oauth.ts, claude-token-manager.ts, claudeTokens table)
+- [ ] **TGAUTH-09**: Remove Better Auth DB tables (user, session, account, verification)
+- [ ] **TGAUTH-10**: Remove login/signup web pages
+- [ ] **TGAUTH-11**: Remove session-based route guards from app routes
+
+### Database Redesign
+
+- [ ] **TGAUTH-12**: New `users` table keyed on `telegram_id` (integer PK) with Telegram profile fields
+- [ ] **TGAUTH-13**: Subscriptions reference `telegram_id` instead of Better Auth `user_id`
+- [ ] **TGAUTH-14**: Migration script to map existing users (if any) to new schema
+
+### User Experience via Telegram
+
+- [ ] **TGUX-01**: User can check container status via `/status` command
+- [ ] **TGUX-02**: User can restart container via `/restart` command
+- [ ] **TGUX-03**: User can view recent logs via `/logs` command
+- [ ] **TGUX-04**: User can view billing info and cancel via `/billing` command
+- [ ] **TGUX-05**: User can get help via `/help` command
+
+### Web App Simplification
+
+- [ ] **WEB-01**: Landing page updated — CTA becomes "Message @RachelAI on Telegram" instead of signup form
+- [ ] **WEB-02**: Admin dashboard uses Telegram Login Widget for authentication (or env-based admin Telegram ID)
+- [ ] **WEB-03**: Remove all authenticated user web routes (dashboard, billing, onboarding pages)
+
 ## Future Requirements (Deferred)
 
 - Multi-server Docker Swarm / Kubernetes for horizontal scaling
@@ -108,15 +160,16 @@
 - GPU-accelerated containers for local model inference
 - Per-user usage dashboards with token consumption charts
 
-## Out of Scope (v2.0)
+## Out of Scope (v3.0)
 
 | Feature | Reason |
 |---------|--------|
-| Full Kubernetes orchestration | Docker Compose / direct Docker API sufficient for MVP |
-| Custom domain per user | Telegram is the interface, no web hosting needed |
+| Full Kubernetes orchestration | Docker API sufficient for MVP |
+| Custom domain per user | Telegram is the interface |
 | Local LLM inference | Z.ai API only for now |
 | Multi-region deployment | Single Hetzner datacenter for MVP |
-| Windows containers | Linux only |
+| Web-based user dashboard | Telegram commands replace it |
+| Per-user Telegram bots | Shared bot is simpler for users |
 
 ## Traceability
 
@@ -132,37 +185,27 @@
 | MNTR-01..04 | Phase 6 | ✅ Complete |
 | UPDT-01..03 | Phase 7 | ✅ Complete |
 
-### v2.0
+### v2.0 (Docker Multi-Tenant)
+| REQ-ID | Phase | Status |
+|--------|-------|--------|
+| DOCK-01..07 | Phase 9, 11 | ✅ Complete (Phase 11-12) |
+| PROX-01..06 | Phase 10 | ✅ Complete |
+| ORCH-01..05 | Phase 11 | ✅ Complete |
+| CTRL-01..04 | Phase 12 | ✅ Complete |
+
+### v3.0 (Telegram-First & Cleanup)
 | REQ-ID | Phase | Plan | Status |
 |--------|-------|------|--------|
-| DOCK-01 | Phase 9 | — | Pending |
-| DOCK-02 | Phase 9 | — | Pending |
-| DOCK-03 | Phase 9 | — | Pending |
-| DOCK-04 | Phase 9 | — | Pending |
-| DOCK-05 | Phase 11 | — | Pending |
-| DOCK-06 | Phase 9 | — | Pending |
-| DOCK-07 | Phase 11 | — | Pending |
-| PROX-01 | Phase 10 | — | Pending |
-| PROX-02 | Phase 10 | — | Pending |
-| PROX-03 | Phase 10 | — | Pending |
-| PROX-04 | Phase 10 | — | Pending |
-| PROX-05 | Phase 10 | — | Pending |
-| PROX-06 | Phase 10 | — | Pending |
-| ORCH-01 | Phase 11 | — | Pending |
-| ORCH-02 | Phase 11 | — | Pending |
-| ORCH-03 | Phase 11 | — | Pending |
-| ORCH-04 | Phase 11 | — | Pending |
-| ORCH-05 | Phase 11 | — | Pending |
-| CTRL-01 | Phase 12 | — | Pending |
-| CTRL-02 | Phase 12 | — | Pending |
-| CTRL-03 | Phase 12 | — | Pending |
-| CTRL-04 | Phase 12 | — | Pending |
+| CLEAN-01..08 | Phase 13 | — | Pending |
+| TGAUTH-01..14 | Phase 14 | — | Pending |
+| TGUX-01..05 | Phase 14 | — | Pending |
+| WEB-01..03 | Phase 14 | — | Pending |
 
-**v2.0 Coverage:**
-- Total requirements: 22
-- Mapped to phases: 22 ✓
+**v3.0 Coverage:**
+- Total requirements: 30
+- Mapped to phases: 30 ✓
 - Unmapped: 0
 
 ---
-*Requirements defined: 2026-02-14 (v1.0), 2026-02-16 (v2.0)*
-*Last updated: 2026-02-16 — v2.0 Docker Multi-Tenant requirements added*
+*Requirements defined: 2026-02-14 (v1.0), 2026-02-16 (v2.0), 2026-02-16 (v3.0)*
+*Last updated: 2026-02-16 — v3.0 Telegram-First & Cleanup requirements added*
