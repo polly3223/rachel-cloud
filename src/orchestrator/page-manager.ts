@@ -462,10 +462,10 @@ export function startPageManager(): void {
     );
   }
 
-  // Hourly heartbeat
+  // Daily heartbeat (every 24 hours)
   heartbeatInterval = setInterval(
     () => heartbeatSweep().catch((err) => log.error("Heartbeat error", { error: String(err) })),
-    60 * 60 * 1000, // 1 hour
+    24 * 60 * 60 * 1000, // 24 hours
   );
 
   log.info("Page manager started", {
