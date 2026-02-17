@@ -66,6 +66,19 @@ export interface Translations {
 			rachel3: string;
 		};
 	};
+	whatsappDemo: {
+		label: string;
+		title: string;
+		subtitle: string;
+		online: string;
+		inputPlaceholder: string;
+		messages: {
+			user1: string;
+			rachel1: string;
+			user2: string;
+			rachel2: string;
+		};
+	};
 	pricing: {
 		label: string;
 		title: string;
@@ -156,8 +169,30 @@ function detectLocale(): Locale {
 // Stores
 // ---------------------------------------------------------------------------
 
-/** Current locale — writable so the LanguageSwitcher can update it. */
-export const locale = writable<Locale>(detectLocale());
+/**
+ * Current locale — writable so the LanguageSwitcher can update it.
+ *
+ * IMPORTANT: We initialise with DEFAULT_LOCALE on both server AND client so
+ * that Svelte's hydration sees identical content. The real browser-detected
+ * locale is applied lazily in a `$effect` / `onMount` by the root layout, or
+ * the first time the LanguageSwitcher is interacted with.
+ *
+ * We used to call `detectLocale()` at import time, but that caused a hydration
+ * mismatch when the browser language differed from DEFAULT_LOCALE — Svelte
+ * would try to hydrate English text against Italian SSR HTML, crash, and leave
+ * the page half-rendered.
+ */
+export const locale = writable<Locale>(DEFAULT_LOCALE);
+
+// On the client, immediately update to the detected locale AFTER the module
+// has been imported (i.e. after hydration has wired up the stores). Using
+// queueMicrotask ensures we run after the synchronous hydration pass.
+if (typeof window !== 'undefined') {
+	queueMicrotask(() => {
+		const detected = detectLocale();
+		locale.set(detected);
+	});
+}
 
 // Persist changes to localStorage
 locale.subscribe((value: Locale) => {

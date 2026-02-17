@@ -79,7 +79,7 @@ const it: Translations = {
 		messages: {
 			user1: 'Quante persone si sono iscritte sulla mia landing page oggi?',
 			rachel1:
-				'Oggi hai ricevuto 7 nuove iscrizioni! Ecco il riepilogo:\n\n1. Marco Rossi \u2014 marco@rossi.it\n2. Elena Bianchi \u2014 elena.b@gmail.com\n3. Fabio Conti \u2014 fabio@contigroup.com\n4. Sara De Luca \u2014 sara.deluca@outlook.com\n5. Luca Moretti \u2014 luca.m@hotmail.it\n6. Anna Ferrari \u2014 a.ferrari@yahoo.com\n7. Giulia Greco \u2014 giulia@greco.biz\n\nVuoi che ti mandi la lista completa come file Excel?',
+				'Oggi hai ricevuto 7 nuove iscrizioni! Ecco il riepilogo:\n\n1. Marco Rossi \u2014 +39 342 881 2201\n2. Elena Bianchi \u2014 +39 331 554 6678\n3. Fabio Conti \u2014 +39 349 227 3345\n4. Sara De Luca \u2014 +39 320 991 4412\n5. Luca Moretti \u2014 +39 338 765 0093\n6. Anna Ferrari \u2014 +39 347 112 8856\n7. Giulia Greco \u2014 +39 333 448 7721\n\nVuoi che ti mandi la lista completa come file Excel?',
 			user2:
 				'S\u00EC, mandami l\'Excel. E ricordami di chiamare Marco Rossi domani alle 9 \u2014 sembra un contatto caldo.',
 			rachel2:
@@ -88,6 +88,23 @@ const it: Translations = {
 				'Scrivi un\'email di follow-up per tutte e 7 le iscrizioni. Professionale ma amichevole, menziona la nostra consulenza gratuita.',
 			rachel3:
 				'Ecco la tua bozza:\n\nOggetto: Grazie per il tuo interesse \u2014 parliamone!\n\nCiao [Nome],\n\nGrazie per esserti iscritto! Mi farebbe piacere offrirti una consulenza gratuita di 15 minuti per capire come possiamo aiutare il tuo business.\n\nRispondi a questa email con un orario che ti va bene, oppure scegli uno slot qui: [link al tuo calendario]\n\nA presto!\n\nVuoi che modifichi il tono o aggiunga qualcosa?'
+		}
+	},
+
+	whatsappDemo: {
+		label: 'Integrazione WhatsApp',
+		title: 'Gestisci i tuoi gruppi WhatsApp',
+		subtitle:
+			'Estrai contatti, manda messaggi, gestisci i tuoi gruppi \u2014 tutto da Telegram. Perfetto per chi lavora con le reti.',
+		online: 'online',
+		inputPlaceholder: 'Messaggio',
+		messages: {
+			user1: 'dammi i numeri e i nomi dal gruppo "Imprenditori Torino Network"',
+			rachel1:
+				'Ecco i contatti di Imprenditori Torino Network:\n\n1. Marco Ferretti \u2014 +39 342 881 2201\n2. Alessia Conti \u2014 +39 331 554 6678\n3. Davide Moretti \u2014 +39 338 360 8260\n4. Sara Rinaldi \u2014 +39 334 804 2843\n5. Luca Barbieri \u2014 +39 347 112 8856\n6. Giulia Marchetti \u2014 +39 333 369 3360\n7. Andrea Vitale \u2014 +39 333 448 7721 (admin)\n\nNomi salvati in rubrica. Vuoi esportarli come Excel?',
+			user2: 'manda un messaggio a Marco Ferretti su WhatsApp: "Ciao Marco! Ho visto che sei nel gruppo Imprenditori Torino. Ti va un caff\u00E8 settimana prossima per parlare di una collaborazione?"',
+			rachel2:
+				'Fatto! \u2705 Messaggio inviato a Marco Ferretti su WhatsApp.\n\nVuoi che mandi un messaggio simile anche agli altri del gruppo?',
 		}
 	},
 

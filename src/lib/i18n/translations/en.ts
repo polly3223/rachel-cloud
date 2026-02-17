@@ -79,7 +79,7 @@ const en: Translations = {
 		messages: {
 			user1: 'How many people signed up on my landing page today?',
 			rachel1:
-				"You got 7 new signups today! Here's the breakdown:\n\n1. Marco Rossi \u2014 marco@rossi.it\n2. Elena Bianchi \u2014 elena.b@gmail.com\n3. Fabio Conti \u2014 fabio@contigroup.com\n4. Sara De Luca \u2014 sara.deluca@outlook.com\n5. Luca Moretti \u2014 luca.m@hotmail.it\n6. Anna Ferrari \u2014 a.ferrari@yahoo.com\n7. Giulia Greco \u2014 giulia@greco.biz\n\nWant me to send you the full list as an Excel file?",
+				"You got 7 new signups today! Here's the breakdown:\n\n1. Marco Rossi \u2014 +39 342 881 2201\n2. Elena Bianchi \u2014 +39 331 554 6678\n3. Fabio Conti \u2014 +39 349 227 3345\n4. Sara De Luca \u2014 +39 320 991 4412\n5. Luca Moretti \u2014 +39 338 765 0093\n6. Anna Ferrari \u2014 +39 347 112 8856\n7. Giulia Greco \u2014 +39 333 448 7721\n\nWant me to send you the full list as an Excel file?",
 			user2:
 				'Yes, send the Excel. And remind me to call Marco Rossi tomorrow at 9am \u2014 he looks like a hot lead.',
 			rachel2:
@@ -88,6 +88,23 @@ const en: Translations = {
 				'Draft a follow-up email for all 7 signups. Professional but friendly, mention our free consultation offer.',
 			rachel3:
 				"Here's your draft:\n\nSubject: Thanks for your interest \u2014 let's chat!\n\nHi [Name],\n\nThanks for signing up! I'd love to offer you a free 15-minute consultation to see how we can help your business.\n\nJust reply to this email with a time that works for you, or pick a slot here: [your calendar link]\n\nLooking forward to it!\n\nWant me to adjust the tone or add anything?"
+		}
+	},
+
+	whatsappDemo: {
+		label: 'WhatsApp Integration',
+		title: 'Manage your WhatsApp groups',
+		subtitle:
+			'Extract contacts, send messages, manage your groups \u2014 all from Telegram. Perfect for networkers.',
+		online: 'online',
+		inputPlaceholder: 'Message',
+		messages: {
+			user1: 'give me the numbers and names from the group "Turin Entrepreneurs Network"',
+			rachel1:
+				'Here are the contacts from Turin Entrepreneurs Network:\n\n1. Marco Ferretti \u2014 +39 342 881 2201\n2. Alessia Conti \u2014 +39 331 554 6678\n3. Davide Moretti \u2014 +39 338 360 8260\n4. Sara Rinaldi \u2014 +39 334 804 2843\n5. Luca Barbieri \u2014 +39 347 112 8856\n6. Giulia Marchetti \u2014 +39 333 369 3360\n7. Andrea Vitale \u2014 +39 333 448 7721 (admin)\n\nNames saved to contacts. Want me to export them as Excel?',
+			user2: 'send a WhatsApp message to Marco Ferretti: "Hey Marco! I saw you\'re in the Turin Entrepreneurs group. Fancy a coffee next week to discuss a potential collaboration?"',
+			rachel2:
+				'Done! \u2705 Message sent to Marco Ferretti on WhatsApp.\n\nWant me to send a similar message to the others in the group?',
 		}
 	},
 

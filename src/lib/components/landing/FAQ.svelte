@@ -10,7 +10,7 @@
 
 <section class="py-24 bg-[#0a0a0f] border-t border-white/5">
 	<div class="max-w-2xl mx-auto px-6">
-		<p class="text-sm font-medium text-rose-400 text-center mb-3 tracking-wide uppercase">{$t.faq.label}</p>
+		<p class="text-sm font-medium text-[#0086EE] text-center mb-3 tracking-wide uppercase">{$t.faq.label}</p>
 		<h2 class="text-3xl sm:text-4xl font-bold text-center text-white mb-16">
 			{$t.faq.title}
 		</h2>
