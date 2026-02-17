@@ -154,6 +154,16 @@
 - [ ] **WEB-04**: Polar checkout page works with Telegram-authenticated sessions
 - [ ] **WEB-05**: Onboarding simplified — no BotFather setup, just subscribe and go
 
+### Container Page Serving
+
+- [ ] **PAGE-01**: Container Rachel can register a web page with the host via `POST /internal/pages` (name, port) and receive a public URL
+- [ ] **PAGE-02**: Container Rachel can deregister a page via `DELETE /internal/pages/{name}` to free the port
+- [ ] **PAGE-03**: Orchestrator allocates host ports from a configurable range (10000-65535) and maps container:port → host:port
+- [ ] **PAGE-04**: Nginx wildcard reverse proxy routes `{name}-{userid}.get-rachel.com` to the correct host:port
+- [ ] **PAGE-05**: Cloudflare tunnel configured with wildcard DNS for `*.get-rachel.com`
+- [ ] **PAGE-06**: Hourly heartbeat checks registered pages and auto-removes dead ones (frees port, removes nginx rule)
+- [ ] **PAGE-07**: Rachel8 system prompt includes instructions for container instances on how to serve pages via the host proxy (no cloudflared needed)
+
 ## Future Requirements (Deferred)
 
 - Multi-server Docker Swarm / Kubernetes for horizontal scaling
@@ -202,10 +212,11 @@
 | TGAUTH-01..14 | Phase 14 | — | Pending |
 | TGUX-01..05 | Phase 14 | — | Pending |
 | WEB-01..05 | Phase 14 | — | Pending |
+| PAGE-01..07 | Phase 15 | — | Pending |
 
 **v3.0 Coverage:**
-- Total requirements: 32
-- Mapped to phases: 32 ✓
+- Total requirements: 39
+- Mapped to phases: 39 ✓
 - Unmapped: 0
 
 ---

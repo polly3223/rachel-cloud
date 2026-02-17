@@ -25,6 +25,15 @@ import {
   stopHealthMonitor,
   runHealthSweep,
 } from "./health-monitor";
+import {
+  startPageManager,
+  stopPageManager,
+  registerAndActivatePage,
+  deactivateAndDeletePage,
+  listUserPages,
+  listAllPages,
+  heartbeatSweep,
+} from "./page-manager";
 import type { UserContainerEnv } from "./types";
 
 // ---------- Auth ----------
@@ -211,7 +220,7 @@ async function handleHealth(): Promise<Response> {
 
 const server = Bun.serve({
   port: config.port,
-  hostname: "127.0.0.1", // localhost only!
+  hostname: "0.0.0.0", // accessible from containers via host.docker.internal
 
   async fetch(req: Request): Promise<Response> {
     const url = new URL(req.url);
@@ -222,6 +231,79 @@ const server = Bun.serve({
     // Health — no auth required
     if (method === "GET" && path === "/health") {
       return handleHealth();
+    }
+
+    // ---------- Internal Pages API (called by containers, no API key) ----------
+    // Containers auth via their userId in the request body/path.
+    // Only reachable from Docker network (host.docker.internal:9998).
+
+    if (path.startsWith("/internal/pages")) {
+      try {
+        // POST /internal/pages — register a page
+        if (method === "POST" && path === "/internal/pages") {
+          const body = (await req.json()) as {
+            userId: string;
+            name: string;
+            port: number;
+          };
+          if (!body.userId || !body.name || !body.port) {
+            return jsonResponse(
+              { status: "error", message: "Missing required fields: userId, name, port" },
+              400,
+            );
+          }
+          const page = await registerAndActivatePage({
+            userId: body.userId,
+            name: body.name,
+            containerPort: body.port,
+          });
+          return jsonResponse({ status: "ok", page }, 201);
+        }
+
+        // DELETE /internal/pages/:userId/:name — deregister a page
+        const deleteMatch = path.match(
+          /^\/internal\/pages\/([^/]+)\/([^/]+)$/,
+        );
+        if (method === "DELETE" && deleteMatch) {
+          const userId = decodeURIComponent(deleteMatch[1]);
+          const name = decodeURIComponent(deleteMatch[2]);
+          const removed = await deactivateAndDeletePage(userId, name);
+          if (!removed) {
+            return jsonResponse(
+              { status: "error", message: "Page not found" },
+              404,
+            );
+          }
+          return jsonResponse({ status: "ok" });
+        }
+
+        // GET /internal/pages/:userId — list user's pages
+        const listMatch = path.match(/^\/internal\/pages\/([^/]+)$/);
+        if (method === "GET" && listMatch) {
+          const userId = decodeURIComponent(listMatch[1]);
+          const pages = listUserPages(userId);
+          return jsonResponse({ status: "ok", pages });
+        }
+
+        // GET /internal/pages — list all pages (admin)
+        if (method === "GET" && path === "/internal/pages") {
+          if (!checkAuth(req)) return unauthorizedResponse();
+          const pages = listAllPages();
+          return jsonResponse({ status: "ok", pages });
+        }
+
+        // POST /internal/pages/heartbeat — manual heartbeat sweep (admin)
+        if (method === "POST" && path === "/internal/pages/heartbeat") {
+          if (!checkAuth(req)) return unauthorizedResponse();
+          const result = await heartbeatSweep();
+          return jsonResponse({ status: "ok", result });
+        }
+
+        return jsonResponse({ status: "error", message: "Not found" }, 404);
+      } catch (err) {
+        log.error("Internal pages error", { method, path, error: String(err) });
+        return jsonResponse({ status: "error", message: String(err) }, 500);
+      }
     }
 
     // All other routes require auth
@@ -309,6 +391,9 @@ const server = Bun.serve({
   },
 });
 
+// Start page manager
+startPageManager();
+
 // Start health monitor
 startHealthMonitor((result) => {
   // Future: update database, send notifications
@@ -323,7 +408,7 @@ startHealthMonitor((result) => {
 
 log.info("Orchestrator started", {
   port: config.port,
-  hostname: "127.0.0.1",
+  hostname: "0.0.0.0",
   image: config.imageName,
   network: config.networkName,
 });
@@ -332,6 +417,7 @@ log.info("Orchestrator started", {
 
 function shutdown() {
   log.info("Shutting down orchestrator...");
+  stopPageManager();
   stopHealthMonitor();
   server.stop();
   process.exit(0);
