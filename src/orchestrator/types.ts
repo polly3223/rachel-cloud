@@ -74,6 +74,7 @@ export interface DockerCreateContainerBody {
     Binds: string[];
     Tmpfs: Record<string, string>;
     NetworkMode: string;
+    ExtraHosts?: string[];
     RestartPolicy: { Name: string; MaximumRetryCount?: number };
     CapDrop: string[];
     SecurityOpt: string[];

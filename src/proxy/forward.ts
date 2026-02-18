@@ -24,17 +24,27 @@ export interface UsageData {
 // ---------- User ID extraction ----------
 
 /**
- * Extract user ID from the Authorization header.
- * Containers set ANTHROPIC_AUTH_TOKEN=rachel-user-{USER_ID},
- * which the Claude Agent SDK sends as the Authorization header.
+ * Extract user ID from the request headers.
+ * Containers set ANTHROPIC_API_KEY=rachel-user-{USER_ID},
+ * which the Claude CLI sends as either:
+ *   - x-api-key header (Anthropic SDK convention)
+ *   - Authorization: Bearer ... header
  */
 export function extractUserId(req: Request): string | null {
+  // Check x-api-key first (what Claude CLI / Anthropic SDK sends)
+  const apiKey = req.headers.get("x-api-key");
+  if (apiKey) {
+    const match = apiKey.match(/^rachel-user-(.+)$/);
+    if (match) return match[1];
+  }
+  // Fallback to Authorization header
   const auth = req.headers.get("authorization");
-  if (!auth) return null;
-  // Support both "rachel-user-{id}" and "Bearer rachel-user-{id}"
-  const token = auth.replace(/^Bearer\s+/i, "");
-  const match = token.match(/^rachel-user-(.+)$/);
-  return match ? match[1] : null;
+  if (auth) {
+    const token = auth.replace(/^Bearer\s+/i, "");
+    const match = token.match(/^rachel-user-(.+)$/);
+    if (match) return match[1];
+  }
+  return null;
 }
 
 // ---------- Retry logic ----------

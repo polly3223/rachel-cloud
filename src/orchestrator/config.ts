@@ -35,10 +35,10 @@ function loadConfig(): OrchestratorConfig {
       process.env.PROXY_URL || "http://host.docker.internal:9999",
     groqApiKey: process.env.GROQ_API_KEY || "",
     defaults: {
-      memoryBytes: 512 * 1024 * 1024,     // 512MB
-      memorySwapBytes: 512 * 1024 * 1024,  // no swap
-      nanoCpus: 500_000_000,               // 0.5 CPU
-      pidsLimit: 100,
+      memoryBytes: 1536 * 1024 * 1024,    // 1.5GB — Claude Code CLI needs ~800MB+
+      memorySwapBytes: 2048 * 1024 * 1024, // 2GB total (512MB swap)
+      nanoCpus: 1_000_000_000,             // 1.0 CPU — Claude Code spawns subprocesses
+      pidsLimit: 256,                      // Claude Code uses subprocesses for tools
     },
   };
 }

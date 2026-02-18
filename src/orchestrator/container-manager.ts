@@ -90,7 +90,7 @@ function buildContainerConfig(
     `NODE_ENV=production`,
     `LOG_LEVEL=${env.logLevel || "info"}`,
     `ANTHROPIC_BASE_URL=${config.proxyUrl}`,
-    `ANTHROPIC_AUTH_TOKEN=rachel-user-${userId}`,
+    `ANTHROPIC_API_KEY=rachel-user-${userId}`,
   ];
 
   // Optional env vars
@@ -110,10 +110,13 @@ function buildContainerConfig(
       Binds: [`${volumeName(userId)}:/data:rw`],
       Tmpfs: { "/tmp": "rw,noexec,nosuid,size=100m" },
       NetworkMode: config.networkName,
+      // Linux Docker doesn't auto-resolve host.docker.internal on custom bridge networks.
+      ExtraHosts: ["host.docker.internal:host-gateway"],
       RestartPolicy: { Name: "unless-stopped" },
       CapDrop: ["ALL"],
       SecurityOpt: ["no-new-privileges"],
-      ReadonlyRootfs: true,
+      // ReadonlyRootfs disabled: Claude Code CLI writes to ~/.claude.json, ~/.claude/, etc.
+      ReadonlyRootfs: false,
       LogConfig: {
         Type: "json-file",
         Config: {
@@ -525,10 +528,13 @@ function buildContainerConfigFromEnv(
       Binds: [`${volumeName(userId)}:/data:rw`],
       Tmpfs: { "/tmp": "rw,noexec,nosuid,size=100m" },
       NetworkMode: config.networkName,
+      // Linux Docker doesn't auto-resolve host.docker.internal on custom bridge networks.
+      ExtraHosts: ["host.docker.internal:host-gateway"],
       RestartPolicy: { Name: "unless-stopped" },
       CapDrop: ["ALL"],
       SecurityOpt: ["no-new-privileges"],
-      ReadonlyRootfs: true,
+      // ReadonlyRootfs disabled: Claude Code CLI writes to ~/.claude.json, ~/.claude/, etc.
+      ReadonlyRootfs: false,
       LogConfig: {
         Type: "json-file",
         Config: {
