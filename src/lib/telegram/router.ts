@@ -75,17 +75,74 @@ async function getUserWithSubscription(telegramId: number) {
 }
 
 /**
+ * Resolve a container's IP address via Docker socket API.
+ * Rachel Cloud runs on the host (not in Docker), so DNS resolution of
+ * container names doesn't work. We query the Docker API directly.
+ *
+ * Results are cached briefly (30s) to avoid hitting Docker API on every message.
+ */
+const containerIpCache = new Map<string, { ip: string; expiresAt: number }>();
+
+async function resolveContainerIp(containerName: string): Promise<string | null> {
+	const cached = containerIpCache.get(containerName);
+	if (cached && cached.expiresAt > Date.now()) {
+		return cached.ip;
+	}
+
+	try {
+		const resp = await fetch(
+			`http://localhost/containers/${encodeURIComponent(containerName)}/json`,
+			{ headers: { Host: 'docker' }, /* @ts-ignore */ unix: '/var/run/docker.sock' }
+		);
+
+		if (!resp.ok) return null;
+
+		const info = (await resp.json()) as Record<string, unknown>;
+		const networks = (info.NetworkSettings as Record<string, unknown>)?.Networks as
+			| Record<string, Record<string, unknown>>
+			| undefined;
+
+		if (!networks) return null;
+
+		// Find IP on any network (typically rachel-net)
+		for (const net of Object.values(networks)) {
+			const ip = net.IPAddress as string;
+			if (ip) {
+				containerIpCache.set(containerName, { ip, expiresAt: Date.now() + 30_000 });
+				return ip;
+			}
+		}
+	} catch (error) {
+		console.error(`[router] Failed to resolve IP for ${containerName}:`, error);
+	}
+
+	return null;
+}
+
+/**
  * Forward a raw Telegram update to a user's container.
  *
  * Each Rachel8 container runs grammY in webhook mode and accepts
  * POST requests with the raw Telegram update JSON on its internal port.
+ *
+ * Since rachel-cloud runs on the host (not inside Docker), we resolve
+ * the container IP via Docker API and connect directly.
  */
 export async function forwardToContainer(
 	containerName: string,
 	update: Record<string, unknown>
 ): Promise<void> {
-	// Containers are on the same Docker network, reachable by name
-	const url = `http://${containerName}:8443/webhook`;
+	const ip = await resolveContainerIp(containerName);
+	if (!ip) {
+		console.error(`[router] Could not resolve IP for container ${containerName}`);
+		const telegramId = extractTelegramId(update);
+		if (telegramId) {
+			await sendMessage(telegramId, '⚠️ Rachel is temporarily unavailable. Try again in a moment.');
+		}
+		return;
+	}
+
+	const url = `http://${ip}:8443/webhook`;
 
 	try {
 		const response = await fetch(url, {
@@ -96,12 +153,15 @@ export async function forwardToContainer(
 
 		if (!response.ok) {
 			console.error(
-				`[router] Forward to ${containerName} failed: ${response.status} ${response.statusText}`
+				`[router] Forward to ${containerName} (${ip}) failed: ${response.status} ${response.statusText}`
 			);
 		}
 	} catch (error) {
-		console.error(`[router] Failed to reach container ${containerName}:`, error);
-		// TODO: Send a "Rachel is temporarily unavailable" message to the user
+		console.error(`[router] Failed to reach container ${containerName} (${ip}):`, error);
+		const telegramId = extractTelegramId(update);
+		if (telegramId) {
+			await sendMessage(telegramId, '⚠️ Rachel is temporarily unavailable. Try again in a moment.');
+		}
 	}
 }
 
