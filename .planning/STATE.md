@@ -50,7 +50,7 @@ Note: Phase 14 (Telegram Auth) completed manually 2026-02-17, Phase 15 (Page Ser
 ### v3.0 Phases
 - Phase 13: Dead Code Cleanup — Not started
 - Phase 14: Telegram-Only Authentication ✅ (completed manually 2026-02-17)
-- Phase 15: Container Page Serving ✅ (completed 2026-02-17)
+- Phase 15: Container Page Serving — REMOVED (replaced with cloudflared quick tunnels, 2026-02-18)
 - Phase 16: Infrastructure Go-Live — In progress
 
 ## Key Learnings (Accumulated)

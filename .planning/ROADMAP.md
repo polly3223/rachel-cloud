@@ -329,25 +329,10 @@ Plans:
 - Phase 13: Dead Code Cleanup
 - Phase 14: Telegram-Only Authentication
 
-## Phase 15: Container Page Serving
+## Phase 15: Container Page Serving — REMOVED
 
-**Goal:** Enable container Rachels to serve public web pages via the host's reverse proxy, with automatic subdomain routing and cleanup.
-**Requirements:** PAGE-01, PAGE-02, PAGE-03, PAGE-04, PAGE-05, PAGE-06, PAGE-07
-
-### Success Criteria
-1. Container Rachel runs a web server and registers it → gets a public URL like `{name}-{userid}.get-rachel.com`
-2. Orchestrator exposes internal POST/DELETE /internal/pages endpoints (no AI, dumb routing)
-3. Nginx wildcard reverse proxy routes `*.get-rachel.com` subdomains to correct container ports
-4. Wildcard DNS `*.get-rachel.com` configured in Cloudflare tunnel
-5. Hourly heartbeat detects dead pages and auto-frees ports
-6. Rachel8 system prompt includes instructions for container instances on how to register pages
-7. Container Rachel can tear down a page and free the port via DELETE endpoint
-
-### Plans
-- [ ] 15-01-PLAN.md — Internal pages API in orchestrator (register/delete endpoints, SQLite storage, port allocation) (Wave 1)
-- [ ] 15-02-PLAN.md — Nginx wildcard reverse proxy + Cloudflare wildcard DNS config (Wave 1)
-- [ ] 15-03-PLAN.md — Hourly heartbeat/cleanup cron for dead pages (Wave 2)
-- [ ] 15-04-PLAN.md — Rachel8 system prompt: container page-serving instructions (Wave 2)
+**Status:** Removed (2026-02-18)
+**Reason:** The nginx reverse proxy + socat + orchestrator page API approach was over-engineered. Container Rachels can simply use `cloudflared tunnel --url` to create quick public tunnels. This works out of the box, requires zero host-side infrastructure, and the container Rachel already knows how to do it via the system prompt. The tradeoff (random URLs that change on restart) is acceptable.
 
 ---
 

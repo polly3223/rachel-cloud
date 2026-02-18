@@ -159,6 +159,7 @@ function buildContainerConfig(
     `SHARED_FOLDER_PATH=/data`,
     `NODE_ENV=production`,
     `LOG_LEVEL=${env.logLevel || "info"}`,
+    `RACHEL_CLOUD=true`,
     // Default: direct Anthropic auth via OAuth credentials on the volume
     // (copied by entrypoint.sh from /data/.claude-credentials.json).
     // No ANTHROPIC_BASE_URL or ANTHROPIC_API_KEY — the Claude CLI uses OAuth.
