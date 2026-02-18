@@ -20,7 +20,7 @@
 	const DOCKER_HOST_COST = 15;
 	const AI_BUDGET_COST = 80;
 	const TOTAL_FIXED_COST = DOCKER_HOST_COST + AI_BUDGET_COST;
-	const PRICE_PER_SUB = 20; // USD
+	const PRICE_PER_SUB = data.pricePerSub ?? 20; // from server, fallback 20
 	const grossMarginPerSubscriber = $derived(
 		overview.activeSubscribers > 0
 			? PRICE_PER_SUB - TOTAL_FIXED_COST / overview.activeSubscribers

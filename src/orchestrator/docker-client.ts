@@ -241,6 +241,44 @@ export const docker = {
     return output || new TextDecoder().decode(bytes);
   },
 
+  // ===== Exec =====
+
+  /**
+   * Execute a command inside a running container.
+   * Uses Docker exec API: create exec instance, then start it.
+   */
+  async execInContainer(
+    nameOrId: string,
+    cmd: string[],
+  ): Promise<string> {
+    // Create exec instance
+    const exec = await dockerJson<{ Id: string }>(
+      `/containers/${encodeURIComponent(nameOrId)}/exec`,
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          Cmd: cmd,
+          AttachStdout: true,
+          AttachStderr: true,
+        }),
+      },
+    );
+
+    // Start exec (returns output stream)
+    const res = await dockerFetch(`/exec/${exec.Id}/start`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ Detach: false }),
+    });
+
+    if (!res.ok) {
+      throw new DockerApiError(res.status, "exec/start", await res.text());
+    }
+
+    return res.text();
+  },
+
   // ===== Utility =====
 
   async ping(): Promise<boolean> {

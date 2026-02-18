@@ -45,7 +45,7 @@ export async function handleStart(telegramId: number): Promise<void> {
 		await sendMessage(
 			telegramId,
 			`👋 Welcome to Rachel!\n\n` +
-				`I'm your personal AI assistant. Subscribe for $20/mo to get started:\n` +
+				`I'm your personal AI assistant. Subscribe to get started:\n` +
 				`${BASE_URL}/subscribe?tg=${telegramId}\n\n` +
 				`Once you subscribe, I'll be ready to chat!`
 		);

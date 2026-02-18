@@ -50,8 +50,10 @@ export interface AdminOverview {
 // Constants
 // ---------------------------------------------------------------------------
 
+import { PRICING } from '$lib/config/pricing';
+
 /** Revenue per active subscriber per month (USD). */
-const PRICE_PER_SUBSCRIBER_USD = 20;
+const PRICE_PER_SUBSCRIBER_USD = PRICING.amount;
 
 /**
  * Estimated Docker host cost per month (EUR).

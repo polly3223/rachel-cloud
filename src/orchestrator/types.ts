@@ -94,6 +94,7 @@ export interface UserContainerEnv {
   groqApiKey?: string;
   sttProvider?: string;
   logLevel?: string;
+  claudeModel?: string;
 }
 
 export interface ContainerStatus {

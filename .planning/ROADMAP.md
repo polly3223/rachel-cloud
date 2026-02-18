@@ -351,4 +351,27 @@ Plans:
 
 ---
 
-**3 phases** | **39 requirements** | All mapped ✓
+## Phase 16: Infrastructure Go-Live
+
+**Goal:** Get the full stack running in production so the first real user can sign up, pay, and start chatting with Rachel on Telegram.
+**Requirements:** INFRA-01, INFRA-02, INFRA-03, INFRA-04, INFRA-05, INFRA-06, INFRA-07, INFRA-08
+
+### Success Criteria
+1. Docker image builds successfully and container starts responding on Telegram within 30 seconds
+2. Orchestrator and LLM proxy running as systemd services (survive reboots)
+3. SvelteKit running as production build (not vite preview)
+4. Full end-to-end flow works: get-rachel.com → Telegram Login → Polar checkout → container provisioned → chat on Telegram
+5. Polar in production mode — real payments work
+6. nginx + socat installed and configured for container page serving
+7. DB migration applied (drizzle-kit push)
+8. Bot commands work: /start, /status, /restart, /billing, /help
+
+### Plans
+- [ ] 16-01-PLAN.md — Build Rachel8 Docker image, run DB migration, production SvelteKit build (Wave 1)
+- [ ] 16-02-PLAN.md — Systemd services for orchestrator (9998), LLM proxy (9999), SvelteKit (5173) (Wave 1)
+- [ ] 16-03-PLAN.md — Install nginx + socat, configure wildcard reverse proxy for *.get-rachel.com (Wave 2)
+- [ ] 16-04-PLAN.md — Switch Polar to production, verify webhook, end-to-end signup flow test (Wave 2)
+
+---
+
+**4 phases** | **47 requirements** | All mapped ✓

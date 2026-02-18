@@ -42,7 +42,7 @@ const DB_PATH = process.env.PAGES_DB_PATH || "/home/rachel/rachel-cloud/data/pag
 const BASE_DOMAIN = process.env.PAGES_BASE_DOMAIN || "get-rachel.com";
 const PORT_RANGE_START = parseInt(process.env.PAGES_PORT_START || "10000", 10);
 const PORT_RANGE_END = parseInt(process.env.PAGES_PORT_END || "60000", 10);
-const NGINX_CONF_PATH = process.env.PAGES_NGINX_CONF || "/etc/nginx/conf.d/rachel-pages.conf";
+const NGINX_CONF_PATH = process.env.PAGES_NGINX_CONF || "/home/rachel/rachel-cloud/data/nginx/rachel-pages.conf";
 
 // ---------- Database ----------
 
@@ -148,7 +148,7 @@ async function writeNginxConfig(): Promise<void> {
 
 async function reloadNginx(): Promise<void> {
   try {
-    const proc = Bun.spawn(["nginx", "-s", "reload"], {
+    const proc = Bun.spawn(["sudo", "nginx", "-s", "reload"], {
       stdout: "pipe",
       stderr: "pipe",
     });

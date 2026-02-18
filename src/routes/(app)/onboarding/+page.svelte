@@ -13,8 +13,20 @@
 
 	// Handle checkout for subscription
 	async function handleCheckout() {
-		// Redirect to checkout endpoint
-		window.location.href = '/api/auth/checkout?slug=rachel-cloud-monthly';
+		try {
+			const res = await fetch('/api/billing/checkout', {
+				method: 'POST',
+				headers: { 'Content-Type': 'application/json' },
+			});
+			const result = await res.json();
+			if (result.url) {
+				window.location.href = result.url;
+			} else {
+				console.error('Checkout error:', result.error);
+			}
+		} catch (err) {
+			console.error('Checkout failed:', err);
+		}
 	}
 </script>
 
@@ -164,7 +176,7 @@
 		<!-- Help Text -->
 		<div class="mt-6 text-center">
 			<p class="text-sm text-gray-500">
-				Need help? Contact us at <a href="mailto:support@rachel-cloud.example" class="text-blue-600 hover:text-blue-500">support@rachel-cloud.example</a>
+				Need help? Contact us at <a href="mailto:pollydalmazzo@gmail.com" class="text-blue-600 hover:text-blue-500">pollydalmazzo@gmail.com</a>
 			</p>
 		</div>
 	</div>

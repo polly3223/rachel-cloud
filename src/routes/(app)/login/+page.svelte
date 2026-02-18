@@ -4,7 +4,7 @@
 	let error = $state('');
 	let loading = $state(false);
 
-	const BOT_USERNAME = 'RachelAIBot'; // TODO: make configurable via env
+	const BOT_USERNAME = 'rachelcloud_bot';
 
 	/**
 	 * Called by the Telegram Login Widget when auth succeeds.
@@ -40,16 +40,22 @@
 	if (typeof window !== 'undefined') {
 		(window as unknown as Record<string, unknown>).onTelegramAuth = onTelegramAuth;
 	}
+
+	function mountTelegramWidget(node: HTMLElement) {
+		const script = document.createElement('script');
+		script.async = true;
+		script.src = 'https://telegram.org/js/telegram-widget.js?22';
+		script.setAttribute('data-telegram-login', BOT_USERNAME);
+		script.setAttribute('data-size', 'large');
+		script.setAttribute('data-auth-url', '/api/auth/telegram');
+		script.setAttribute('data-request-access', 'write');
+		node.appendChild(script);
+		return { destroy() { node.removeChild(script); } };
+	}
 </script>
 
 <svelte:head>
 	<title>Sign In - Rachel Cloud</title>
-	<script async src="https://telegram.org/js/telegram-widget.js?22"
-		data-telegram-login={BOT_USERNAME}
-		data-size="large"
-		data-onauth="onTelegramAuth(user)"
-		data-request-access="write"
-	></script>
 </svelte:head>
 
 <div class="min-h-screen flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8 bg-gray-50">
@@ -89,8 +95,7 @@
 			</div>
 		{:else}
 			<!-- Telegram Login Widget renders here -->
-			<div class="flex justify-center py-6" id="telegram-login-widget">
-				<!-- The widget script auto-renders a button here -->
+			<div class="flex justify-center py-6" id="telegram-login-widget" use:mountTelegramWidget>
 				<noscript>
 					<p class="text-gray-500">JavaScript is required to sign in with Telegram.</p>
 				</noscript>

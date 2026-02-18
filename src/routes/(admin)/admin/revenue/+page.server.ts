@@ -1,5 +1,6 @@
 import { requireAdmin } from '$lib/admin/guard';
 import { getAdminOverview } from '$lib/admin/data';
+import { PRICING } from '$lib/config/pricing';
 import type { PageServerLoad } from './$types';
 
 export const load: PageServerLoad = async (event) => {
@@ -8,5 +9,5 @@ export const load: PageServerLoad = async (event) => {
 
 	const overview = await getAdminOverview();
 
-	return { overview };
+	return { overview, pricePerSub: PRICING.amount };
 };

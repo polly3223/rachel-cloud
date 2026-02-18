@@ -164,6 +164,17 @@
 - [ ] **PAGE-06**: Hourly heartbeat checks registered pages and auto-removes dead ones (frees port, removes nginx rule)
 - [ ] **PAGE-07**: Rachel8 system prompt includes instructions for container instances on how to serve pages via the host proxy (no cloudflared needed)
 
+### Infrastructure Go-Live
+
+- [ ] **INFRA-01**: Rachel8 Docker image builds successfully with all deps, skills, and Bun runtime
+- [ ] **INFRA-02**: DB migration applied via `bun drizzle-kit push` — all v3.0 schema changes live
+- [ ] **INFRA-03**: SvelteKit control plane running as production build (not vite preview/dev)
+- [ ] **INFRA-04**: Orchestrator running as systemd service on port 9998 (survives reboots)
+- [ ] **INFRA-05**: LLM proxy running as systemd service on port 9999 (survives reboots)
+- [ ] **INFRA-06**: nginx + socat installed and configured for container page serving (wildcard *.get-rachel.com)
+- [ ] **INFRA-07**: Polar switched to production mode — real Stripe payments processed
+- [ ] **INFRA-08**: End-to-end flow tested: Telegram Login → Polar checkout → container provisioned → chat works
+
 ## Future Requirements (Deferred)
 
 - Multi-server Docker Swarm / Kubernetes for horizontal scaling
@@ -213,6 +224,7 @@
 | TGUX-01..05 | Phase 14 | — | Pending |
 | WEB-01..05 | Phase 14 | — | Pending |
 | PAGE-01..07 | Phase 15 | — | Pending |
+| INFRA-01..08 | Phase 16 | — | Pending |
 
 **v3.0 Coverage:**
 - Total requirements: 39

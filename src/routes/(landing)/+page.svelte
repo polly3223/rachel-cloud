@@ -15,7 +15,7 @@
 
 	const title = 'Rachel Cloud - Your Personal AI Assistant on Telegram';
 	const description =
-		'Your personal AI assistant on Telegram. She builds pages, manages contacts, creates documents — all for $20/month.';
+		'Your personal AI assistant on Telegram. She builds pages, manages contacts, creates documents — all for $20/mo.';
 	const canonicalUrl = 'https://get-rachel.com';
 	const ogImageUrl = `${canonicalUrl}/og-image.png`;
 

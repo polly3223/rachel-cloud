@@ -7,11 +7,11 @@ See: .planning/PROJECT.md (updated 2026-02-16)
 
 ## Current Position
 
-Phase: Phase 15 — Container Page Serving
-Plan: In progress
-Status: Building internal pages API, nginx proxy, and Rachel8 system prompt
-Last activity: 2026-02-17 — Phase 15 added, building page serving infrastructure
-Note: Phase 14 (Telegram Auth) was completed manually on 2026-02-17
+Phase: Phase 16 — Infrastructure Go-Live
+Plan: Starting
+Status: Docker image, systemd services, production build, Polar production, e2e test
+Last activity: 2026-02-18 — Phase 16 created, Phase 15 complete
+Note: Phase 14 (Telegram Auth) completed manually 2026-02-17, Phase 15 (Page Serving) completed 2026-02-17
 
 ## v1.0 Summary (Phases 1-8 Complete)
 - Authentication (Better Auth, Claude OAuth, AES-256-GCM)
@@ -50,7 +50,8 @@ Note: Phase 14 (Telegram Auth) was completed manually on 2026-02-17
 ### v3.0 Phases
 - Phase 13: Dead Code Cleanup — Not started
 - Phase 14: Telegram-Only Authentication ✅ (completed manually 2026-02-17)
-- Phase 15: Container Page Serving — In progress
+- Phase 15: Container Page Serving ✅ (completed 2026-02-17)
+- Phase 16: Infrastructure Go-Live — In progress
 
 ## Key Learnings (Accumulated)
 - Baileys WhatsApp: use startSock() recursion pattern, not complex abstraction

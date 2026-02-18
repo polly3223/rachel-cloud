@@ -671,7 +671,7 @@
 								href="/onboarding"
 								class="inline-flex items-center px-6 py-3 border border-transparent text-base font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors shadow-sm"
 							>
-								Subscribe Now — $20/month
+								Subscribe Now — $20/mo
 							</a>
 						</div>
 					</div>
@@ -680,43 +680,4 @@
 		</div>
 	{/if}
 
-	<!-- Quick Links Card -->
-	{#if data.hasActiveSubscription || data.subscription?.containerProvisioned}
-		<div class="bg-white shadow rounded-lg">
-			<div class="px-6 py-5 border-b border-gray-200">
-				<h2 class="text-xl font-semibold text-gray-900">Quick Links</h2>
-			</div>
-			<div class="px-6 py-5">
-				<div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
-					<a
-						href="/dashboard/billing"
-						class="flex items-center p-3 rounded-lg border border-gray-200 hover:bg-gray-50 transition-colors"
-					>
-						<svg class="w-5 h-5 text-gray-400 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-							<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"></path>
-						</svg>
-						<span class="text-sm font-medium text-gray-700">Billing</span>
-					</a>
-					<a
-						href="/dashboard/claude"
-						class="flex items-center p-3 rounded-lg border border-gray-200 hover:bg-gray-50 transition-colors"
-					>
-						<svg class="w-5 h-5 text-gray-400 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-							<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"></path>
-						</svg>
-						<span class="text-sm font-medium text-gray-700">Claude Connection</span>
-					</a>
-					<a
-						href="/dashboard/logs"
-						class="flex items-center p-3 rounded-lg border border-gray-200 hover:bg-gray-50 transition-colors"
-					>
-						<svg class="w-5 h-5 text-gray-400 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-							<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
-						</svg>
-						<span class="text-sm font-medium text-gray-700">Logs</span>
-					</a>
-				</div>
-			</div>
-		</div>
-	{/if}
 </div>

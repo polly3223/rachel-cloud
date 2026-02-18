@@ -2,7 +2,7 @@ import type { Translations } from '../index';
 
 const it: Translations = {
 	hero: {
-		badge: 'La tua assistente AI personale, attiva 24 ore su 24',
+		badge: 'La tua assistente AI personale, attiva 24/7',
 		h1Line1: 'Gestisci il tuo business',
 		h1Line2: 'come un supereroe',
 		subtitle:

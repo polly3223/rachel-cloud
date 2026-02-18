@@ -6,6 +6,7 @@
  * with all security hardening from run-container.sh.
  */
 
+import { existsSync, readFileSync } from "node:fs";
 import { config, log } from "./config";
 import { docker, DockerApiError } from "./docker-client";
 import type {
@@ -77,6 +78,75 @@ async function ensureVolume(name: string): Promise<void> {
   await docker.createVolume(name);
 }
 
+// ---------- Claude credentials ----------
+
+/**
+ * Path to shared Claude OAuth credentials on the host.
+ * The entrypoint.sh in the container copies /data/.claude-credentials.json
+ * to ~/.claude/.credentials.json on every boot.
+ */
+const CLAUDE_CREDENTIALS_PATH =
+  process.env.CLAUDE_CREDENTIALS_PATH || "/home/rachel/.claude/.credentials.json";
+
+/**
+ * Provision Claude OAuth credentials onto a user's data volume.
+ * Uses a temporary container to write the file with correct ownership (1001:1001).
+ */
+async function provisionCredentials(volName: string): Promise<void> {
+  if (!existsSync(CLAUDE_CREDENTIALS_PATH)) {
+    log.warn("Claude credentials not found, skipping", {
+      path: CLAUDE_CREDENTIALS_PATH,
+    });
+    return;
+  }
+
+  const creds = readFileSync(CLAUDE_CREDENTIALS_PATH, "utf-8");
+  const tmpName = `rachel-creds-${Date.now()}`;
+
+  try {
+    // Use a lightweight temp container to write credentials to the volume
+    await docker.createContainer(tmpName, {
+      Image: config.imageName,
+      Env: [],
+      User: "1001:1001",
+      HostConfig: {
+        Memory: 64 * 1024 * 1024,
+        MemorySwap: 64 * 1024 * 1024,
+        NanoCpus: 100_000_000,
+        PidsLimit: 10,
+        Binds: [`${volName}:/data:rw`],
+        Tmpfs: {},
+        NetworkMode: "none",
+        RestartPolicy: { Name: "no" },
+        CapDrop: ["ALL"],
+        SecurityOpt: ["no-new-privileges"],
+        ReadonlyRootfs: false,
+      },
+    });
+    await docker.startContainer(tmpName);
+
+    // Write credentials via exec
+    const escaped = creds.replace(/'/g, "'\\''");
+    await docker.execInContainer(tmpName, [
+      "bash",
+      "-c",
+      `printf '%s' '${escaped}' > /data/.claude-credentials.json && chmod 600 /data/.claude-credentials.json`,
+    ]);
+
+    log.info("Claude credentials provisioned to volume", { volName });
+  } catch (err) {
+    log.error("Failed to provision credentials", { error: String(err) });
+  } finally {
+    // Clean up temp container
+    try {
+      await docker.stopContainer(tmpName);
+    } catch { /* may already be stopped */ }
+    try {
+      await docker.removeContainer(tmpName);
+    } catch { /* best effort */ }
+  }
+}
+
 // ---------- Container config builder ----------
 
 function buildContainerConfig(
@@ -89,8 +159,10 @@ function buildContainerConfig(
     `SHARED_FOLDER_PATH=/data`,
     `NODE_ENV=production`,
     `LOG_LEVEL=${env.logLevel || "info"}`,
-    `ANTHROPIC_BASE_URL=${config.proxyUrl}`,
-    `ANTHROPIC_API_KEY=rachel-user-${userId}`,
+    // Default: direct Anthropic auth via OAuth credentials on the volume
+    // (copied by entrypoint.sh from /data/.claude-credentials.json).
+    // No ANTHROPIC_BASE_URL or ANTHROPIC_API_KEY — the Claude CLI uses OAuth.
+    `CLAUDE_MODEL=${env.claudeModel || "claude-sonnet-4-6"}`,
   ];
 
   // Optional env vars
@@ -185,6 +257,7 @@ export async function provisionContainer(
   // Create new container
   await ensureNetwork();
   await ensureVolume(volumeName(userId));
+  await provisionCredentials(volumeName(userId));
 
   const containerConfig = buildContainerConfig(userId, env);
   await docker.createContainer(name, containerConfig);
