@@ -1,6 +1,35 @@
 import type { Translations } from '../index';
 
 const it: Translations = {
+	whatIsRachel: {
+		label: 'Cos\u2019\u00E8 Rachel',
+		title: 'Un agente AI che controlla un computer nel cloud. Per te.',
+		subtitle: 'Rachel non \u00E8 un chatbot. \u00C8 un\u2019intelligenza artificiale con accesso completo a un server dedicato \u2014 naviga il web, crea file, gestisce dati e lavora per il tuo business 24 ore su 24.',
+		points: [
+			{
+				icon: '\uD83D\uDCBB',
+				title: 'Un vero computer nel cloud',
+				description: 'Rachel ha il controllo completo di un server dedicato solo a te. Pu\u00F2 creare siti web, generare documenti, analizzare dati \u2014 tutto ci\u00F2 che faresti tu al computer, lo fa lei.'
+			},
+			{
+				icon: '\uD83D\uDD0D',
+				title: 'Trova clienti e contatti',
+				description: 'Cerca fornitori, analizza la concorrenza, estrai contatti da gruppi WhatsApp, trova lead online \u2014 e ti presenta tutto gi\u00E0 pronto su Telegram.'
+			},
+			{
+				icon: '\uD83D\uDCC8',
+				title: 'Marketing e comunicazione',
+				description: 'Crea landing page, scrivi email di follow-up, genera post per i social, prepara presentazioni \u2014 tutto con un semplice messaggio.'
+			},
+			{
+				icon: '\uD83D\uDCB0',
+				title: 'Consulenza e analisi',
+				description: 'Analizza documenti finanziari, confronta offerte, prepara report, ricerca mercati \u2014 come avere un consulente sempre disponibile.'
+			}
+		],
+		bottomText: 'Tu parli con Rachel su Telegram. Lei fa il lavoro pesante sul suo computer nel cloud.',
+		cta: 'Provalo ora \u2014 $20/mese'
+	},
 	hero: {
 		badge: 'La tua assistente AI personale, attiva 24/7',
 		h1Line1: 'Gestisci il tuo business',

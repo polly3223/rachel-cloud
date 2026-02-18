@@ -58,18 +58,25 @@
 	<title>Sign In - Rachel Cloud</title>
 </svelte:head>
 
-<div class="min-h-screen flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8 bg-gray-50">
-	<div class="max-w-md w-full space-y-8">
+<div class="min-h-screen flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8 bg-[#0a0a0f] relative overflow-hidden">
+	<!-- Glow orbs matching landing page -->
+	<div class="absolute top-1/4 -left-32 w-96 h-96 bg-[#0086EE]/20 rounded-full blur-[120px]"></div>
+	<div class="absolute bottom-1/4 -right-32 w-80 h-80 bg-[#0086EE]/15 rounded-full blur-[100px]"></div>
+
+	<div class="relative max-w-md w-full space-y-8">
 		<!-- Logo / Header -->
 		<div class="text-center">
-			<h1 class="text-4xl font-bold text-gray-900">Rachel Cloud</h1>
-			<p class="mt-3 text-lg text-gray-600">
+			<a href="/" class="inline-block mb-6">
+				<span class="text-sm text-gray-500 hover:text-gray-400 transition-colors">&larr; Back to homepage</span>
+			</a>
+			<h1 class="text-4xl font-bold text-white">Rachel Cloud</h1>
+			<p class="mt-3 text-lg text-gray-400">
 				Sign in with your Telegram account
 			</p>
 		</div>
 
 		{#if error}
-			<div class="rounded-md bg-red-50 p-4">
+			<div class="rounded-xl bg-red-500/10 border border-red-500/20 p-4">
 				<div class="flex">
 					<div class="flex-shrink-0">
 						<svg class="h-5 w-5 text-red-400" viewBox="0 0 20 20" fill="currentColor">
@@ -77,7 +84,7 @@
 						</svg>
 					</div>
 					<div class="ml-3">
-						<p class="text-sm font-medium text-red-800">{error}</p>
+						<p class="text-sm font-medium text-red-300">{error}</p>
 					</div>
 				</div>
 			</div>
@@ -85,7 +92,7 @@
 
 		{#if loading}
 			<div class="text-center py-8">
-				<div class="inline-flex items-center gap-2 text-gray-600">
+				<div class="inline-flex items-center gap-2 text-gray-400">
 					<svg class="animate-spin h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
 						<circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
 						<path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
@@ -106,13 +113,8 @@
 		<div class="text-center text-sm text-gray-500 space-y-2">
 			<p>
 				Don't have Telegram?
-				<a href="https://telegram.org/dl" target="_blank" rel="noopener" class="text-blue-600 hover:text-blue-500 font-medium">
+				<a href="https://telegram.org/dl" target="_blank" rel="noopener" class="text-[#0086EE] hover:text-[#1a94f0] font-medium">
 					Download it here
-				</a>
-			</p>
-			<p>
-				<a href="/" class="text-gray-400 hover:text-gray-600">
-					&larr; Back to homepage
 				</a>
 			</p>
 		</div>

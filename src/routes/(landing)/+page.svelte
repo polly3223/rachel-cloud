@@ -4,6 +4,7 @@
 	import type { WithContext, SoftwareApplication } from 'schema-dts';
 	import { inview } from 'svelte-inview';
 	import Hero from '$lib/components/landing/Hero.svelte';
+	import WhatIsRachel from '$lib/components/landing/WhatIsRachel.svelte';
 	import HowItWorks from '$lib/components/landing/HowItWorks.svelte';
 	import Features from '$lib/components/landing/Features.svelte';
 	import TelegramDemo from '$lib/components/landing/TelegramDemo.svelte';
@@ -85,6 +86,13 @@
 
 <main>
 	<Hero />
+	<div
+		class="scroll-reveal opacity-0 translate-y-8 transition-all duration-700 ease-out"
+		use:inview={inviewOptions}
+		oninview_enter={reveal}
+	>
+		<WhatIsRachel />
+	</div>
 	<div
 		class="scroll-reveal opacity-0 translate-y-8 transition-all duration-700 ease-out"
 		use:inview={inviewOptions}

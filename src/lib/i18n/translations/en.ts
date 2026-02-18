@@ -1,6 +1,35 @@
 import type { Translations } from '../index';
 
 const en: Translations = {
+	whatIsRachel: {
+		label: 'What is Rachel',
+		title: 'An AI agent that controls a full computer in the cloud. For you.',
+		subtitle: 'Rachel isn\u2019t a chatbot. She\u2019s an AI with full access to a dedicated server \u2014 she browses the web, creates files, manages data, and works for your business around the clock.',
+		points: [
+			{
+				icon: '\uD83D\uDCBB',
+				title: 'A real computer in the cloud',
+				description: 'Rachel has full control of a dedicated server just for you. She can build websites, generate documents, analyze data \u2014 anything you\u2019d do on a computer, she does for you.'
+			},
+			{
+				icon: '\uD83D\uDD0D',
+				title: 'Find clients & contacts',
+				description: 'Search for suppliers, analyze competitors, extract contacts from WhatsApp groups, find leads online \u2014 and get everything delivered straight to your Telegram.'
+			},
+			{
+				icon: '\uD83D\uDCC8',
+				title: 'Marketing & communication',
+				description: 'Build landing pages, write follow-up emails, create social media posts, prepare presentations \u2014 all with a simple message.'
+			},
+			{
+				icon: '\uD83D\uDCB0',
+				title: 'Consulting & analysis',
+				description: 'Analyze financial documents, compare offers, prepare reports, research markets \u2014 like having a consultant available 24/7.'
+			}
+		],
+		bottomText: 'You talk to Rachel on Telegram. She does the heavy lifting on her cloud computer.',
+		cta: 'Try it now \u2014 $20/mo'
+	},
 	hero: {
 		badge: 'Your personal AI that works for you 24/7',
 		h1Line1: 'Run your business',

@@ -19,6 +19,8 @@ import { routeUpdate } from '$lib/telegram/router';
 export const POST: RequestHandler = async ({ request }) => {
 	try {
 		const update = await request.json();
+		const updateId = (update as Record<string, unknown>).update_id;
+		console.log(`[webhook] Received update ${updateId}`);
 
 		// Route asynchronously — don't block the webhook response
 		// Telegram expects a fast 200 OK

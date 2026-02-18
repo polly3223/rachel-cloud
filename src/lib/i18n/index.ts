@@ -23,7 +23,21 @@ interface Feature {
 	description: string;
 }
 
+interface WhatIsRachelPoint {
+	icon: string;
+	title: string;
+	description: string;
+}
+
 export interface Translations {
+	whatIsRachel: {
+		label: string;
+		title: string;
+		subtitle: string;
+		points: WhatIsRachelPoint[];
+		bottomText: string;
+		cta: string;
+	};
 	hero: {
 		badge: string;
 		h1Line1: string;

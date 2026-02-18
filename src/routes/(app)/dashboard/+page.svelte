@@ -65,15 +65,15 @@
 	let statusColor = $derived.by(() => {
 		switch (containerState) {
 			case 'running':
-				return { bg: 'bg-green-500', ring: 'ring-green-300', label: 'Running', badge: 'bg-green-100 text-green-800' };
+				return { bg: 'bg-green-500', ring: 'ring-green-300', label: 'Running', badge: 'bg-green-500/10 text-green-400' };
 			case 'exited':
 			case 'dead':
-				return { bg: 'bg-red-500', ring: 'ring-red-300', label: 'Stopped', badge: 'bg-red-100 text-red-800' };
+				return { bg: 'bg-red-500', ring: 'ring-red-300', label: 'Stopped', badge: 'bg-red-500/10 text-red-400' };
 			case 'created':
 			case 'restarting':
-				return { bg: 'bg-yellow-500', ring: 'ring-yellow-300', label: 'Starting', badge: 'bg-yellow-100 text-yellow-800' };
+				return { bg: 'bg-yellow-500', ring: 'ring-yellow-300', label: 'Starting', badge: 'bg-yellow-500/10 text-yellow-400' };
 			default:
-				return { bg: 'bg-gray-400', ring: 'ring-gray-300', label: containerState || 'Unknown', badge: 'bg-gray-100 text-gray-800' };
+				return { bg: 'bg-gray-400', ring: 'ring-gray-300', label: containerState || 'Unknown', badge: 'bg-gray-500/10 text-gray-400' };
 		}
 	});
 
@@ -81,13 +81,13 @@
 	let healthColor = $derived.by(() => {
 		switch (containerHealth) {
 			case 'healthy':
-				return { bg: 'bg-green-500', label: 'Healthy', badge: 'bg-green-100 text-green-800' };
+				return { bg: 'bg-green-500', label: 'Healthy', badge: 'bg-green-500/10 text-green-400' };
 			case 'unhealthy':
-				return { bg: 'bg-red-500', label: 'Unhealthy', badge: 'bg-red-100 text-red-800' };
+				return { bg: 'bg-red-500', label: 'Unhealthy', badge: 'bg-red-500/10 text-red-400' };
 			case 'starting':
-				return { bg: 'bg-yellow-500', label: 'Starting', badge: 'bg-yellow-100 text-yellow-800' };
+				return { bg: 'bg-yellow-500', label: 'Starting', badge: 'bg-yellow-500/10 text-yellow-400' };
 			default:
-				return { bg: 'bg-gray-400', label: containerHealth || 'Unknown', badge: 'bg-gray-100 text-gray-800' };
+				return { bg: 'bg-gray-400', label: containerHealth || 'Unknown', badge: 'bg-gray-500/10 text-gray-400' };
 		}
 	});
 
@@ -109,21 +109,16 @@
 		if (pollTimer) return;
 		pollTimer = setInterval(async () => {
 			try {
-				const response = await fetch(window.location.href, {
-					headers: { 'Accept': 'application/json' },
-				});
+				const response = await fetch('/api/provision/status');
 				if (!response.ok) return;
 				const result = await response.json();
-				const sub = result.data?.subscription ?? result.subscription;
-				if (sub) {
-					pollingStatus = sub.provisioningStatus;
-					pollingContainerId = sub.containerId;
-					pollingError = sub.provisioningError;
-					if (pollingStatus === 'ready' || pollingStatus === 'failed' || !isProvisioning(pollingStatus)) {
-						stopPolling();
-						if (pollingStatus === 'ready') {
-							setTimeout(() => window.location.reload(), 1000);
-						}
+				pollingStatus = result.provisioningStatus;
+				pollingContainerId = result.containerId;
+				pollingError = result.provisioningError;
+				if (pollingStatus === 'ready' || pollingStatus === 'failed' || !isProvisioning(pollingStatus)) {
+					stopPolling();
+					if (pollingStatus === 'ready' || result.containerProvisioned) {
+						setTimeout(() => window.location.reload(), 1000);
 					}
 				}
 			} catch {
@@ -283,18 +278,18 @@
 
 <div class="max-w-4xl mx-auto">
 	<div class="mb-6">
-		<h1 class="text-3xl font-bold text-gray-900">Dashboard</h1>
-		<p class="text-gray-600 mt-2">Manage your Rachel AI instance</p>
+		<h1 class="text-3xl font-bold text-white">Dashboard</h1>
+		<p class="text-gray-400 mt-2">Manage your Rachel AI instance</p>
 	</div>
 
 	<!-- Error Message -->
 	{#if error}
-		<div class="mb-6 rounded-md bg-red-50 p-4 border border-red-200">
+		<div class="mb-6 rounded-md bg-red-500/10 p-4 border border-red-500/20">
 			<div class="flex">
 				<svg class="h-5 w-5 text-red-400 mr-2 flex-shrink-0" viewBox="0 0 20 20" fill="currentColor">
 					<path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd" />
 				</svg>
-				<span class="text-sm font-medium text-red-800">{error}</span>
+				<span class="text-sm font-medium text-red-300">{error}</span>
 			</div>
 		</div>
 	{/if}
@@ -303,14 +298,14 @@
 		<!-- ═══════ ENHANCED RUNNING DASHBOARD ═══════ -->
 
 		<!-- Section 1: Server Status Card -->
-		<div class="bg-white shadow rounded-lg mb-6">
-			<div class="px-6 py-5 border-b border-gray-200">
+		<div class="bg-white/[0.03] rounded-lg border border-white/10 mb-6">
+			<div class="px-6 py-5 border-b border-white/10">
 				<div class="flex items-center justify-between">
-					<h2 class="text-xl font-semibold text-gray-900">Server Status</h2>
+					<h2 class="text-xl font-semibold text-white">Server Status</h2>
 					<button
 						onclick={refreshStatus}
 						disabled={statusLoading}
-						class="text-sm text-gray-500 hover:text-gray-700 flex items-center gap-1 disabled:opacity-50"
+						class="text-sm text-gray-500 hover:text-gray-300 flex items-center gap-1 disabled:opacity-50"
 					>
 						<svg class="w-4 h-4 {statusLoading ? 'animate-spin' : ''}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
 							<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
@@ -353,27 +348,27 @@
 					<!-- Uptime -->
 					<div>
 						<p class="text-sm font-medium text-gray-500 mb-1">Uptime</p>
-						<p class="text-sm text-gray-900">{formatUptime(containerUptime)}</p>
+						<p class="text-sm text-white">{formatUptime(containerUptime)}</p>
 					</div>
 
 					<!-- Image -->
 					<div>
 						<p class="text-sm font-medium text-gray-500 mb-1">Version</p>
-						<p class="text-sm text-gray-900 font-mono">{containerImage || 'N/A'}</p>
+						<p class="text-sm text-white font-mono">{containerImage || 'N/A'}</p>
 					</div>
 				</div>
 			</div>
 		</div>
 
 		<!-- Section 2: Actions Card -->
-		<div class="bg-white shadow rounded-lg mb-6">
-			<div class="px-6 py-5 border-b border-gray-200">
-				<h2 class="text-xl font-semibold text-gray-900">Actions</h2>
+		<div class="bg-white/[0.03] rounded-lg border border-white/10 mb-6">
+			<div class="px-6 py-5 border-b border-white/10">
+				<h2 class="text-xl font-semibold text-white">Actions</h2>
 			</div>
 			<div class="px-6 py-5">
 				<!-- Restart message banner -->
 				{#if restartMessage}
-					<div class="mb-4 rounded-md p-4 border {restartMessage.type === 'success' ? 'bg-green-50 border-green-200' : 'bg-red-50 border-red-200'}">
+					<div class="mb-4 rounded-md p-4 border {restartMessage.type === 'success' ? 'bg-green-500/10 border-green-500/20' : 'bg-red-500/10 border-red-500/20'}">
 						<div class="flex items-center">
 							{#if restartMessage.type === 'success'}
 								<svg class="h-5 w-5 text-green-400 mr-2 flex-shrink-0" viewBox="0 0 20 20" fill="currentColor">
@@ -384,7 +379,7 @@
 									<path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd" />
 								</svg>
 							{/if}
-							<span class="text-sm font-medium {restartMessage.type === 'success' ? 'text-green-800' : 'text-red-800'}">{restartMessage.text}</span>
+							<span class="text-sm font-medium {restartMessage.type === 'success' ? 'text-green-300' : 'text-red-300'}">{restartMessage.text}</span>
 						</div>
 					</div>
 				{/if}
@@ -393,7 +388,7 @@
 					<button
 						onclick={handleRestart}
 						disabled={restarting}
-						class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-orange-600 hover:bg-orange-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-500 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+						class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-orange-500 hover:bg-orange-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-500 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
 					>
 						{#if restarting}
 							<svg class="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
@@ -416,16 +411,16 @@
 		</div>
 
 		<!-- Section 3: Recent Logs Card -->
-		<div class="bg-white shadow rounded-lg mb-6">
-			<div class="px-6 py-5 border-b border-gray-200">
+		<div class="bg-white/[0.03] rounded-lg border border-white/10 mb-6">
+			<div class="px-6 py-5 border-b border-white/10">
 				<div class="flex items-center justify-between flex-wrap gap-3">
-					<h2 class="text-xl font-semibold text-gray-900">Recent Logs</h2>
+					<h2 class="text-xl font-semibold text-white">Recent Logs</h2>
 					<div class="flex items-center gap-3">
 						<!-- Line count selector -->
 						<select
 							bind:value={logLines}
 							onchange={() => fetchLogs()}
-							class="text-sm border border-gray-300 rounded-md px-2 py-1 text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
+							class="text-sm border border-white/10 bg-white/5 rounded-md px-2 py-1 text-gray-300 focus:outline-none focus:ring-2 focus:ring-[#0086EE]"
 						>
 							<option value={50}>50 lines</option>
 							<option value={100}>100 lines</option>
@@ -434,11 +429,11 @@
 						</select>
 
 						<!-- Auto-refresh toggle -->
-						<label class="flex items-center gap-1.5 text-sm text-gray-600 cursor-pointer">
+						<label class="flex items-center gap-1.5 text-sm text-gray-400 cursor-pointer">
 							<input
 								type="checkbox"
 								bind:checked={autoRefreshLogs}
-								class="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+								class="rounded border-white/10 text-[#0086EE] focus:ring-[#0086EE]"
 							/>
 							Auto-refresh
 						</label>
@@ -447,7 +442,7 @@
 						<button
 							onclick={fetchLogs}
 							disabled={logsLoading}
-							class="inline-flex items-center px-3 py-1.5 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50"
+							class="inline-flex items-center px-3 py-1.5 text-sm font-medium text-gray-300 bg-white/5 border border-white/10 rounded-md hover:bg-white/10 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#0086EE] disabled:opacity-50"
 						>
 							<svg class="w-4 h-4 mr-1 {logsLoading ? 'animate-spin' : ''}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
 								<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
@@ -488,28 +483,28 @@
 		</div>
 
 		<!-- Section 4: Instance Info Card -->
-		<div class="bg-white shadow rounded-lg mb-6">
-			<div class="px-6 py-5 border-b border-gray-200">
-				<h2 class="text-xl font-semibold text-gray-900">Instance Info</h2>
+		<div class="bg-white/[0.03] rounded-lg border border-white/10 mb-6">
+			<div class="px-6 py-5 border-b border-white/10">
+				<h2 class="text-xl font-semibold text-white">Instance Info</h2>
 			</div>
 			<div class="px-6 py-5">
 				<dl class="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-4">
 					{#if containerName}
 						<div>
 							<dt class="text-sm font-medium text-gray-500">Container</dt>
-							<dd class="mt-1 text-sm font-mono text-gray-900">{containerName}</dd>
+							<dd class="mt-1 text-sm font-mono text-white">{containerName}</dd>
 						</div>
 					{/if}
 					{#if containerImage}
 						<div>
 							<dt class="text-sm font-medium text-gray-500">Image</dt>
-							<dd class="mt-1 text-sm font-mono text-gray-900">{containerImage}</dd>
+							<dd class="mt-1 text-sm font-mono text-white">{containerImage}</dd>
 						</div>
 					{/if}
 					{#if data.subscription?.provisionedAt}
 						<div>
 							<dt class="text-sm font-medium text-gray-500">Deployed</dt>
-							<dd class="mt-1 text-sm text-gray-900">
+							<dd class="mt-1 text-sm text-white">
 								{new Date(data.subscription.provisionedAt).toLocaleDateString('en-US', {
 									year: 'numeric',
 									month: 'long',
@@ -520,7 +515,7 @@
 					{/if}
 					<div>
 						<dt class="text-sm font-medium text-gray-500">Uptime</dt>
-						<dd class="mt-1 text-sm text-gray-900">{formatUptime(containerUptime)}</dd>
+						<dd class="mt-1 text-sm text-white">{formatUptime(containerUptime)}</dd>
 					</div>
 				</dl>
 			</div>
@@ -529,9 +524,9 @@
 	{:else}
 		<!-- ═══════ EXISTING PROVISIONING / DEPLOY / NO-SUB STATES ═══════ -->
 
-		<div class="bg-white shadow rounded-lg mb-6">
-			<div class="px-6 py-5 border-b border-gray-200">
-				<h2 class="text-xl font-semibold text-gray-900">Rachel Instance</h2>
+		<div class="bg-white/[0.03] rounded-lg border border-white/10 mb-6">
+			<div class="px-6 py-5 border-b border-white/10">
+				<h2 class="text-xl font-semibold text-white">Rachel Instance</h2>
 			</div>
 			<div class="px-6 py-5">
 				{#if isProvisioning(pollingStatus)}
@@ -539,7 +534,7 @@
 					<div class="flex items-start">
 						<div class="flex-1">
 							<div class="flex items-center mb-3">
-								<span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-blue-100 text-blue-800">
+								<span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-[#0086EE]/10 text-[#0086EE]">
 									<svg class="animate-spin w-4 h-4 mr-1.5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
 										<circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
 										<path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
@@ -547,8 +542,8 @@
 									{statusMessages[pollingStatus ?? 'pending']?.label ?? 'Provisioning'}
 								</span>
 							</div>
-							<h3 class="text-lg font-medium text-gray-900 mb-2">Setting up your Rachel instance</h3>
-							<p class="text-sm text-gray-600 mb-4">
+							<h3 class="text-lg font-medium text-white mb-2">Setting up your Rachel instance</h3>
+							<p class="text-sm text-gray-400 mb-4">
 								{statusMessages[pollingStatus ?? 'pending']?.description ?? 'Working on it...'}
 							</p>
 
@@ -561,14 +556,14 @@
 												<path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
 											</svg>
 										{:else if i === currentStepIndex}
-											<svg class="animate-spin w-5 h-5 text-blue-500 mr-3 flex-shrink-0" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+											<svg class="animate-spin w-5 h-5 text-[#0086EE] mr-3 flex-shrink-0" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
 												<circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
 												<path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
 											</svg>
 										{:else}
-											<div class="w-5 h-5 rounded-full border-2 border-gray-300 mr-3 flex-shrink-0"></div>
+											<div class="w-5 h-5 rounded-full border-2 border-white/10 mr-3 flex-shrink-0"></div>
 										{/if}
-										<span class="text-sm {i <= currentStepIndex ? 'text-gray-900 font-medium' : 'text-gray-400'}">
+										<span class="text-sm {i <= currentStepIndex ? 'text-white font-medium' : 'text-gray-500'}">
 											{statusMessages[step]?.description ?? step}
 										</span>
 									</div>
@@ -582,29 +577,29 @@
 					<div class="flex items-start">
 						<div class="flex-1">
 							<div class="flex items-center mb-3">
-								<span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-red-100 text-red-800">
+								<span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-red-500/10 text-red-400">
 									<svg class="w-4 h-4 mr-1.5" fill="currentColor" viewBox="0 0 20 20">
 										<path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd" />
 									</svg>
 									Failed
 								</span>
 							</div>
-							<h3 class="text-lg font-medium text-gray-900 mb-2">Provisioning Failed</h3>
+							<h3 class="text-lg font-medium text-white mb-2">Provisioning Failed</h3>
 							{#if pollingError || data.subscription?.provisioningError}
-								<div class="bg-red-50 border-l-4 border-red-400 p-4 mb-4">
-									<p class="text-sm text-red-700">
+								<div class="bg-red-500/10 border-l-4 border-red-500/30 p-4 mb-4">
+									<p class="text-sm text-red-300">
 										{pollingError || data.subscription?.provisioningError}
 									</p>
 								</div>
 							{/if}
-							<p class="text-sm text-gray-600 mb-4">
+							<p class="text-sm text-gray-400 mb-4">
 								Something went wrong during setup. Any resources have been cleaned up automatically. You can try again.
 							</p>
 							<button
 								type="button"
 								onclick={handleRetry}
 								disabled={deploying}
-								class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+								class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-[#0086EE] hover:bg-[#1a94f0] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#0086EE] disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
 							>
 								{#if deploying}
 									<svg class="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
@@ -624,19 +619,19 @@
 					<div class="flex items-start">
 						<div class="flex-1">
 							<div class="flex items-center mb-3">
-								<span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-gray-100 text-gray-800">
+								<span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-gray-500/10 text-gray-400">
 									Not Deployed
 								</span>
 							</div>
-							<h3 class="text-lg font-medium text-gray-900 mb-2">Deploy Rachel</h3>
-							<p class="text-sm text-gray-600 mb-4">
+							<h3 class="text-lg font-medium text-white mb-2">Deploy Rachel</h3>
+							<p class="text-sm text-gray-400 mb-4">
 								Your subscription is active. Click the button below to deploy Rachel on Telegram. Setup takes about 10 seconds.
 							</p>
 							<button
 								type="button"
 								onclick={handleDeploy}
 								disabled={deploying}
-								class="inline-flex items-center px-6 py-3 border border-transparent text-base font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed transition-colors shadow-sm"
+								class="inline-flex items-center px-6 py-3 border border-transparent text-base font-medium rounded-md text-white bg-[#0086EE] hover:bg-[#1a94f0] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#0086EE] disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
 							>
 								{#if deploying}
 									<svg class="animate-spin -ml-1 mr-2 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
@@ -659,17 +654,17 @@
 					<div class="flex items-start">
 						<div class="flex-1">
 							<div class="flex items-center mb-3">
-								<span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-gray-100 text-gray-800">
+								<span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-gray-500/10 text-gray-400">
 									Inactive
 								</span>
 							</div>
-							<h3 class="text-lg font-medium text-gray-900 mb-2">Get Started with Rachel</h3>
-							<p class="text-sm text-gray-600 mb-4">
+							<h3 class="text-lg font-medium text-white mb-2">Get Started with Rachel</h3>
+							<p class="text-sm text-gray-400 mb-4">
 								Subscribe to get your own personal AI assistant on Telegram. Setup takes less than 2 minutes.
 							</p>
 							<a
 								href="/onboarding"
-								class="inline-flex items-center px-6 py-3 border border-transparent text-base font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors shadow-sm"
+								class="inline-flex items-center px-6 py-3 border border-transparent text-base font-medium rounded-md text-white bg-[#0086EE] hover:bg-[#1a94f0] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#0086EE] transition-colors"
 							>
 								Subscribe Now — $20/mo
 							</a>

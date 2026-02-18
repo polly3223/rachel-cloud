@@ -132,7 +132,9 @@ export async function forwardToContainer(
 	containerName: string,
 	update: Record<string, unknown>
 ): Promise<void> {
+	console.log(`[router] forwardToContainer: resolving IP for ${containerName}...`);
 	const ip = await resolveContainerIp(containerName);
+	console.log(`[router] forwardToContainer: resolved IP = ${ip}`);
 	if (!ip) {
 		console.error(`[router] Could not resolve IP for container ${containerName}`);
 		const telegramId = extractTelegramId(update);
@@ -152,9 +154,12 @@ export async function forwardToContainer(
 		});
 
 		if (!response.ok) {
+			const body = await response.text().catch(() => '');
 			console.error(
-				`[router] Forward to ${containerName} (${ip}) failed: ${response.status} ${response.statusText}`
+				`[router] Forward to ${containerName} (${ip}) failed: ${response.status} ${response.statusText} — ${body}`
 			);
+		} else {
+			console.log(`[router] Forward to ${containerName} (${ip}) succeeded: ${response.status}`);
 		}
 	} catch (error) {
 		console.error(`[router] Failed to reach container ${containerName} (${ip}):`, error);
@@ -204,9 +209,11 @@ export async function handleUnsubscribedUser(
 export async function routeUpdate(update: Record<string, unknown>): Promise<void> {
 	const telegramId = extractTelegramId(update);
 	if (!telegramId) {
-		// Unsupported update type — ignore
+		console.log('[router] No telegramId found in update — ignoring');
 		return;
 	}
+
+	console.log(`[router] Routing update for telegramId=${telegramId}`);
 
 	// Check for platform management commands
 	const text = extractMessageText(update);
@@ -214,6 +221,7 @@ export async function routeUpdate(update: Record<string, unknown>): Promise<void
 
 	// Look up user and their container
 	const user = await getUserWithSubscription(telegramId);
+	console.log(`[router] User lookup: ${user ? `found (sub=${user.subscription?.status}, container=${user.subscription?.containerName})` : 'not found'}`);
 
 	if (
 		!user?.subscription ||
@@ -233,5 +241,6 @@ export async function routeUpdate(update: Record<string, unknown>): Promise<void
 	}
 
 	// Forward the raw update to the user's container
+	console.log(`[router] Forwarding to container ${user.subscription.containerName}`);
 	await forwardToContainer(user.subscription.containerName, update);
 }

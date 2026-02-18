@@ -39,14 +39,12 @@
 				>
 					{$t.hero.cta1}
 				</a>
-				<a
-					href="https://github.com/polly3223/Rachel8"
-					class="px-8 py-3.5 rounded-xl font-medium text-gray-300 border border-white/10 hover:border-white/25 hover:text-white transition-all duration-300"
-					target="_blank"
-					rel="noopener noreferrer"
+				<button
+					class="px-8 py-3.5 rounded-xl font-medium text-gray-300 border border-white/10 hover:border-white/25 hover:text-white transition-all duration-300 cursor-pointer"
+					onclick={() => document.getElementById('what-is-rachel')?.scrollIntoView({ behavior: 'smooth' })}
 				>
 					{$t.hero.cta2}
-				</a>
+				</button>
 			</div>
 
 			<p class="mt-5 text-sm text-gray-600">
