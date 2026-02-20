@@ -393,12 +393,13 @@ export async function waitForHealthy(
 export async function updateContainer(
   userId: string,
   newImage?: string,
+  force = false,
 ): Promise<UpdateResult> {
   const name = containerName(userId);
   const targetImage = newImage || config.imageName;
   const startTime = Date.now();
 
-  log.info("Updating container", { userId, targetImage });
+  log.info("Updating container", { userId, targetImage, force });
 
   // Get current state
   let existing: DockerContainerInspect;
@@ -417,9 +418,10 @@ export async function updateContainer(
 
   const previousImage = existing.Config.Image;
 
-  // Already on target image?
-  if (previousImage === targetImage) {
-    log.info("Already on target image, skipping", { userId });
+  // Already on target image? (skip unless forced — force is needed when the
+  // image was rebuilt with the same tag, e.g. rachel9:latest)
+  if (previousImage === targetImage && !force) {
+    log.info("Already on target image, skipping (use force=true to override)", { userId });
     return {
       userId,
       success: true,
@@ -529,6 +531,7 @@ export async function updateContainer(
 export async function updateAllContainers(
   newImage?: string,
   onProgress?: UpdateProgressCallback,
+  force = false,
 ): Promise<UpdateAllResult> {
   const startTime = Date.now();
   const containers = await listAllContainers();
@@ -549,7 +552,7 @@ export async function updateAllContainers(
       results,
     });
 
-    const result = await updateContainer(c.userId, newImage);
+    const result = await updateContainer(c.userId, newImage, force);
     results.push(result);
 
     if (result.success) {

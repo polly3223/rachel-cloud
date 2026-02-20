@@ -160,27 +160,31 @@ async function handleUpdateOne(
   if (!userId) return jsonResponse({ status: "error", message: "Missing userId" }, 400);
 
   let image: string | undefined;
+  let force = false;
   try {
     const body = await req.json();
     image = body?.image;
+    force = body?.force === true;
   } catch {
     // No body is fine — use default image
   }
 
-  const result = await updateContainer(userId, image);
+  const result = await updateContainer(userId, image, force);
   return jsonResponse({ status: "ok", result });
 }
 
 async function handleUpdateAll(req: Request): Promise<Response> {
   let image: string | undefined;
+  let force = false;
   try {
     const body = await req.json();
     image = body?.image;
+    force = body?.force === true;
   } catch {
     // No body is fine
   }
 
-  const result = await updateAllContainers(image);
+  const result = await updateAllContainers(image, undefined, force);
   return jsonResponse({ status: "ok", result });
 }
 
