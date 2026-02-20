@@ -122,7 +122,7 @@ async function resolveContainerIp(containerName: string): Promise<string | null>
 /**
  * Forward a raw Telegram update to a user's container.
  *
- * Each Rachel8 container runs grammY in webhook mode and accepts
+ * Each Rachel9 container runs grammY in webhook mode and accepts
  * POST requests with the raw Telegram update JSON on its internal port.
  *
  * Since rachel-cloud runs on the host (not inside Docker), we resolve

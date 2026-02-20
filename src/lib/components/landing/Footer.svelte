@@ -18,7 +18,7 @@
 					{$t.footer.navLogin}
 				</a>
 				<a
-					href="https://github.com/polly3223/Rachel8"
+					href="https://github.com/polly3223/Rachel9"
 					class="text-sm text-gray-500 hover:text-gray-300 transition-colors"
 					target="_blank"
 					rel="noopener noreferrer"

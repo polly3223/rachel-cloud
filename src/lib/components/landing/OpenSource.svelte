@@ -1,14 +1,5 @@
 <script lang="ts">
-	import { onMount } from 'svelte';
 	import { t } from '$lib/i18n';
-
-	onMount(() => {
-		const script = document.createElement('script');
-		script.src = 'https://buttons.github.io/buttons.js';
-		script.async = true;
-		script.defer = true;
-		document.body.appendChild(script);
-	});
 </script>
 
 <section class="py-24 bg-[#0a0a0f] border-t border-white/5">
@@ -24,19 +15,9 @@
 			{$t.openSource.paragraph2}
 		</p>
 
-		<div class="flex flex-col sm:flex-row items-center justify-center gap-5">
+		<div class="flex items-center justify-center">
 			<a
-				class="github-button"
-				href="https://github.com/polly3223/Rachel8"
-				data-icon="octicon-star"
-				data-size="large"
-				data-show-count="true"
-				aria-label="Star polly3223/Rachel8 on GitHub"
-			>
-				{$t.openSource.starButton}
-			</a>
-			<a
-				href="https://github.com/polly3223/Rachel8"
+				href="https://github.com/polly3223/Rachel9"
 				class="inline-flex items-center px-6 py-3 rounded-xl font-medium text-gray-300 border border-white/10 hover:border-white/25 hover:text-white transition-all duration-300"
 				target="_blank"
 				rel="noopener noreferrer"
