@@ -12,7 +12,7 @@ export interface OrchestratorConfig {
   port: number;
   containerPrefix: string;
   volumePrefix: string;
-  proxyUrl: string;
+  zaiApiKey: string;
   groqApiKey: string;
   defaults: {
     memoryBytes: number;
@@ -26,19 +26,18 @@ function loadConfig(): OrchestratorConfig {
   return {
     dockerSocket: process.env.DOCKER_SOCKET || "/var/run/docker.sock",
     dockerApiVersion: process.env.DOCKER_API_VERSION || "v1.45",
-    imageName: process.env.RACHEL_IMAGE || "rachel8:latest",
+    imageName: process.env.RACHEL_IMAGE || "rachel9:latest",
     networkName: process.env.DOCKER_NETWORK || "rachel-net",
     port: parseInt(process.env.ORCHESTRATOR_PORT || "9998", 10),
     containerPrefix: "rachel-user-",
     volumePrefix: "rachel-user-",
-    proxyUrl:
-      process.env.PROXY_URL || "http://host.docker.internal:9999",
+    zaiApiKey: process.env.ZAI_API_KEY || "",
     groqApiKey: process.env.GROQ_API_KEY || "",
     defaults: {
-      memoryBytes: 1536 * 1024 * 1024,    // 1.5GB — Claude Code CLI needs ~800MB+
+      memoryBytes: 1536 * 1024 * 1024,    // 1.5GB
       memorySwapBytes: 2048 * 1024 * 1024, // 2GB total (512MB swap)
-      nanoCpus: 1_000_000_000,             // 1.0 CPU — Claude Code spawns subprocesses
-      pidsLimit: 256,                      // Claude Code uses subprocesses for tools
+      nanoCpus: 1_000_000_000,             // 1.0 CPU
+      pidsLimit: 256,
     },
   };
 }

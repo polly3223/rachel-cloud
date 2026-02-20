@@ -91,10 +91,10 @@ export interface DockerCreateContainerBody {
 export interface UserContainerEnv {
   telegramBotToken: string;
   ownerTelegramUserId: string;
+  zaiApiKey?: string;
   groqApiKey?: string;
   sttProvider?: string;
   logLevel?: string;
-  claudeModel?: string;
 }
 
 export interface ContainerStatus {

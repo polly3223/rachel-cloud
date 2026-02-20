@@ -153,6 +153,9 @@ function buildContainerConfig(
   userId: string,
   env: UserContainerEnv,
 ): DockerCreateContainerBody {
+  // Rachel9 uses Z.ai GLM-5 via ZAI_API_KEY (not Claude/Anthropic)
+  const zaiKey = env.zaiApiKey || config.zaiApiKey;
+
   const envVars: string[] = [
     `TELEGRAM_BOT_TOKEN=${env.telegramBotToken}`,
     `OWNER_TELEGRAM_USER_ID=${env.ownerTelegramUserId}`,
@@ -160,11 +163,11 @@ function buildContainerConfig(
     `NODE_ENV=production`,
     `LOG_LEVEL=${env.logLevel || "info"}`,
     `RACHEL_CLOUD=true`,
-    // Default: direct Anthropic auth via OAuth credentials on the volume
-    // (copied by entrypoint.sh from /data/.claude-credentials.json).
-    // No ANTHROPIC_BASE_URL or ANTHROPIC_API_KEY — the Claude CLI uses OAuth.
-    `CLAUDE_MODEL=${env.claudeModel || "claude-sonnet-4-6"}`,
+    `THINKING_LEVEL=off`,
   ];
+
+  // Z.ai API key (required for Rachel9)
+  if (zaiKey) envVars.push(`ZAI_API_KEY=${zaiKey}`);
 
   // Optional env vars
   const groqKey = env.groqApiKey || config.groqApiKey;
