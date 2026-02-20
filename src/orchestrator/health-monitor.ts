@@ -6,7 +6,7 @@
  * protection to prevent infinite restart loops.
  */
 
-import { log } from "./config";
+import { log, config } from "./config";
 import { docker } from "./docker-client";
 import { listAllContainers } from "./container-manager";
 
@@ -15,6 +15,7 @@ import { listAllContainers } from "./container-manager";
 const SWEEP_INTERVAL_MS = 30_000; // 30 seconds
 const MAX_RESTARTS_PER_HOUR = 3;
 const CIRCUIT_WINDOW_MS = 3_600_000; // 1 hour
+const CONFIG_DRIFT_INTERVAL_MS = 5 * 60 * 1000; // 5 minutes
 
 // ---------- Types ----------
 
@@ -41,6 +42,7 @@ export type HealthEventHandler = (result: HealthSweepResult) => void;
 
 const circuits = new Map<string, CircuitState>();
 let sweepInterval: ReturnType<typeof setInterval> | null = null;
+let driftInterval: ReturnType<typeof setInterval> | null = null;
 let sweeping = false;
 
 // ---------- Circuit breaker ----------
@@ -177,6 +179,48 @@ export async function runHealthSweep(): Promise<HealthSweepResult> {
   return result;
 }
 
+// ---------- Config drift detection ----------
+
+/**
+ * Check all containers for config drift (wrong env vars, wrong network).
+ * Runs less frequently than health sweeps (every 5 minutes).
+ */
+async function checkConfigDrift(): Promise<void> {
+  let containers;
+  try {
+    containers = await listAllContainers();
+  } catch {
+    return;
+  }
+
+  for (const c of containers) {
+    try {
+      const info = await docker.inspectContainer(c.containerName);
+      const envVars = info.Config?.Env ?? [];
+      const networkMode = info.HostConfig?.NetworkMode ?? "";
+
+      const hasRachelCloud = envVars.some((e: string) => e === "RACHEL_CLOUD=true");
+      const hasCorrectNetwork = networkMode === config.networkName;
+
+      if (!hasRachelCloud || !hasCorrectNetwork) {
+        log.error("CONFIG DRIFT DETECTED — container has wrong configuration", {
+          userId: c.userId,
+          container: c.containerName,
+          hasRachelCloud,
+          hasCorrectNetwork,
+          actualNetwork: networkMode,
+          expectedNetwork: config.networkName,
+        });
+      }
+    } catch (err) {
+      log.debug("Could not inspect container for drift check", {
+        userId: c.userId,
+        error: String(err),
+      });
+    }
+  }
+}
+
 // ---------- Monitor lifecycle ----------
 
 /**
@@ -239,6 +283,10 @@ export function startHealthMonitor(
   doSweep();
 
   sweepInterval = setInterval(doSweep, SWEEP_INTERVAL_MS);
+
+  // Config drift check (every 5 minutes)
+  checkConfigDrift();
+  driftInterval = setInterval(checkConfigDrift, CONFIG_DRIFT_INTERVAL_MS);
 }
 
 /**
@@ -248,6 +296,10 @@ export function stopHealthMonitor(): void {
   if (sweepInterval) {
     clearInterval(sweepInterval);
     sweepInterval = null;
-    log.info("Health monitor stopped");
   }
+  if (driftInterval) {
+    clearInterval(driftInterval);
+    driftInterval = null;
+  }
+  log.info("Health monitor stopped");
 }

@@ -40,6 +40,9 @@ export interface DockerContainerInspect {
     Image: string;
     Env: string[];
   };
+  HostConfig?: {
+    NetworkMode?: string;
+  };
 }
 
 export interface DockerCreateResponse {
