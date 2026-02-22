@@ -235,7 +235,8 @@ export async function routeUpdate(update: Record<string, unknown>): Promise<void
 	}
 
 	// Intercept platform commands for subscribed users
-	if (command && command in PLATFORM_COMMANDS) {
+	// /start is special: forward to container so the user sees the Rachel welcome message
+	if (command && command !== 'start' && command in PLATFORM_COMMANDS) {
 		await PLATFORM_COMMANDS[command](telegramId);
 		return;
 	}
