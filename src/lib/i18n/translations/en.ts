@@ -67,34 +67,34 @@ const en: Translations = {
 		subtitle:
 			'Rachel handles the work that eats up your day, so you can spend your time where it actually matters.',
 		feature1: {
+			title: 'Your personal CRM, built-in',
+			description:
+				'Import contacts from WhatsApp groups, enrich them by sending a LinkedIn screenshot or business card photo, and Rachel organizes everything. Search, filter, track relationships \u2014 no app to learn.'
+		},
+		feature2: {
+			title: 'Smart follow-ups that never slip',
+			description:
+				'"Remind me to call Marco next Tuesday." Rachel doesn\u2019t just remind you \u2014 she briefs you: who Marco is, what you discussed, and suggests what to say. Zero context lost.'
+		},
+		feature3: {
 			title: 'Build landing pages & collect leads',
 			description:
 				'Tell Rachel to create a web page for your offer. She builds it, tracks who fills in forms, and sends you the leads as Excel or CSV right on Telegram.'
 		},
-		feature2: {
-			title: 'Manage contacts & follow-ups',
-			description:
-				'Ask "who did I talk to last week?" and Rachel tells you. She remembers every conversation, every contact, every detail — so you never drop the ball.'
-		},
-		feature3: {
+		feature4: {
 			title: 'Documents, presentations & reports',
 			description:
 				'Need a proposal? A report? A pitch deck? Just describe what you need and Rachel generates it on the spot. Ready to send.'
 		},
-		feature4: {
-			title: 'Reminders & task scheduling',
-			description:
-				'"Remind me to call Marco on Monday at 9am." Done. Rachel keeps track of your tasks, deadlines, and follow-ups while you sleep.'
-		},
 		feature5: {
 			title: 'Research anything, instantly',
 			description:
-				'"Find me the best suppliers for packaging in Northern Italy." Rachel searches, compares, and gives you a summary — in minutes, not hours.'
+				'"Find me the best suppliers for packaging in Northern Italy." Rachel searches, compares, and gives you a summary \u2014 in minutes, not hours.'
 		},
 		feature6: {
 			title: 'Translations, emails & social media',
 			description:
-				'Translate messages instantly in any language. Draft emails, write social media posts, create content — all from a quick Telegram message.'
+				'Translate messages instantly in any language. Draft emails, write social media posts, create content \u2014 all from a quick Telegram message.'
 		}
 	},
 
@@ -121,19 +121,19 @@ const en: Translations = {
 	},
 
 	whatsappDemo: {
-		label: 'WhatsApp Integration',
-		title: 'Manage your WhatsApp groups',
+		label: 'WhatsApp + CRM',
+		title: 'From WhatsApp group to organized CRM in seconds',
 		subtitle:
-			'Extract contacts, send messages, manage your groups \u2014 all from Telegram. Perfect for networkers.',
+			'Import contacts from groups, enrich them with screenshots, track follow-ups \u2014 all from Telegram. Built for networkers.',
 		online: 'online',
 		inputPlaceholder: 'Message',
 		messages: {
-			user1: 'give me the numbers and names from the group "Turin Entrepreneurs Network"',
+			user1: 'Add all contacts from the WhatsApp group "Turin Entrepreneurs Network" to my CRM',
 			rachel1:
-				'Here are the contacts from Turin Entrepreneurs Network:\n\n1. Marco Ferretti \u2014 +39 342 881 2201\n2. Alessia Conti \u2014 +39 331 554 6678\n3. Davide Moretti \u2014 +39 338 360 8260\n4. Sara Rinaldi \u2014 +39 334 804 2843\n5. Luca Barbieri \u2014 +39 347 112 8856\n6. Giulia Marchetti \u2014 +39 333 369 3360\n7. Andrea Vitale \u2014 +39 333 448 7721 (admin)\n\nNames saved to contacts. Want me to export them as Excel?',
-			user2: 'send a WhatsApp message to Marco Ferretti: "Hey Marco! I saw you\'re in the Turin Entrepreneurs group. Fancy a coffee next week to discuss a potential collaboration?"',
+				'Done! Imported 47 contacts from Turin Entrepreneurs Network.\n\n\u2022 38 new contacts created\n\u2022 9 merged with existing (matched by phone)\n\u2022 3 group admins tagged\n\nAll tagged as #turin-entrepreneurs. Want me to find the ones without full names so you can enrich them?',
+			user2: '[screenshot of a LinkedIn profile]\nThis is Marco Ferretti from that group',
 			rachel2:
-				'Done! \u2705 Message sent to Marco Ferretti on WhatsApp.\n\nWant me to send a similar message to the others in the group?',
+				'Got it! Updated Marco Ferretti in your CRM:\n\n\u2022 Role: Sales Director @ Piemonte Digital\n\u2022 Location: Turin, Italy\n\u2022 Education: Politecnico di Torino\n\u2022 LinkedIn linked\n\nWant me to schedule a follow-up or draft an outreach message?',
 		}
 	},
 
@@ -148,11 +148,11 @@ const en: Translations = {
 		priceUnit: '/month',
 		features: [
 			'Your own AI assistant on Telegram \u2014 available 24/7',
+			'Built-in CRM \u2014 import from WhatsApp, enrich with screenshots',
+			'Smart follow-ups with full context \u2014 never lose track',
 			'Build landing pages, track leads, export data',
-			'Contact management, reminders & scheduling',
 			'Documents, research, translations \u2014 on demand',
 			'Dedicated private server \u2014 your data stays yours',
-			'Monitored 24/7 with auto-recovery',
 			'Cancel anytime \u2014 no contracts, no tricks'
 		],
 		cta: 'Start now \u2014 $20/mo',
@@ -183,7 +183,7 @@ const en: Translations = {
 			{
 				question: 'What exactly can Rachel do for my business?',
 				answer:
-					'Rachel can build landing pages and track leads, manage your contacts and follow-ups, generate documents and presentations, schedule reminders and tasks, research suppliers or competitors, translate messages in any language, draft emails and social media posts \u2014 and much more. Think of her as a personal assistant who never sleeps.'
+					'Rachel has a built-in CRM: import contacts from WhatsApp groups, enrich them by sending a LinkedIn screenshot or business card photo, and track follow-ups with smart reminders that brief you with full context. She also builds landing pages, generates documents, researches suppliers, translates messages, drafts emails and social posts \u2014 and much more. Think of her as a personal assistant who never sleeps.'
 			},
 			{
 				question: 'How does the landing page and lead tracking work?',

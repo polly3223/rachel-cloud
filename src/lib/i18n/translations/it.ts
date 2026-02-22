@@ -67,24 +67,24 @@ const it: Translations = {
 		subtitle:
 			'Rachel si occupa del lavoro che ti ruba la giornata, cos\u00EC puoi dedicare il tuo tempo a ci\u00F2 che conta davvero.',
 		feature1: {
+			title: 'Il tuo CRM personale, integrato',
+			description:
+				'Importa contatti dai gruppi WhatsApp, arricchiscili mandando uno screenshot di LinkedIn o una foto del biglietto da visita, e Rachel organizza tutto. Cerca, filtra, gestisci relazioni \u2014 nessuna app da imparare.'
+		},
+		feature2: {
+			title: 'Follow-up intelligenti, mai persi',
+			description:
+				'"Ricordami di chiamare Marco marted\u00EC prossimo." Rachel non ti manda solo un promemoria \u2014 ti fa un briefing: chi \u00E8 Marco, di cosa avete parlato e cosa suggerisce di dire. Zero contesto perso.'
+		},
+		feature3: {
 			title: 'Crea landing page e raccogli contatti',
 			description:
 				'Di\u2019 a Rachel di creare una pagina web per la tua offerta. La costruisce, traccia chi compila i form e ti manda i contatti come Excel o CSV direttamente su Telegram.'
 		},
-		feature2: {
-			title: 'Gestisci contatti e follow-up',
-			description:
-				'Chiedi "con chi ho parlato la settimana scorsa?" e Rachel te lo dice. Ricorda ogni conversazione, ogni contatto, ogni dettaglio \u2014 cos\u00EC non ti sfugge nulla.'
-		},
-		feature3: {
+		feature4: {
 			title: 'Documenti, presentazioni e report',
 			description:
 				'Ti serve un preventivo? Un report? Una presentazione? Descrivile e Rachel le genera al volo. Pronte da inviare.'
-		},
-		feature4: {
-			title: 'Promemoria e gestione attivit\u00E0',
-			description:
-				'"Ricordami di chiamare Marco luned\u00EC alle 9." Fatto. Rachel tiene sotto controllo attivit\u00E0, scadenze e follow-up mentre tu dormi.'
 		},
 		feature5: {
 			title: 'Ricerche istantanee su qualsiasi cosa',
@@ -121,19 +121,19 @@ const it: Translations = {
 	},
 
 	whatsappDemo: {
-		label: 'Integrazione WhatsApp',
-		title: 'Gestisci i tuoi gruppi WhatsApp',
+		label: 'WhatsApp + CRM',
+		title: 'Da gruppo WhatsApp a CRM organizzato in pochi secondi',
 		subtitle:
-			'Estrai contatti, manda messaggi, gestisci i tuoi gruppi \u2014 tutto da Telegram. Perfetto per chi lavora con le reti.',
+			'Importa contatti dai gruppi, arricchiscili con screenshot, gestisci i follow-up \u2014 tutto da Telegram. Pensato per chi fa networking.',
 		online: 'online',
 		inputPlaceholder: 'Messaggio',
 		messages: {
-			user1: 'dammi i numeri e i nomi dal gruppo "Imprenditori Torino Network"',
+			user1: 'Aggiungi tutti i contatti del gruppo WhatsApp "Imprenditori Torino Network" al mio CRM',
 			rachel1:
-				'Ecco i contatti di Imprenditori Torino Network:\n\n1. Marco Ferretti \u2014 +39 342 881 2201\n2. Alessia Conti \u2014 +39 331 554 6678\n3. Davide Moretti \u2014 +39 338 360 8260\n4. Sara Rinaldi \u2014 +39 334 804 2843\n5. Luca Barbieri \u2014 +39 347 112 8856\n6. Giulia Marchetti \u2014 +39 333 369 3360\n7. Andrea Vitale \u2014 +39 333 448 7721 (admin)\n\nNomi salvati in rubrica. Vuoi esportarli come Excel?',
-			user2: 'manda un messaggio a Marco Ferretti su WhatsApp: "Ciao Marco! Ho visto che sei nel gruppo Imprenditori Torino. Ti va un caff\u00E8 settimana prossima per parlare di una collaborazione?"',
+				'Fatto! Importati 47 contatti da Imprenditori Torino Network.\n\n\u2022 38 nuovi contatti creati\n\u2022 9 uniti a contatti esistenti (match per telefono)\n\u2022 3 admin del gruppo taggati\n\nTutti taggati come #imprenditori-torino. Vuoi che trovi quelli senza nome completo per arricchirli?',
+			user2: '[screenshot di un profilo LinkedIn]\nQuesto \u00E8 Marco Ferretti di quel gruppo',
 			rachel2:
-				'Fatto! \u2705 Messaggio inviato a Marco Ferretti su WhatsApp.\n\nVuoi che mandi un messaggio simile anche agli altri del gruppo?',
+				'Aggiornato Marco Ferretti nel tuo CRM:\n\n\u2022 Ruolo: Direttore Vendite @ Piemonte Digital\n\u2022 Localit\u00E0: Torino, Italia\n\u2022 Istruzione: Politecnico di Torino\n\u2022 LinkedIn collegato\n\nVuoi che programmi un follow-up o che prepari un messaggio di contatto?',
 		}
 	},
 
@@ -148,11 +148,11 @@ const it: Translations = {
 		priceUnit: '/mese',
 		features: [
 			'La tua assistente AI su Telegram \u2014 disponibile 24/7',
+			'CRM integrato \u2014 importa da WhatsApp, arricchisci con screenshot',
+			'Follow-up intelligenti con contesto completo \u2014 mai pi\u00F9 persi',
 			'Crea landing page, traccia contatti, esporta dati',
-			'Gestione contatti, promemoria e pianificazione',
 			'Documenti, ricerche, traduzioni \u2014 su richiesta',
 			'Server privato dedicato \u2014 i tuoi dati restano tuoi',
-			'Monitoraggio 24/7 con ripristino automatico',
 			'Disdici quando vuoi \u2014 nessun vincolo, nessun trucco'
 		],
 		cta: 'Inizia ora \u2014 $20/mese',
@@ -183,7 +183,7 @@ const it: Translations = {
 			{
 				question: 'Cosa pu\u00F2 fare Rachel per il mio business?',
 				answer:
-					'Rachel pu\u00F2 creare landing page e tracciare contatti, gestire la tua rubrica e i follow-up, generare documenti e presentazioni, programmare promemoria e attivit\u00E0, cercare fornitori o concorrenti, tradurre messaggi in qualsiasi lingua, scrivere email e post per i social \u2014 e molto altro. Pensala come un\'assistente personale che non dorme mai.'
+					'Rachel ha un CRM integrato: importa contatti dai gruppi WhatsApp, arricchiscili mandando uno screenshot di LinkedIn o una foto del biglietto da visita, e gestisci i follow-up con promemoria intelligenti che ti fanno un briefing completo. Crea anche landing page, genera documenti, cerca fornitori, traduce messaggi, scrive email e post per i social \u2014 e molto altro. Pensala come un\'assistente personale che non dorme mai.'
 			},
 			{
 				question: 'Come funzionano le landing page e il tracciamento contatti?',
