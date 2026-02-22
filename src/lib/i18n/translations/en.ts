@@ -92,9 +92,9 @@ const en: Translations = {
 				'"Find me the best suppliers for packaging in Northern Italy." Rachel searches, compares, and gives you a summary \u2014 in minutes, not hours.'
 		},
 		feature6: {
-			title: 'Translations, emails & social media',
+			title: 'Social media content that isn\u2019t slop',
 			description:
-				'Translate messages instantly in any language. Draft emails, write social media posts, create content \u2014 all from a quick Telegram message.'
+				'Rachel researches what\u2019s trending in your niche, combines it with your real experiences, and writes posts in your voice for LinkedIn, X, and Threads. She even coaches you to capture photos at events for killer content.'
 		}
 	},
 
@@ -137,6 +137,25 @@ const en: Translations = {
 		}
 	},
 
+	socialMediaDemo: {
+		label: 'Social Media + CRM',
+		title: 'She writes your posts. You close deals.',
+		subtitle:
+			'Rachel researches what\u2019s trending in your niche, combines it with your real experience, and writes posts in your voice. She even coaches you to capture content-worthy moments.',
+		online: 'online',
+		inputPlaceholder: 'Message',
+		messages: {
+			user1: 'It\u2019s Monday, any content ideas for this week?',
+			rachel1:
+				'I found 3 angles for you this week:\n\n1. \uD83D\uDD25 AI agents are trending on LinkedIn \u2014 I\u2019d combine that with how you imported 200 contacts from a WhatsApp group last week. Angle: "Everyone builds AI agents. I use mine to do boring stuff in 10 seconds."\n\n2. A study says 80% of deals die from bad follow-ups \u2014 perfect match with your CRM workflow. Angle: "I never forget a follow-up. Here\u2019s my system."\n\n3. You\u2019re meeting 4 new people at TechCrunch Turin on Thursday \u2014 a "lessons from networking events" post always performs well.\n\nWhich ones do you like? I\u2019ll write full drafts for LinkedIn, X, and Threads.',
+			rachel1b:
+				'\uD83D\uDCF8 By the way \u2014 at TechCrunch Thursday, snap a photo at the venue or with a speaker. A real photo + your take on the event = your best-performing post this month. I\u2019ll have a draft ready when you send it.',
+			user2: 'Love #1 and #3. Write the drafts, and yeah I\u2019ll grab a photo Thursday',
+			rachel2:
+				'Here\u2019s your LinkedIn draft for #1:\n\n"Everyone\u2019s talking about AI agents this week.\n\nMeanwhile, I imported 200 contacts from a WhatsApp group in 10 seconds. No code. No API. Just a message to my assistant.\n\nSometimes the best AI isn\u2019t the flashiest \u2014 it\u2019s the one that saves you 3 hours on a Tuesday."\n\nI also wrote the X thread and Threads versions. Want to see them, or post this one as-is?'
+		}
+	},
+
 	pricing: {
 		label: 'Pricing',
 		title: 'Less than a coffee a day. Pays for itself in week one.',
@@ -150,6 +169,7 @@ const en: Translations = {
 			'Your own AI assistant on Telegram \u2014 available 24/7',
 			'Built-in CRM \u2014 import from WhatsApp, enrich with screenshots',
 			'Smart follow-ups with full context \u2014 never lose track',
+			'Social media ghostwriter \u2014 LinkedIn, X, Threads in your voice',
 			'Build landing pages, track leads, export data',
 			'Documents, research, translations \u2014 on demand',
 			'Dedicated private server \u2014 your data stays yours',

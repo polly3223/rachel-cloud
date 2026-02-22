@@ -93,6 +93,20 @@ export interface Translations {
 			rachel2: string;
 		};
 	};
+	socialMediaDemo: {
+		label: string;
+		title: string;
+		subtitle: string;
+		online: string;
+		inputPlaceholder: string;
+		messages: {
+			user1: string;
+			rachel1: string;
+			rachel1b: string;
+			user2: string;
+			rachel2: string;
+		};
+	};
 	pricing: {
 		label: string;
 		title: string;

@@ -92,9 +92,9 @@ const it: Translations = {
 				'"Trovami i migliori fornitori di packaging nel Nord Italia." Rachel cerca, confronta e ti d\u00E0 un riepilogo \u2014 in minuti, non in ore.'
 		},
 		feature6: {
-			title: 'Traduzioni, email e social media',
+			title: 'Contenuti social che non sembrano AI',
 			description:
-				'Traduci messaggi istantaneamente in qualsiasi lingua. Scrivi email, crea post per i social, genera contenuti \u2014 tutto da un semplice messaggio su Telegram.'
+				'Rachel cerca i trend nel tuo settore, li combina con le tue esperienze reali e scrive post con la tua voce per LinkedIn, X e Threads. Ti suggerisce anche di fare foto agli eventi per contenuti autentici.'
 		}
 	},
 
@@ -137,6 +137,25 @@ const it: Translations = {
 		}
 	},
 
+	socialMediaDemo: {
+		label: 'Social Media + CRM',
+		title: 'Lei scrive i tuoi post. Tu chiudi i deal.',
+		subtitle:
+			'Rachel cerca i trend nel tuo settore, li combina con la tua esperienza reale e scrive post con la tua voce. Ti aiuta anche a catturare momenti da trasformare in contenuti.',
+		online: 'online',
+		inputPlaceholder: 'Messaggio',
+		messages: {
+			user1: '\u00C8 luned\u00EC, idee per i contenuti di questa settimana?',
+			rachel1:
+				'Ho trovato 3 spunti per te:\n\n1. \uD83D\uDD25 Gli agenti AI sono in trend su LinkedIn \u2014 lo combinerei con i 200 contatti che hai importato da WhatsApp la settimana scorsa. Angolo: "Tutti costruiscono agenti AI. Io uso il mio per fare le cose noiose in 10 secondi."\n\n2. Uno studio dice che l\'80% dei deal muore per follow-up scadenti \u2014 perfetto con il tuo workflow CRM. Angolo: "Non dimentico mai un follow-up. Ecco il mio sistema."\n\n3. Gioved\u00EC incontri 4 persone nuove al TechCrunch Torino \u2014 un post sulle lezioni da eventi di networking funziona sempre bene.\n\nQuali ti piacciono? Scrivo le bozze per LinkedIn, X e Threads.',
+			rachel1b:
+				'\uD83D\uDCF8 Ah, gioved\u00EC al TechCrunch \u2014 fai una foto alla location o con uno speaker. Una foto vera + il tuo punto di vista = il post che performer\u00E0 meglio questo mese. Ti preparo la bozza appena me la mandi.',
+			user2: 'Mi piacciono il #1 e il #3. Scrivi le bozze, gioved\u00EC faccio la foto',
+			rachel2:
+				'Ecco la bozza LinkedIn per il #1:\n\n"Questa settimana tutti parlano di agenti AI.\n\nIntanto, io ho importato 200 contatti da un gruppo WhatsApp in 10 secondi. Niente codice. Niente API. Solo un messaggio alla mia assistente.\n\nA volte la miglior AI non \u00E8 la pi\u00F9 appariscente \u2014 \u00E8 quella che ti fa risparmiare 3 ore di marted\u00EC."\n\nHo scritto anche il thread per X e la versione Threads. Vuoi vederli o posti questo?'
+		}
+	},
+
 	pricing: {
 		label: 'Prezzo',
 		title: 'Meno di un caff\u00E8 al giorno. Si ripaga nella prima settimana.',
@@ -150,6 +169,7 @@ const it: Translations = {
 			'La tua assistente AI su Telegram \u2014 disponibile 24/7',
 			'CRM integrato \u2014 importa da WhatsApp, arricchisci con screenshot',
 			'Follow-up intelligenti con contesto completo \u2014 mai pi\u00F9 persi',
+			'Ghostwriter social \u2014 LinkedIn, X, Threads con la tua voce',
 			'Crea landing page, traccia contatti, esporta dati',
 			'Documenti, ricerche, traduzioni \u2014 su richiesta',
 			'Server privato dedicato \u2014 i tuoi dati restano tuoi',
