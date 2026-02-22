@@ -100,10 +100,9 @@ export interface Translations {
 		online: string;
 		inputPlaceholder: string;
 		messages: {
-			user1: string;
 			rachel1: string;
 			rachel1b: string;
-			user2: string;
+			user1: string;
 			rachel2: string;
 		};
 	};

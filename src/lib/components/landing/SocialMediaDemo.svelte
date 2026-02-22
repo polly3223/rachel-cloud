@@ -8,11 +8,10 @@
 	}
 
 	let messages = $derived<Message[]>([
-		{ text: $t.socialMediaDemo.messages.user1, sender: 'user', time: '09:01' },
-		{ text: $t.socialMediaDemo.messages.rachel1, sender: 'rachel', time: '09:03' },
-		{ text: $t.socialMediaDemo.messages.rachel1b, sender: 'rachel', time: '09:03' },
-		{ text: $t.socialMediaDemo.messages.user2, sender: 'user', time: '09:15' },
-		{ text: $t.socialMediaDemo.messages.rachel2, sender: 'rachel', time: '09:16' }
+		{ text: $t.socialMediaDemo.messages.rachel1, sender: 'rachel', time: '09:00' },
+		{ text: $t.socialMediaDemo.messages.rachel1b, sender: 'rachel', time: '09:00' },
+		{ text: $t.socialMediaDemo.messages.user1, sender: 'user', time: '09:12' },
+		{ text: $t.socialMediaDemo.messages.rachel2, sender: 'rachel', time: '09:13' }
 	]);
 </script>
 

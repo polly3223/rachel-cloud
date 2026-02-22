@@ -145,14 +145,13 @@ const en: Translations = {
 		online: 'online',
 		inputPlaceholder: 'Message',
 		messages: {
-			user1: 'It\u2019s Monday, any content ideas for this week?',
 			rachel1:
-				'I found 3 angles for you this week:\n\n1. \uD83D\uDD25 AI agents are trending on LinkedIn \u2014 I\u2019d combine that with how you imported 200 contacts from a WhatsApp group last week. Angle: "Everyone builds AI agents. I use mine to do boring stuff in 10 seconds."\n\n2. A study says 80% of deals die from bad follow-ups \u2014 perfect match with your CRM workflow. Angle: "I never forget a follow-up. Here\u2019s my system."\n\n3. You\u2019re meeting 4 new people at TechCrunch Turin on Thursday \u2014 a "lessons from networking events" post always performs well.\n\nWhich ones do you like? I\u2019ll write full drafts for LinkedIn, X, and Threads.',
+				'\uD83D\uDCE3 Monday content drop! I found 3 angles for you:\n\n1. \uD83D\uDD25 AI agents are trending on LinkedIn \u2014 combine it with how you imported 200 contacts from WhatsApp last week. Angle: "Everyone builds AI agents. I use mine to do boring stuff in 10 seconds."\n\n2. A study says 80% of deals die from bad follow-ups \u2014 perfect with your CRM workflow. Angle: "I never forget a follow-up. Here\u2019s my system."\n\n3. You\u2019re meeting 4 new people at TechCrunch Turin Thursday \u2014 a networking lessons post always does well.\n\nWhich ones? I\u2019ll write drafts for LinkedIn, X, and Threads.',
 			rachel1b:
-				'\uD83D\uDCF8 By the way \u2014 at TechCrunch Thursday, snap a photo at the venue or with a speaker. A real photo + your take on the event = your best-performing post this month. I\u2019ll have a draft ready when you send it.',
-			user2: 'Love #1 and #3. Write the drafts, and yeah I\u2019ll grab a photo Thursday',
+				'\uD83D\uDCF8 Also \u2014 Thursday at TechCrunch, snap a photo at the venue or with a speaker. Real photo + your take = your best post this month. I\u2019ll have a draft ready when you send it.',
+			user1: 'Love #1 and #3. Write the drafts, I\u2019ll grab a photo Thursday \uD83D\uDC4D',
 			rachel2:
-				'Here\u2019s your LinkedIn draft for #1:\n\n"Everyone\u2019s talking about AI agents this week.\n\nMeanwhile, I imported 200 contacts from a WhatsApp group in 10 seconds. No code. No API. Just a message to my assistant.\n\nSometimes the best AI isn\u2019t the flashiest \u2014 it\u2019s the one that saves you 3 hours on a Tuesday."\n\nI also wrote the X thread and Threads versions. Want to see them, or post this one as-is?'
+				'Here\u2019s your LinkedIn draft for #1:\n\n"Everyone\u2019s talking about AI agents this week.\n\nMeanwhile, I imported 200 contacts from a WhatsApp group in 10 seconds. No code. No API. Just a message to my assistant.\n\nSometimes the best AI isn\u2019t the flashiest \u2014 it\u2019s the one that saves you 3 hours on a Tuesday."\n\nX thread and Threads versions ready too. Post this one as-is, or want me to tweak it?'
 		}
 	},
 
