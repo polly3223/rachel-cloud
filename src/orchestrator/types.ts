@@ -94,6 +94,7 @@ export interface DockerCreateContainerBody {
 export interface UserContainerEnv {
   telegramBotToken: string;
   ownerTelegramUserId: string;
+  geminiApiKey?: string;
   zaiApiKey?: string;
   groqApiKey?: string;
   sttProvider?: string;

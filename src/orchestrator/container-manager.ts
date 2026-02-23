@@ -153,7 +153,8 @@ function buildContainerConfig(
   userId: string,
   env: UserContainerEnv,
 ): DockerCreateContainerBody {
-  // Rachel9 uses Z.ai GLM-5 via ZAI_API_KEY (not Claude/Anthropic)
+  // API keys: Gemini Flash is primary, Z.ai is fallback
+  const geminiKey = env.geminiApiKey || config.geminiApiKey;
   const zaiKey = env.zaiApiKey || config.zaiApiKey;
 
   const envVars: string[] = [
@@ -163,10 +164,14 @@ function buildContainerConfig(
     `NODE_ENV=production`,
     `LOG_LEVEL=${env.logLevel || "info"}`,
     `RACHEL_CLOUD=true`,
+    `WEBHOOK_PORT=8443`,
     `THINKING_LEVEL=off`,
   ];
 
-  // Z.ai API key (required for Rachel9)
+  // Gemini API key (primary — Gemini Flash)
+  if (geminiKey) envVars.push(`GEMINI_API_KEY=${geminiKey}`);
+
+  // Z.ai API key (fallback)
   if (zaiKey) envVars.push(`ZAI_API_KEY=${zaiKey}`);
 
   // Optional env vars

@@ -13,6 +13,7 @@ export interface OrchestratorConfig {
   containerPrefix: string;
   volumePrefix: string;
   zaiApiKey: string;
+  geminiApiKey: string;
   groqApiKey: string;
   defaults: {
     memoryBytes: number;
@@ -32,6 +33,7 @@ function loadConfig(): OrchestratorConfig {
     containerPrefix: "rachel-user-",
     volumePrefix: "rachel-user-",
     zaiApiKey: process.env.ZAI_API_KEY || "",
+    geminiApiKey: process.env.GEMINI_API_KEY || "",
     groqApiKey: process.env.GROQ_API_KEY || "",
     defaults: {
       memoryBytes: 1536 * 1024 * 1024,    // 1.5GB
