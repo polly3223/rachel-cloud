@@ -178,6 +178,7 @@ function buildContainerConfig(
   const groqKey = env.groqApiKey || config.groqApiKey;
   if (groqKey) envVars.push(`GROQ_API_KEY=${groqKey}`);
   if (env.sttProvider) envVars.push(`STT_PROVIDER=${env.sttProvider}`);
+  if (env.geminiModel) envVars.push(`GEMINI_MODEL=${env.geminiModel}`);
 
   return {
     Image: config.imageName,
@@ -436,14 +437,19 @@ export async function updateContainer(
     };
   }
 
-  // Extract env vars from existing container to preserve them
-  const envVars = existing.Config.Env;
+  // Extract env vars from existing container, but refresh API keys from current orchestrator config
+  const envVars = existing.Config.Env.map((v: string) => {
+    if (v.startsWith("GEMINI_API_KEY=") && config.geminiApiKey) return `GEMINI_API_KEY=${config.geminiApiKey}`;
+    if (v.startsWith("ZAI_API_KEY=") && config.zaiApiKey) return `ZAI_API_KEY=${config.zaiApiKey}`;
+    if (v.startsWith("GROQ_API_KEY=") && config.groqApiKey) return `GROQ_API_KEY=${config.groqApiKey}`;
+    return v;
+  });
 
   // Stop and remove old container
   await docker.stopContainer(name);
   await docker.removeContainer(name);
 
-  // Create new container with new image but same env
+  // Create new container with new image and refreshed env
   try {
     const containerConfig = buildContainerConfigFromEnv(
       userId,
