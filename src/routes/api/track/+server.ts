@@ -14,13 +14,12 @@ export const POST: RequestHandler = async ({ request }) => {
 		const body = await request.json();
 		const type = body.type || 'PageView';
 
-		// Forward to Munin's public endpoint with original headers for origin check
+		// Forward to Munin's public endpoint (visitor identity is hashed UUID from client, no IP)
 		const res = await fetch(`${MUNIN_URL}/api/public/${encodeURIComponent(type)}`, {
 			method: 'POST',
 			headers: {
 				'Content-Type': 'application/json',
 				'Origin': 'https://get-rachel.com',
-				'X-Forwarded-For': request.headers.get('x-forwarded-for') || request.headers.get('cf-connecting-ip') || 'unknown',
 			},
 			body: JSON.stringify({ data: body.data }),
 		});

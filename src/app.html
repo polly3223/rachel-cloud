@@ -11,19 +11,46 @@
 		%sveltekit.head%
 		<script>
 			// Munin Analytics — lightweight page view & click tracking
+			// Uses anonymous hashed UUID (no PII, GDPR-friendly)
 			(function() {
 				var endpoint = '/api/track';
 				var sent = {};
 
+				// Anonymous visitor ID: generate UUID, store in localStorage, hash before sending
+				function getOrCreateUUID() {
+					var key = '_munin_vid';
+					var id = localStorage.getItem(key);
+					if (!id) {
+						id = 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+							var r = Math.random() * 16 | 0;
+							return (c === 'x' ? r : (r & 0x3 | 0x8)).toString(16);
+						});
+						localStorage.setItem(key, id);
+					}
+					return id;
+				}
+
+				// SHA-256 hash the UUID so the raw ID never leaves the browser
+				async function hashUUID(uuid) {
+					var data = new TextEncoder().encode(uuid);
+					var buf = await crypto.subtle.digest('SHA-256', data);
+					return Array.from(new Uint8Array(buf)).map(function(b) { return b.toString(16).padStart(2, '0'); }).join('');
+				}
+
+				var visitorHashPromise = hashUUID(getOrCreateUUID());
+
 				function track(type, data) {
-					try {
-						var payload = JSON.stringify({ type: type, data: data });
-						if (navigator.sendBeacon) {
-							navigator.sendBeacon(endpoint, new Blob([payload], { type: 'application/json' }));
-						} else {
-							fetch(endpoint, { method: 'POST', body: payload, headers: { 'Content-Type': 'application/json' }, keepalive: true });
-						}
-					} catch(e) {}
+					visitorHashPromise.then(function(vid) {
+						try {
+							data.vid = vid;
+							var payload = JSON.stringify({ type: type, data: data });
+							if (navigator.sendBeacon) {
+								navigator.sendBeacon(endpoint, new Blob([payload], { type: 'application/json' }));
+							} else {
+								fetch(endpoint, { method: 'POST', body: payload, headers: { 'Content-Type': 'application/json' }, keepalive: true });
+							}
+						} catch(e) {}
+					});
 				}
 
 				function trackPage() {
