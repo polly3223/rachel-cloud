@@ -11,14 +11,15 @@
 			</div>
 
 			<nav class="flex items-center gap-6">
-				<a href="/login" class="text-sm text-gray-500 hover:text-gray-300 transition-colors">
+				<a href="/login" data-track="footer-get-started" class="text-sm text-gray-500 hover:text-gray-300 transition-colors">
 					{$t.footer.navGetStarted}
 				</a>
-				<a href="/login" class="text-sm text-gray-500 hover:text-gray-300 transition-colors">
+				<a href="/login" data-track="footer-login" class="text-sm text-gray-500 hover:text-gray-300 transition-colors">
 					{$t.footer.navLogin}
 				</a>
 				<a
 					href="https://github.com/polly3223/Rachel9"
+					data-track="footer-github"
 					class="text-sm text-gray-500 hover:text-gray-300 transition-colors"
 					target="_blank"
 					rel="noopener noreferrer"

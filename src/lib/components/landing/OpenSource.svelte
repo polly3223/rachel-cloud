@@ -18,6 +18,7 @@
 		<div class="flex items-center justify-center">
 			<a
 				href="https://github.com/polly3223/Rachel9"
+				data-track="opensource-github"
 				class="inline-flex items-center px-6 py-3 rounded-xl font-medium text-gray-300 border border-white/10 hover:border-white/25 hover:text-white transition-all duration-300"
 				target="_blank"
 				rel="noopener noreferrer"

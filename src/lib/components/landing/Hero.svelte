@@ -35,11 +35,13 @@
 			<div class="mt-10 flex flex-col sm:flex-row items-center gap-4">
 				<a
 					href="/login"
+					data-track="hero-get-started"
 					class="group relative px-8 py-3.5 rounded-xl font-medium text-white bg-[#0086EE] hover:bg-[#1a94f0] transition-all duration-300 shadow-lg shadow-[#0086EE]/25 hover:shadow-[#0086EE]/40"
 				>
 					{$t.hero.cta1}
 				</a>
 				<button
+					data-track="hero-learn-more"
 					class="px-8 py-3.5 rounded-xl font-medium text-gray-300 border border-white/10 hover:border-white/25 hover:text-white transition-all duration-300 cursor-pointer"
 					onclick={() => document.getElementById('what-is-rachel')?.scrollIntoView({ behavior: 'smooth' })}
 				>

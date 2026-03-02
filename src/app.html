@@ -9,6 +9,64 @@
 		<meta name="viewport" content="width=device-width, initial-scale=1" />
 		<meta name="theme-color" content="#0a0a0f" />
 		%sveltekit.head%
+		<script>
+			// Munin Analytics — lightweight page view & click tracking
+			(function() {
+				var endpoint = '/api/track';
+				var sent = {};
+
+				function track(type, data) {
+					try {
+						var payload = JSON.stringify({ type: type, data: data });
+						if (navigator.sendBeacon) {
+							navigator.sendBeacon(endpoint, new Blob([payload], { type: 'application/json' }));
+						} else {
+							fetch(endpoint, { method: 'POST', body: payload, headers: { 'Content-Type': 'application/json' }, keepalive: true });
+						}
+					} catch(e) {}
+				}
+
+				function trackPage() {
+					var page = location.pathname;
+					if (sent[page] && Date.now() - sent[page] < 2000) return;
+					sent[page] = Date.now();
+
+					var params = new URLSearchParams(location.search);
+					track('PageView', {
+						page: page,
+						referrer: document.referrer || null,
+						screen: screen.width + 'x' + screen.height,
+						language: navigator.language,
+						utm_source: params.get('utm_source') || null,
+						utm_medium: params.get('utm_medium') || null,
+						utm_campaign: params.get('utm_campaign') || null
+					});
+				}
+
+				if (document.readyState === 'complete') trackPage();
+				else window.addEventListener('load', trackPage);
+
+				// Track SvelteKit client-side navigations
+				var _pushState = history.pushState;
+				history.pushState = function() {
+					_pushState.apply(this, arguments);
+					setTimeout(trackPage, 50);
+				};
+				window.addEventListener('popstate', function() { setTimeout(trackPage, 50); });
+
+				// Track clicks on elements with data-track attribute
+				document.addEventListener('click', function(e) {
+					var el = e.target.closest('[data-track]');
+					if (!el) return;
+					track('ClickEvent', {
+						page: location.pathname,
+						element: el.tagName.toLowerCase(),
+						action: el.getAttribute('data-track'),
+						label: (el.textContent || '').trim().slice(0, 100)
+					});
+				});
+			})();
+		</script>
 	</head>
 	<body data-sveltekit-preload-data="hover" style="background-color: #0a0a0f; color: #e5e7eb;">
 		<div style="display: contents">%sveltekit.body%</div>

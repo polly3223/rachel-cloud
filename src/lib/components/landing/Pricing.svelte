@@ -41,6 +41,7 @@
 
 					<a
 						href="/login"
+						data-track="pricing-cta"
 						class="block w-full px-8 py-3.5 rounded-xl font-medium text-white text-center bg-[#0086EE] hover:bg-[#1a94f0] transition-all duration-300 shadow-lg shadow-[#0086EE]/25 hover:shadow-[#0086EE]/40"
 					>
 						{$t.pricing.cta}

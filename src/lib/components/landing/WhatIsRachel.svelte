@@ -30,6 +30,7 @@
 			<p class="text-gray-500 text-sm mb-6">{$t.whatIsRachel.bottomText}</p>
 			<a
 				href="/login"
+			data-track="whatisrachel-cta"
 				class="inline-flex px-8 py-3.5 rounded-xl font-medium text-white bg-[#0086EE] hover:bg-[#1a94f0] transition-all duration-300 shadow-lg shadow-[#0086EE]/25 hover:shadow-[#0086EE]/40"
 			>
 				{$t.whatIsRachel.cta}

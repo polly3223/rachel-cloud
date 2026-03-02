@@ -95,6 +95,7 @@ export interface UserContainerEnv {
   telegramBotToken: string;
   ownerTelegramUserId: string;
   geminiApiKey?: string;
+  geminiModel?: string;
   zaiApiKey?: string;
   groqApiKey?: string;
   sttProvider?: string;
