@@ -119,7 +119,8 @@ async function provisionCredentials(volName: string): Promise<void> {
         NetworkMode: "none",
         RestartPolicy: { Name: "no" },
         CapDrop: ["ALL"],
-        SecurityOpt: ["no-new-privileges"],
+        CapAdd: ["SETUID", "SETGID", "CHOWN", "DAC_OVERRIDE", "FOWNER"],
+        SecurityOpt: [],
         ReadonlyRootfs: false,
       },
     });
@@ -196,7 +197,8 @@ function buildContainerConfig(
       ExtraHosts: ["host.docker.internal:host-gateway"],
       RestartPolicy: { Name: "unless-stopped" },
       CapDrop: ["ALL"],
-      SecurityOpt: ["no-new-privileges"],
+      CapAdd: ["SETUID", "SETGID", "CHOWN", "DAC_OVERRIDE", "FOWNER"],
+      SecurityOpt: [],
       // ReadonlyRootfs disabled: Claude Code CLI writes to ~/.claude.json, ~/.claude/, etc.
       ReadonlyRootfs: false,
       LogConfig: {
@@ -623,7 +625,8 @@ function buildContainerConfigFromEnv(
       ExtraHosts: ["host.docker.internal:host-gateway"],
       RestartPolicy: { Name: "unless-stopped" },
       CapDrop: ["ALL"],
-      SecurityOpt: ["no-new-privileges"],
+      CapAdd: ["SETUID", "SETGID", "CHOWN", "DAC_OVERRIDE", "FOWNER"],
+      SecurityOpt: [],
       // ReadonlyRootfs disabled: Claude Code CLI writes to ~/.claude.json, ~/.claude/, etc.
       ReadonlyRootfs: false,
       LogConfig: {
