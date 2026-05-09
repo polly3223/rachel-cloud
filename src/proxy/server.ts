@@ -49,6 +49,18 @@ function notFoundError(): Response {
   );
 }
 
+function parseRequestUrl(req: Request): URL | null {
+  try {
+    return new URL(req.url);
+  } catch (err) {
+    log.warn("Malformed request URL", {
+      url: req.url,
+      error: String(err),
+    });
+    return null;
+  }
+}
+
 // ---------- Route handlers ----------
 
 async function handleMessages(req: Request): Promise<Response> {
@@ -133,7 +145,16 @@ const server = Bun.serve({
   hostname: "0.0.0.0",
 
   async fetch(req: Request): Promise<Response> {
-    const url = new URL(req.url);
+    const url = parseRequestUrl(req);
+    if (!url) {
+      return new Response(
+        JSON.stringify({
+          type: "error",
+          error: { type: "invalid_request_error", message: "Malformed request URL" },
+        }),
+        { status: 400, headers: { "content-type": "application/json" } },
+      );
+    }
     const path = url.pathname;
     const method = req.method;
 

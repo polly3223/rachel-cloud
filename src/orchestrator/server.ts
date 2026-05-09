@@ -60,6 +60,18 @@ function jsonResponse(body: unknown, status = 200): Response {
   });
 }
 
+function parseRequestUrl(req: Request): URL | null {
+  try {
+    return new URL(req.url);
+  } catch (err) {
+    log.warn("Malformed request URL", {
+      url: req.url,
+      error: String(err),
+    });
+    return null;
+  }
+}
+
 // ---------- Route helpers ----------
 
 function extractUserId(url: URL): string | null {
@@ -218,7 +230,10 @@ const server = Bun.serve({
   hostname: "0.0.0.0", // accessible from containers via host.docker.internal
 
   async fetch(req: Request): Promise<Response> {
-    const url = new URL(req.url);
+    const url = parseRequestUrl(req);
+    if (!url) {
+      return jsonResponse({ status: "error", message: "Malformed request URL" }, 400);
+    }
     const path = url.pathname;
     const method = req.method;
     const startTime = Date.now();
