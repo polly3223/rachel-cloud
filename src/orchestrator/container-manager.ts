@@ -19,6 +19,10 @@ import type {
   UpdateAllResult,
 } from "./types";
 
+interface ContainerEnvOverrides {
+  geminiModel?: string;
+}
+
 // ---------- Helpers ----------
 
 function containerName(userId: string): string {
@@ -402,6 +406,7 @@ export async function updateContainer(
   userId: string,
   newImage?: string,
   force = false,
+  envOverrides: ContainerEnvOverrides = {},
 ): Promise<UpdateResult> {
   const name = containerName(userId);
   const targetImage = newImage || config.imageName;
@@ -446,6 +451,10 @@ export async function updateContainer(
     if (v.startsWith("GROQ_API_KEY=") && config.groqApiKey) return `GROQ_API_KEY=${config.groqApiKey}`;
     return v;
   });
+
+  if (envOverrides.geminiModel !== undefined) {
+    upsertEnvVar(envVars, "GEMINI_MODEL", envOverrides.geminiModel);
+  }
 
   // Stop and remove old container
   await docker.stopContainer(name);
@@ -638,4 +647,21 @@ function buildContainerConfigFromEnv(
       },
     },
   };
+}
+
+function upsertEnvVar(
+  envVars: string[],
+  key: string,
+  value: string,
+): void {
+  const normalized = value.trim();
+  const prefix = `${key}=`;
+  for (let i = envVars.length - 1; i >= 0; i--) {
+    if (envVars[i]?.startsWith(prefix)) {
+      envVars.splice(i, 1);
+    }
+  }
+  if (normalized) {
+    envVars.push(`${key}=${normalized}`);
+  }
 }
