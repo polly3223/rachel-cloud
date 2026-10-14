@@ -173,20 +173,20 @@ async function handleUpdateOne(
 
   let image: string | undefined;
   let force = false;
-  let geminiModel: string | undefined;
+  let premModel: string | undefined;
   try {
     const body = await req.json();
     image = body?.image;
     force = body?.force === true;
-    geminiModel = typeof body?.geminiModel === "string"
-      ? body.geminiModel
+    premModel = typeof body?.premModel === "string"
+      ? body.premModel
       : undefined;
   } catch {
     // No body is fine — use default image
   }
 
   const result = await updateContainer(userId, image, force, {
-    geminiModel,
+    premModel,
   });
   return jsonResponse({ status: "ok", result });
 }

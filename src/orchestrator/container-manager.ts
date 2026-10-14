@@ -8,6 +8,7 @@
 
 import { existsSync, readFileSync } from "node:fs";
 import { config, log } from "./config";
+import { premRuntimeEnv } from "./runtime-env";
 import { docker, DockerApiError } from "./docker-client";
 import type {
   UserContainerEnv,
@@ -20,7 +21,7 @@ import type {
 } from "./types";
 
 interface ContainerEnvOverrides {
-  geminiModel?: string;
+  premModel?: string;
 }
 
 // ---------- Helpers ----------
@@ -158,10 +159,6 @@ function buildContainerConfig(
   userId: string,
   env: UserContainerEnv,
 ): DockerCreateContainerBody {
-  // API keys: Gemini Flash is primary, Z.ai is fallback
-  const geminiKey = env.geminiApiKey || config.geminiApiKey;
-  const zaiKey = env.zaiApiKey || config.zaiApiKey;
-
   const envVars: string[] = [
     `TELEGRAM_BOT_TOKEN=${env.telegramBotToken}`,
     `OWNER_TELEGRAM_USER_ID=${env.ownerTelegramUserId}`,
@@ -173,21 +170,11 @@ function buildContainerConfig(
     `THINKING_LEVEL=off`,
   ];
 
-  // Gemini API key (primary — Gemini Flash)
-  if (geminiKey) envVars.push(`GEMINI_API_KEY=${geminiKey}`);
-
-  // Z.ai API key (fallback)
-  if (zaiKey) envVars.push(`ZAI_API_KEY=${zaiKey}`);
-
-  // Optional env vars
-  const groqKey = env.groqApiKey || config.groqApiKey;
-  if (groqKey) envVars.push(`GROQ_API_KEY=${groqKey}`);
-  if (env.sttProvider) envVars.push(`STT_PROVIDER=${env.sttProvider}`);
-  if (env.geminiModel) envVars.push(`GEMINI_MODEL=${env.geminiModel}`);
+  const runtimeEnv = premRuntimeEnv(envVars, { ...config, premApiKey: env.premApiKey || config.premApiKey, groqApiKey: env.groqApiKey || config.groqApiKey }, env.premModel);
 
   return {
     Image: config.imageName,
-    Env: envVars,
+    Env: runtimeEnv,
     User: "1001:1001",
     HostConfig: {
       Memory: config.defaults.memoryBytes,
@@ -444,17 +431,7 @@ export async function updateContainer(
     };
   }
 
-  // Extract env vars from existing container, but refresh API keys from current orchestrator config
-  const envVars = existing.Config.Env.map((v: string) => {
-    if (v.startsWith("GEMINI_API_KEY=") && config.geminiApiKey) return `GEMINI_API_KEY=${config.geminiApiKey}`;
-    if (v.startsWith("ZAI_API_KEY=") && config.zaiApiKey) return `ZAI_API_KEY=${config.zaiApiKey}`;
-    if (v.startsWith("GROQ_API_KEY=") && config.groqApiKey) return `GROQ_API_KEY=${config.groqApiKey}`;
-    return v;
-  });
-
-  if (envOverrides.geminiModel !== undefined) {
-    upsertEnvVar(envVars, "GEMINI_MODEL", envOverrides.geminiModel);
-  }
+  const envVars = premRuntimeEnv(existing.Config.Env, config, envOverrides.premModel);
 
   // Stop and remove old container
   await docker.stopContainer(name);
@@ -495,7 +472,7 @@ export async function updateContainer(
     const rollbackConfig = buildContainerConfigFromEnv(
       userId,
       previousImage,
-      envVars,
+      existing.Config.Env,
     );
     await docker.createContainer(name, rollbackConfig);
     await docker.startContainer(name);
@@ -521,7 +498,7 @@ export async function updateContainer(
       const rollbackConfig = buildContainerConfigFromEnv(
         userId,
         previousImage,
-        envVars,
+        existing.Config.Env,
       );
       await docker.createContainer(name, rollbackConfig);
       await docker.startContainer(name);
@@ -647,21 +624,4 @@ function buildContainerConfigFromEnv(
       },
     },
   };
-}
-
-function upsertEnvVar(
-  envVars: string[],
-  key: string,
-  value: string,
-): void {
-  const normalized = value.trim();
-  const prefix = `${key}=`;
-  for (let i = envVars.length - 1; i >= 0; i--) {
-    if (envVars[i]?.startsWith(prefix)) {
-      envVars.splice(i, 1);
-    }
-  }
-  if (normalized) {
-    envVars.push(`${key}=${normalized}`);
-  }
 }

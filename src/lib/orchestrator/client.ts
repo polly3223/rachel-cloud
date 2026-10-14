@@ -173,7 +173,7 @@ class OrchestratorClient {
   async updateContainer(
     userId: string,
     image?: string,
-    options?: { force?: boolean; geminiModel?: string },
+    options?: { force?: boolean; premModel?: string },
   ): Promise<{ status: string; result: UpdateResult }> {
     return this.request(
       "POST",
@@ -181,7 +181,7 @@ class OrchestratorClient {
       {
         ...(image ? { image } : {}),
         ...(options?.force !== undefined ? { force: options.force } : {}),
-        ...(options?.geminiModel ? { geminiModel: options.geminiModel } : {}),
+        ...(options?.premModel ? { premModel: options.premModel } : {}),
       },
     );
   }

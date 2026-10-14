@@ -80,6 +80,7 @@ export interface DockerCreateContainerBody {
     ExtraHosts?: string[];
     RestartPolicy: { Name: string; MaximumRetryCount?: number };
     CapDrop: string[];
+    CapAdd?: string[];
     SecurityOpt: string[];
     ReadonlyRootfs: boolean;
     LogConfig?: {
@@ -94,8 +95,8 @@ export interface DockerCreateContainerBody {
 export interface UserContainerEnv {
   telegramBotToken: string;
   ownerTelegramUserId: string;
-  geminiApiKey?: string;
-  geminiModel?: string;
+  premApiKey?: string;
+  premModel?: string;
   zaiApiKey?: string;
   groqApiKey?: string;
   sttProvider?: string;

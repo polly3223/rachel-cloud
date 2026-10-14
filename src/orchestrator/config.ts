@@ -13,7 +13,8 @@ export interface OrchestratorConfig {
   containerPrefix: string;
   volumePrefix: string;
   zaiApiKey: string;
-  geminiApiKey: string;
+  premApiKey: string;
+  premModel: string;
   groqApiKey: string;
   defaults: {
     memoryBytes: number;
@@ -33,7 +34,8 @@ function loadConfig(): OrchestratorConfig {
     containerPrefix: "rachel-user-",
     volumePrefix: "rachel-user-",
     zaiApiKey: process.env.ZAI_API_KEY || "",
-    geminiApiKey: process.env.GEMINI_API_KEY || "",
+    premApiKey: process.env.PREM_API_KEY || "",
+    premModel: process.env.PREM_MODEL || "deepseek-v4.1-flash",
     groqApiKey: process.env.GROQ_API_KEY || "",
     defaults: {
       memoryBytes: 1536 * 1024 * 1024,    // 1.5GB

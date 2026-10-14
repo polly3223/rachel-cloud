@@ -39,7 +39,6 @@ async function dockerFetch(
   const url = `${API_BASE}${path}`;
   return fetch(url, {
     ...options,
-    // @ts-expect-error — Bun extension for Unix socket
     unix: config.dockerSocket,
   });
 }
